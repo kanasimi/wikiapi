@@ -1,8 +1,10 @@
 'use strict';
 
+let CeL;
+
 try {
 	// Load CeJS library.
-	const CeL = require('cejs');
+	CeL = require('cejs');
 } catch {
 }
 
@@ -12,6 +14,7 @@ if (typeof CeL === 'undefined') {
 	require('./_CeL.loader.nodejs.js');
 }
 
+// Load modules.
 // @see `wiki loader.js`
 CeL.run(['interact.DOM', 'application.debug',
 	// 載入不同地區語言的功能 for wiki.work()。
@@ -24,18 +27,25 @@ CeL.run(['interact.DOM', 'application.debug',
 	// CeL.fs_mkdir(), CeL.wiki.read_dump()
 	'application.storage']);
 
+const CeL_wiki = CeL.wiki;
+
 // Set default language. 改變預設之語言。
-CeL.wiki.set_language('en');
+CeL_wiki.set_language('en');
 
 const KEY_wiki = 'wiki';
 
+/**
+ * wikiapi operator 操作子.
+ * 
+ * @param {String}[API_URL] language code or API URL of MediaWiki project
+ */
 function wikiapi(API_URL) {
-	this[KEY_wiki] = new CeL.wiki(null, null, API_URL);
+	this[KEY_wiki] = new CeL_wiki(null, null, API_URL);
 }
 
 function wikiapi_login(user_name, user_password, API_URL) {
 	return new Promise(function (resolve, reject) {
-		this[KEY_wiki] = CeL.wiki.login(user_name, user_password, {
+		this[KEY_wiki] = CeL_wiki.login(user_name, user_password, {
 			API_URL: API_URL || this[KEY_wiki].API_URL,
 			callback: function (data, error) {
 				if (error) {
@@ -52,12 +62,12 @@ function wikiapi_login(user_name, user_password, API_URL) {
 const page_data_attributes = {
 	wikitext: {
 		get() {
-			return CeL.wiki.content_of(this);
+			return CeL_wiki.content_of(this);
 		}
 	},
 	parse: {
 		value: function parse() {
-			return CeL.wiki.parser(this).parse();
+			return CeL_wiki.parser(this).parse();
 		}
 	},
 };
