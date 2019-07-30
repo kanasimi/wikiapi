@@ -1,0 +1,32 @@
+{
+	"name" : "wikiapi",
+	"title" : "JavaScript MidiaWiki API",
+	"version" : "1.0.0",
+	"description" : "Simple way to assess MidiaWiki API via JavaScript with simple wikitext parser.",
+	"main" : "wikiapi.js",
+	"dependencies" : {
+		"cejs" : "latest"
+	},
+	"devDependencies" : {},
+	"engines" : {
+		"node" : ">=0.10"
+	},
+	"scripts" : {
+	},
+	"repository" : {
+		"type" : "git",
+		"url" : "git+https://github.com/kanasimi/wikiapi.git"
+	},
+	"keywords" : [ "MidiaWiki", "MidiaWiki API" ],
+	"author" : {
+		"name" : "vimunci",
+		"email" : "vimunci@gmail.com",
+		"url" : "https://github.com/kanasimi/CeJS"
+	},
+	"contributors": [ "vimunci" ],
+	"license" : "BSD-3-Clause",
+	"bugs" : {
+		"url" : "https://github.com/kanasimi/wikiapi/issues"
+	},
+	"homepage" : "https://github.com/kanasimi/wikiapi"
+}
