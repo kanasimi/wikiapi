@@ -18,16 +18,24 @@ const wikiapi = require('wikiapi');
 	let wiki = new wikiapi;
 	let page = await wiki.page('ABC');
 	console.log(page.wikitext);
+})();
 	
-	let wiki = new wikiapi;
+(async () => {
+	let enwiki = new wikiapi('en');
+	await enwiki.login('user', 'password');
+	let page = await enwiki.page('ABC');
+	page.parse().each('template',
+		token => console.log(token.name));
+})();
+
+(async () => {
+	let enwiki = new wikiapi;
 	await enwiki.login('user', 'password', 'en');
-	page = await enwiki.page('ABC');
-	page.parsed.each('template',
-		token => console.log(token.title));
-	
-	await enwiki.page('WP:SB').edit(function(page_data) {
-		return page_data.wikitext + 'Test edit using {{GitHub|kanasimi/wikiapi}}.';
+	page = await enwiki.page('Wikipedia:Sandbox');
+	await enwiki.edit(function(page_data) {
+		return page_data.wikitext + '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 	});
+	console.log('Done.');
 })();
 
 ```
