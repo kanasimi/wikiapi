@@ -1,8 +1,8 @@
 ﻿[![npm version](https://badge.fury.io/js/wikiapi.svg)](https://www.npmjs.com/package/wikiapi)
 [![npm downloads](https://img.shields.io/npm/dm/wikiapi.svg)](https://www.npmjs.com/package/wikiapi)
 [![Known Vulnerabilities](https://snyk.io/test/github/kanasimi/wikiapi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/kanasimi/wikiapi?targetFile=package.json)
-[![codebeat badge](https://codebeat.co/badges/e1f640e9-afec-482b-83b0-5c684958ba05)](https://codebeat.co/projects/github-com-kanasimi-wikiapi-master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2d3464182d23463bb851f99cf06eaa28)](https://app.codacy.com/app/kanasimi/wikiapi?utm_source=github.com&utm_medium=referral&utm_content=kanasimi/wikiapi&utm_campaign=Badge_Grade_Settings)
+[![codebeat badge](https://codebeat.co/badges/47d3b442-fd49-4142-a69b-05171bf8fe36)](https://codebeat.co/projects/github-com-kanasimi-wikiapi-master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/02aa4b9cc9df4fa9b10389abbb139ebf)](https://app.codacy.com/app/kanasimi/wikiapi?utm_source=github.com&utm_medium=referral&utm_content=kanasimi/wikiapi&utm_campaign=Badge_Grade_Dashboard)
 
 # JavaScript MidiaWiki API
 Simple way to assess MidiaWiki API via JavaScript with simple wikitext parser.
@@ -33,11 +33,11 @@ const wikiapi = require('wikiapi');
 ```
 
 ## OS support
-| Platform | support |
-| --- | --- |
-| Windows | ✔️ |
-| macOS | ✔️ |
-| UNIX, Linux | ✔️ |
+| Platform    | support |
+| ----------- | ------- |
+| Windows     | ✔️      |
+| macOS       | ✔️      |
+| UNIX, Linux | ✔️      |
 
 ## Contact 聯絡我們
 Contact us at [GitHub](https://github.com/kanasimi/wikiapi/issues).

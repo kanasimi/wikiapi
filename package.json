@@ -1,7 +1,7 @@
 {
 	"name" : "wikiapi",
 	"title" : "JavaScript MidiaWiki API",
-	"version" : "1.0.0",
+	"version" : "1.0.1",
 	"description" : "Simple way to assess MidiaWiki API via JavaScript with simple wikitext parser.",
 	"main" : "wikiapi.js",
 	"dependencies" : {
