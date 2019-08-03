@@ -41,20 +41,21 @@ function wikiapi(API_URL) {
 	this[KEY_wiki] = new CeL_wiki(null, null, API_URL);
 }
 
+function wikiapi_login_executor(resolve, reject) {
+	this[KEY_wiki] = CeL_wiki.login(user_name, user_password, {
+		API_URL: API_URL || this[KEY_wiki].API_URL,
+		callback(data, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(data);
+			}
+		},
+		preserve_password: true
+	});
+}
 function wikiapi_login(user_name, user_password, API_URL) {
-	return new Promise(function (resolve, reject) {
-		this[KEY_wiki] = CeL_wiki.login(user_name, user_password, {
-			API_URL: API_URL || this[KEY_wiki].API_URL,
-			callback(data, error) {
-				if (error) {
-					reject(error);
-				} else {
-					resolve(data);
-				}
-			},
-			preserve_password: true
-		});
-	}.bind(this));
+	return new Promise(wikiapi_login_executor.bind(this));
 }
 
 const page_data_attributes = {
@@ -71,35 +72,37 @@ const page_data_attributes = {
 	},
 };
 
-function wikiapi_page(title, options) {
-	return new Promise(function (resolve, reject) {
-		const wiki = this[KEY_wiki];
-		wiki.page(title, function (page_data, error) {
-			if (error) {
-				reject(error);
-				return;
-			}
+function wikiapi_page_executor(resolve, reject) {
+	const wiki = this[KEY_wiki];
+	wiki.page(title, function (page_data, error) {
+		if (error) {
+			reject(error);
+			return;
+		}
 
-			Object.defineProperties(page_data, page_data_attributes);
-			resolve(page_data);
-		}, options);
-	}.bind(this));
+		Object.defineProperties(page_data, page_data_attributes);
+		resolve(page_data);
+	}, options);
+}
+function wikiapi_page(title, options) {
+	return new Promise(wikiapi_page_executor.bind(this));
 }
 
-function wikiapi_edit_page(title, content, options) {
-	return new Promise(function (resolve, reject) {
-		const wiki = this[KEY_wiki];
-		if (title) {
-			wiki.page(title);
+function wikiapi_edit_page_executor(resolve, reject) {
+	const wiki = this[KEY_wiki];
+	if (title) {
+		wiki.page(title);
+	}
+	wiki.edit(content, options, function (title, error) {
+		if (error) {
+			reject(error);
+		} else {
+			resolve(title);
 		}
-		wiki.edit(content, options, function (title, error) {
-			if (error) {
-				reject(error);
-			} else {
-				resolve(title);
-			}
-		});
-	}.bind(this));
+	});
+}
+function wikiapi_edit_page(title, content, options) {
+	return new Promise(wikiapi_edit_page_executor.bind(this));
 }
 
 
