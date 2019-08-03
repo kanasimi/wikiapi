@@ -21,6 +21,17 @@ const wikiapi = require('wikiapi');
 })();
 	
 (async () => {
+	let enwiki = new wikiapi;
+	await enwiki.login('bot name', 'password', 'en');
+	let page = await enwiki.page('Wikipedia:Sandbox');
+	await enwiki.edit(function(page_data) {
+		return page_data.wikitext
+			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
+	}, {bot: 1});
+	console.log('Done.');
+})();
+
+(async () => {
 	let zhwiki = new wikiapi('zh');
 	await zhwiki.login('user', 'password');
 	let page = await zhwiki.page('ABC');
@@ -28,20 +39,9 @@ const wikiapi = require('wikiapi');
 		token => console.log(token.name));
 })();
 
-(async () => {
-	let enwiki = new wikiapi;
-	await enwiki.login('user', 'password', 'en');
-	page = await enwiki.page('Wikipedia:Sandbox');
-	await enwiki.edit(function(page_data) {
-		return page_data.wikitext
-			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
-	});
-	console.log('Done.');
-})();
-
 ```
 
-# Install
+## Install
 ``` sh
 npm install wikiapi
 ```

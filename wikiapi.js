@@ -47,7 +47,7 @@ function wikiapi_login(user_name, user_password, API_URL) {
 	return new Promise(function (resolve, reject) {
 		this[KEY_wiki] = CeL_wiki.login(user_name, user_password, {
 			API_URL: API_URL || this[KEY_wiki].API_URL,
-			callback: function (data, error) {
+			callback(data, error) {
 				if (error) {
 					reject(error);
 				} else {
@@ -66,8 +66,9 @@ const page_data_attributes = {
 		}
 	},
 	parse: {
-		value: function parse() {
-			return CeL_wiki.parser(this).parse();
+		value: function parse(options) {
+			// function parse_page(options) @ CeL.wiki
+			return CeL_wiki.parser(this).parse(options);
 		}
 	},
 };
@@ -108,7 +109,7 @@ Object.assign(wikiapi.prototype, {
 	login: wikiapi_login,
 	page: wikiapi_page,
 	edit_page: wikiapi_edit_page,
-	edit: function (content, options) {
+	edit(content, options) {
 		return this.edit_page(null, content, options);
 	},
 });
