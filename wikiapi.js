@@ -5,14 +5,12 @@ let CeL;
 try {
 	// Load CeJS library.
 	CeL = require('cejs');
-} catch {
-}
-
-// for debug:
-// const wikiapi = require('./wikiapi.js');
-if (typeof CeL === 'undefined') {
+} catch (e) {
+	// for debug:
+	// const wikiapi = require('./wikiapi.js');
 	require('./_CeL.loader.nodejs.js');
 }
+// assert: typeof CeL === 'function'
 
 // Load modules.
 // @see `wiki loader.js`
