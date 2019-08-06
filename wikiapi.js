@@ -1,12 +1,15 @@
 ﻿'use strict';
 
+let CeL;
+
 try {
 	// Load CeJS library.
-	global.CeL = require('cejs');
+	CeL = require('cejs');
 } catch (e) {
 	// for debug:
 	// const wikiapi = require('./wikiapi.js');
 	require('./_CeL.loader.nodejs.js');
+	CeL = global.CeL;
 }
 // assert: typeof CeL === 'function'
 
