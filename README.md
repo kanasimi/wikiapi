@@ -12,14 +12,17 @@ Here lists the usage of this tool.
 
 ### As node.js module
 ``` JavaScript
+// load module
 const wikiapi = require('wikiapi');
 
+// load page
 (async () => {
 	let wiki = new wikiapi;
 	let page = await wiki.page('ABC');
 	console.log(page.wikitext);
 })();
-	
+
+// edit page
 (async () => {
 	let enwiki = new wikiapi;
 	await enwiki.login('bot name', 'password', 'en');
@@ -31,12 +34,34 @@ const wikiapi = require('wikiapi');
 	console.log('Done.');
 })();
 
+// parse page
 (async () => {
 	let zhwiki = new wikiapi('zh');
 	await zhwiki.login('user', 'password');
 	let page = await zhwiki.page('ABC');
 	page.parse().each('template',
 		token => console.log(token.name));
+})();
+
+// read wikidata
+(async () => {
+	let wiki = new wikiapi;
+	let page = await wiki.data('Q1');
+	console.assert(CeL.wiki.data.value_of(page.labels.zh) === '宇宙');
+})();
+
+// read wikidata
+(async () => {
+	let wiki = new wikiapi;
+	let data = await wiki.data('Universe', 'P1419');
+	console.assert(data.includes('shape of the universe'));
+})();
+
+// get list of [[w:en:Category:Chemical_elements]]
+(async () => {
+	let wiki = new wikiapi;
+	let list = await wiki.categorymembers('Chemical elements');
+	console.log(list);
 })();
 
 ```

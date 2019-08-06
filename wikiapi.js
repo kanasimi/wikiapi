@@ -1,10 +1,8 @@
-'use strict';
-
-let CeL;
+﻿'use strict';
 
 try {
 	// Load CeJS library.
-	CeL = require('cejs');
+	global.CeL = require('cejs');
 } catch (e) {
 	// for debug:
 	// const wikiapi = require('./wikiapi.js');
@@ -110,6 +108,45 @@ function wikiapi_edit_page(title, content, options) {
 }
 
 
+function wikiapi_data(key, property, options) {
+	if (CeL.is_Object(property) && !options) {
+		// shift arguments.
+		options = property;
+		property = null;
+	}
+
+	function wikiapi_data_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		// using wikidata_entity() → wikidata_datavalue()
+		wiki.data(key, property, function (data, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(data);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_data_executor.bind(this));
+}
+
+function wikiapi_categorymembers(title, options) {
+	function wikiapi_categorymembers_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		wiki.categorymembers(title, function (pages, titles, title, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(pages);
+			}
+		}, Object.assign({
+			limit: 'max'
+		}, options));
+	}
+
+	return new Promise(wikiapi_categorymembers_executor.bind(this));
+}
+
 Object.assign(wikiapi.prototype, {
 	login: wikiapi_login,
 	page: wikiapi_page,
@@ -117,6 +154,8 @@ Object.assign(wikiapi.prototype, {
 	edit(content, options) {
 		return this.edit_page(null, content, options);
 	},
+	data: wikiapi_data,
+	categorymembers: wikiapi_categorymembers,
 });
 
 module.exports = wikiapi;
