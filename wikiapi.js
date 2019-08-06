@@ -134,20 +134,22 @@ function wikiapi_data(key, property, options) {
 }
 
 function wikiapi_categorymembers(title, options) {
-	function wikiapi_categorymembers_executor(resolve, reject) {
+	function callback(pages, titles, title, error) {
+		if (error) {
+			reject(error);
+		} else {
+			resolve(pages);
+		}
+	}
+
+	function executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		wiki.categorymembers(title, function (pages, titles, title, error) {
-			if (error) {
-				reject(error);
-			} else {
-				resolve(pages);
-			}
-		}, Object.assign({
+		wiki.categorymembers(title, callback, Object.assign({
 			limit: 'max'
 		}, options));
 	}
 
-	return new Promise(wikiapi_categorymembers_executor.bind(this));
+	return new Promise(executor.bind(this));
 }
 
 Object.assign(wikiapi.prototype, {
