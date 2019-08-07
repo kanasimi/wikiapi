@@ -42,6 +42,8 @@ function wikiapi(API_URL) {
 	this[KEY_wiki] = new CeL_wiki(null, null, API_URL);
 }
 
+// --------------------------------------------------------
+
 function wikiapi_login(user_name, user_password, API_URL) {
 	function wikiapi_login_executor(resolve, reject) {
 		this[KEY_wiki] = CeL_wiki.login(user_name, user_password, {
@@ -59,6 +61,8 @@ function wikiapi_login(user_name, user_password, API_URL) {
 
 	return new Promise(wikiapi_login_executor.bind(this));
 }
+
+// --------------------------------------------------------
 
 const page_data_attributes = {
 	wikitext: {
@@ -91,6 +95,7 @@ function wikiapi_page(title, options) {
 	return new Promise(wikiapi_page_executor.bind(this));
 }
 
+// --------------------------------------------------------
 
 function wikiapi_edit_page(title, content, options) {
 	function wikiapi_edit_page_executor(resolve, reject) {
@@ -110,6 +115,7 @@ function wikiapi_edit_page(title, content, options) {
 	return new Promise(wikiapi_edit_page_executor.bind(this));
 }
 
+// --------------------------------------------------------
 
 function wikiapi_data(key, property, options) {
 	if (CeL.is_Object(property) && !options) {
@@ -133,10 +139,12 @@ function wikiapi_data(key, property, options) {
 	return new Promise(wikiapi_data_executor.bind(this));
 }
 
-function wikiapi_categorymembers(title, options) {
-	function wikiapi_categorymembers_executor(resolve, reject) {
+// --------------------------------------------------------
+
+function wikiapi_list(type, title, options) {
+	function wikiapi_list_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		wiki.categorymembers(title, function callback(list, error) {
+		wiki[type](title, function callback(list, error) {
 			if (error) {
 				reject(error);
 			} else {
@@ -147,8 +155,10 @@ function wikiapi_categorymembers(title, options) {
 		}, options));
 	}
 
-	return new Promise(wikiapi_categorymembers_executor.bind(this));
+	return new Promise(wikiapi_list_executor.bind(this));
 }
+
+// --------------------------------------------------------
 
 Object.assign(wikiapi.prototype, {
 	login: wikiapi_login,
@@ -160,8 +170,12 @@ Object.assign(wikiapi.prototype, {
 	},
 
 	data: wikiapi_data,
+});
 
-	categorymembers: wikiapi_categorymembers,
+'categorymembers'.split('|').forEach(type => {
+	wikiapi.prototype[type] = function (title, options) {
+		return wikiapi_list.call(this, type, title, options);
+	};
 });
 
 module.exports = wikiapi;
