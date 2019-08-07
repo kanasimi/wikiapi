@@ -67,21 +67,31 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 
 	let enwiki = new wikiapi;
 	await enwiki.login(bot_name, password, 'en');
-
+	await enwiki.page(test_page_title);
 	// CeL.set_debug(6);
-	await enwiki.edit_page(test_page_title, (page_data) => {
-		// append text
-		return page_data.wikitext
-			+ test_wikitext;
-	}, {
-			bot: 1,
-			summary: 'Test edit using wikiapi'
-		});
-	// CeL.set_debug(0);
+	try {
+		await enwiki.edit((page_data) => {
+			// append text
+			return page_data.wikitext
+				+ test_wikitext;
+		}, {
+				bot: 1,
+				summary: 'Test edit using wikiapi'
+			});
 
-	let page = await enwiki.page(test_page_title);
-	// IP is blocked.
-	// assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
+		// CeL.set_debug(0);
+
+		let page = await enwiki.page(test_page_title);
+		// IP is blocked.
+		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
+
+	} catch (result) {
+		// CeL.set_debug(0);
+		if ((!result.edit || !result.edit.captcha)
+			&& (!result.error || result.error.code !== 'globalblocking-ipblocked-range')) {
+			assert([result.message, 'OK'], 'test edit page result');
+		}
+	}
 
 	// console.log('Done.');
 	finish_test('edit page');

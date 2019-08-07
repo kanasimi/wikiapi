@@ -104,9 +104,10 @@ function wikiapi_edit_page(title, content, options) {
 			wiki.page(title);
 		}
 		// wiki.edit(page contents, options, callback)
-		wiki.edit(content, options, function callback(title, error) {
+		wiki.edit(content, options, function callback(title, error, result) {
 			if (error) {
-				reject(error);
+				result.message = error;
+				reject(result);
 			} else {
 				resolve(title);
 			}
