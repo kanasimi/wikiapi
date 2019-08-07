@@ -3,20 +3,6 @@
 	"title" : "JavaScript MidiaWiki API for node.js",
 	"version" : "1.0.3",
 	"description" : "Simple way to access MidiaWiki API via JavaScript with simple wikitext parser.",
-	"main" : "wikiapi.js",
-	"dependencies" : {
-		"cejs" : "latest"
-	},
-	"devDependencies" : {},
-	"engines" : {
-		"node" : ">=0.10"
-	},
-	"scripts" : {
-	},
-	"repository" : {
-		"type" : "git",
-		"url" : "git+https://github.com/kanasimi/wikiapi.git"
-	},
 	"keywords" : [ "MidiaWiki", "MidiaWiki API" ],
 	"author" : {
 		"name" : "vimunci",
@@ -28,5 +14,23 @@
 	"bugs" : {
 		"url" : "https://github.com/kanasimi/wikiapi/issues"
 	},
-	"homepage" : "https://github.com/kanasimi/wikiapi"
+	"homepage" : "https://github.com/kanasimi/wikiapi",
+	"repository" : {
+		"type" : "git",
+		"url" : "git+https://github.com/kanasimi/wikiapi.git"
+	},
+
+	"main" : "wikiapi.js",
+	"scripts" : {
+		"test" : "node \"_test suite/test.js\""
+	},
+
+	"engines" : {
+		"node" : ">=10.16"
+	},
+
+	"dependencies" : {
+		"cejs" : "latest"
+	},
+	"devDependencies" : {}
 }
