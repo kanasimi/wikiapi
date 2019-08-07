@@ -18,18 +18,23 @@ let all_tests = 0;
 /** {ℕ⁰:Natural+0}tests done */
 let test_done = 0;
 
+let start_time = Date.now();
+
 function check_tests(recorder, error_count) {
 	all_error_count += error_count;
 	if (++test_done < all_tests) {
 		return;
 	}
 
+	let elapsed_message = ' Elapsed time: '
+		+ Math.round((Date.now() - start_time) / 1000) + ' s.';
+
 	if (all_error_count === 0) {
-		CeL.info('All tests OK.');
+		CeL.info('check_tests: All tests done.' + elapsed_message);
 		return;
 	}
 
-	throw new Error('All %error@1.', all_error_count);
+	throw new Error('check_tests: All %error@1.' + elapsed_message, all_error_count);
 }
 
 function add_tests(test_name, conditions) {
