@@ -38,6 +38,7 @@ function check_tests(recorder, error_count) {
 
 	if (all_error_count === 0) {
 		CeL.info('All tests OK.');
+		return;
 	}
 
 	throw new Error('All %error@1.', all_error_count);
@@ -82,13 +83,15 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 		// CeL.set_debug(0);
 
 		let page = await enwiki.page(test_page_title);
-		// IP is blocked.
 		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
 
 	} catch (result) {
 		// CeL.set_debug(0);
-		if ((!result.edit || !result.edit.captcha)
-			&& (!result.error || result.error.code !== 'globalblocking-ipblocked-range')) {
+		if (result.edit && result.edit.captcha
+			|| result.error && result.error.code === 'globalblocking-ipblocked-range') {
+			// IP is blocked.
+			CeL.log('Skip blocked edit.');
+		} else {
 			assert([result.message, 'OK'], 'test edit page result');
 		}
 	}
