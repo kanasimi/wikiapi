@@ -1,7 +1,7 @@
 ﻿'use strict';
 
 // load module
-const wikiapi = require('wikiapi');
+const wikiapi = require('../wikiapi.js');
 
 const CeL = global.CeL;
 CeL.run('application.debug.log');
