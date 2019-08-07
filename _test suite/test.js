@@ -20,7 +20,7 @@ let test_done = 0;
 
 function check_tests(recorder, error_count) {
 	all_error_count += error_count;
-	if (++test_done === all_tests) {
+	if (++test_done < all_tests) {
 		return;
 	}
 
