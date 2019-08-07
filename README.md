@@ -66,6 +66,8 @@ const wikiapi = require('wikiapi');
 
 ```
 
+More example: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/master/_test%20suite/test.js).
+
 ## Install
 ``` sh
 npm install wikiapi
