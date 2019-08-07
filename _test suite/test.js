@@ -18,18 +18,6 @@ let all_tests = 0;
 /** {ℕ⁰:Natural+0}tests still running */
 let still_running = 0;
 
-function add_tests(test_name, conditions) {
-	if (!conditions) {
-		// shift arguments: 跳過 test_name。
-		conditions = test_name;
-		test_name = null;
-	}
-
-	all_tests++;
-	still_running++;
-	CeL.test(test_name, conditions, check_tests);
-}
-
 function check_tests(recorder, error_count) {
 	all_error_count += error_count;
 	if (--still_running > 0) {
@@ -42,6 +30,18 @@ function check_tests(recorder, error_count) {
 	}
 
 	throw new Error('All %error@1.', all_error_count);
+}
+
+function add_tests(test_name, conditions) {
+	if (!conditions) {
+		// shift arguments: 跳過 test_name。
+		conditions = test_name;
+		test_name = null;
+	}
+
+	all_tests++;
+	still_running++;
+	CeL.test(test_name, conditions, check_tests);
 }
 
 // ============================================================================
@@ -69,22 +69,19 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 	let enwiki = new wikiapi;
 	await enwiki.login(bot_name, password, 'en');
 	await enwiki.page(test_page_title);
+
+	function modify_text(page_data) {
+		// append text
+		return page_data.wikitext
+			+ test_wikitext;
+	}
+
 	// CeL.set_debug(6);
 	try {
-		await enwiki.edit((page_data) => {
-			// append text
-			return page_data.wikitext
-				+ test_wikitext;
-		}, {
-				bot: 1,
-				summary: 'Test edit using wikiapi'
-			});
-
-		// CeL.set_debug(0);
-
-		let page = await enwiki.page(test_page_title);
-		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
-
+		await enwiki.edit(modify_text, {
+			bot: 1,
+			summary: 'Test edit using wikiapi'
+		});
 	} catch (result) {
 		// CeL.set_debug(0);
 		if (result.edit && result.edit.captcha
@@ -95,6 +92,10 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 			assert([result.message, 'OK'], 'test edit page result');
 		}
 	}
+	// CeL.set_debug(0);
+
+	let page = await enwiki.page(test_page_title);
+	assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
 
 	// console.log('Done.');
 	finish_test('edit page');
