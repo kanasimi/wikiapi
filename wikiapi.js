@@ -172,7 +172,7 @@ Object.assign(wikiapi.prototype, {
 	data: wikiapi_data,
 });
 
-'categorymembers'.split('|').forEach(type => {
+'categorymembers'.split('|').forEach((type) => {
 	wikiapi.prototype[type] = function (title, options) {
 		return wikiapi_list.call(this, type, title, options);
 	};

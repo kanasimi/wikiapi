@@ -2,6 +2,7 @@
 
 // load module
 const wikiapi = require('../wikiapi.js');
+CeL.info('Using CeL version: ' + CeL.version);
 
 const CeL = global.CeL;
 CeL.run('application.debug.log');
@@ -22,7 +23,7 @@ CeL.test('edit page', async (assert) => {
 	let enwiki = new wikiapi;
 	await enwiki.login(bot_name, password, 'en');
 	await enwiki.page(test_page_title);
-	await enwiki.edit(page_data => {
+	await enwiki.edit((page_data) => {
 		// append text
 		return page_data.wikitext
 			+ test_wikitext;
@@ -45,7 +46,7 @@ CeL.test('parse page', async (assert) => {
 	let page = await zhwiki.page('Universe');
 	let template_list = [];
 	page.parse().each('template',
-		token => template_list.push(token.name));
+		(token) => template_list.push(token.name));
 	assert(template_list.includes('Infobox'), '[[Universe]] must includes {{Infobox}}');
 });
 
@@ -66,5 +67,5 @@ CeL.test('read wikidata #2', async (assert) => {
 CeL.test('get list of [[w:en:Category:Chemical_elements]]', async (assert) => {
 	let wiki = new wikiapi;
 	let list = await wiki.categorymembers('Chemical elements');
-	assert(list.map(page_data => page_data.title).includes('Iron'), 'Iron is a chemical element');
+	assert(list.map((page_data) => page_data.title).includes('Iron'), 'Iron is a chemical element');
 });
