@@ -26,7 +26,11 @@ CeL.test('edit page', async (assert) => {
 
 	let enwiki = new wikiapi;
 	await enwiki.login(bot_name, password, 'en');
-	CeL.set_debug(6);
+
+	// IP is blocked.
+	return;
+
+	// CeL.set_debug(6);
 	await enwiki.edit_page(test_page_title, (page_data) => {
 		// append text
 		return page_data.wikitext
@@ -35,7 +39,7 @@ CeL.test('edit page', async (assert) => {
 			bot: 1,
 			summary: 'Test edit using wikiapi'
 		});
-	CeL.set_debug(0);
+	// CeL.set_debug(0);
 
 	let page = await enwiki.page(test_page_title);
 	assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
