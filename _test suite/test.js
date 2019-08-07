@@ -87,13 +87,15 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 				bot: 1,
 				summary: 'Test edit using wikiapi'
 			});
+		// edit successed
 	} catch (error) {
 		// failed to edit
 		result = error;
 	}
 	// CeL.set_debug(0);
 
-	if (edit_successed) {
+	if (!result) {
+		// edit successed
 		// reget page to test.
 		let page = await enwiki.page(test_page_title);
 		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
