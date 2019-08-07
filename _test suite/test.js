@@ -65,7 +65,7 @@ add_tests('load page', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
-async function handler_edit_result(test_page_title, test_wikitext, assert, result) {
+async function handler_edit_result(enwiki, test_page_title, test_wikitext, assert, result) {
 	if (!result) {
 		// edit successed
 		// reget page to test.
@@ -113,7 +113,7 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 	}
 	// CeL.set_debug(0);
 
-	handler_edit_result(test_page_title, test_wikitext, assert, result);
+	handler_edit_result(enwiki, test_page_title, test_wikitext, assert, result);
 
 	// console.log('Done.');
 	finish_test('edit page');
