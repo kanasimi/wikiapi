@@ -34,7 +34,7 @@ const wikiapi = require('wikiapi');
 	console.log('Done.');
 })();
 
-// parse page
+// parse page (The parser is more powerful than the ecample here. Try yourself.)
 (async () => {
 	let zhwiki = new wikiapi('zh');
 	await zhwiki.login('user', 'password');
@@ -61,6 +61,13 @@ const wikiapi = require('wikiapi');
 (async () => {
 	let wiki = new wikiapi;
 	let list = await wiki.categorymembers('Chemical elements');
+	console.log(list);
+})();
+
+// get pages transclude {{w:en:Periodic table}}
+(async () => {
+	let wiki = new wikiapi;
+	let list = await wiki.embeddedin('Template:Periodic table');
 	console.log(list);
 })();
 

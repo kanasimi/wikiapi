@@ -12,8 +12,8 @@ CeL.run('application.debug.log');
 CeL.test('load page', async (assert) => {
 	let wiki = new wikiapi;
 	let page = await wiki.page('Universe');
-	console.log(CeL.wiki.title_link_of('Universe') + ':');
-	console.log(page.wikitext);
+	// console.log(CeL.wiki.title_link_of('Universe') + ':');
+	// console.log(page.wikitext);
 	assert(page.wikitext.includes('space]]')
 		&& page.wikitext.includes('time]]'), 'wikitext');
 });
@@ -65,8 +65,8 @@ CeL.test('read wikidata #2', async (assert) => {
 	let wiki = new wikiapi;
 	// P1419: shape
 	let data = await wiki.data('Universe', 'P1419');
-	console.log('`shape` of the `Universe`:');
-	console.log(data);
+	// console.log('`shape` of the `Universe`:');
+	// console.log(data);
 	assert(data.includes('shape of the universe'), '`shape` of the `Universe` is Q1647152 (shape of the universe)');
 });
 

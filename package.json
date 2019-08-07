@@ -1,7 +1,7 @@
 {
 	"name" : "wikiapi",
 	"title" : "JavaScript MidiaWiki API for node.js",
-	"version" : "1.0.3",
+	"version" : "1.1.0",
 	"description" : "Simple way to access MidiaWiki API via JavaScript with simple wikitext parser.",
 	"keywords" : [ "MidiaWiki", "MidiaWiki API" ],
 	"author" : {
