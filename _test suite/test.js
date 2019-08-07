@@ -9,6 +9,8 @@ CeL.info('Using CeJS version: ' + CeL.version);
 // load modules for test
 CeL.run('application.debug.log');
 
+// ============================================================================
+
 /** {ℕ⁰:Natural+0}count of all errors (failed + fatal) */
 let all_error_count = 0;
 /** {ℕ⁰:Natural+0}tests still running */
@@ -49,9 +51,6 @@ CeL.test('edit page', async (assert, setup_test, finish_test) => {
 	let enwiki = new wikiapi;
 	await enwiki.login(bot_name, password, 'en');
 
-	// IP is blocked.
-	return;
-
 	// CeL.set_debug(6);
 	await enwiki.edit_page(test_page_title, (page_data) => {
 		// append text
@@ -64,7 +63,9 @@ CeL.test('edit page', async (assert, setup_test, finish_test) => {
 	// CeL.set_debug(0);
 
 	let page = await enwiki.page(test_page_title);
-	assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
+	// IP is blocked.
+	// assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
+
 	// console.log('Done.');
 	finish_test('edit page');
 }, check_tests);
