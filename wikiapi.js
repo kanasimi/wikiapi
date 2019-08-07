@@ -77,7 +77,7 @@ const page_data_attributes = {
 function wikiapi_page(title, options) {
 	function wikiapi_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		wiki.page(title, function (page_data, error) {
+		wiki.page(title, function callback(page_data, error) {
 			if (error) {
 				reject(error);
 				return;
@@ -98,7 +98,7 @@ function wikiapi_edit_page(title, content, options) {
 		if (title) {
 			wiki.page(title);
 		}
-		wiki.edit(content, options, function (title, error) {
+		wiki.edit(content, options, function callback(title, error) {
 			if (error) {
 				reject(error);
 			} else {
@@ -121,7 +121,7 @@ function wikiapi_data(key, property, options) {
 	function wikiapi_data_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		// using wikidata_entity() → wikidata_datavalue()
-		wiki.data(key, property, function (data, error) {
+		wiki.data(key, property, function callback(data, error) {
 			if (error) {
 				reject(error);
 			} else {
@@ -134,32 +134,33 @@ function wikiapi_data(key, property, options) {
 }
 
 function wikiapi_categorymembers(title, options) {
-	function callback(pages, titles, title, error) {
-		if (error) {
-			reject(error);
-		} else {
-			resolve(pages);
-		}
-	}
-
-	function executor(resolve, reject) {
+	function wikiapi_categorymembers_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		wiki.categorymembers(title, callback, Object.assign({
+		wiki.categorymembers(title, function callback(list, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(list);
+			}
+		}, Object.assign({
 			limit: 'max'
 		}, options));
 	}
 
-	return new Promise(executor.bind(this));
+	return new Promise(wikiapi_categorymembers_executor.bind(this));
 }
 
 Object.assign(wikiapi.prototype, {
 	login: wikiapi_login,
+
 	page: wikiapi_page,
 	edit_page: wikiapi_edit_page,
 	edit(content, options) {
 		return this.edit_page(null, content, options);
 	},
+
 	data: wikiapi_data,
+
 	categorymembers: wikiapi_categorymembers,
 });
 
