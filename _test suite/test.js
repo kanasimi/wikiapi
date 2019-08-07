@@ -65,6 +65,21 @@ add_tests('load page', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
+async function handler_edit_result(test_page_title, test_wikitext, assert, result) {
+	if (!result) {
+		// edit successed
+		// reget page to test.
+		const page = await enwiki.page(test_page_title);
+		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
+	} else if (result.edit && result.edit.captcha
+		|| result.error && result.error.code === 'globalblocking-ipblocked-range') {
+		// IP is blocked.
+		CeL.log('Skip blocked edit: ' + result.message);
+	} else {
+		assert([result.message, 'OK'], 'test edit page result');
+	}
+}
+
 add_tests('edit page', async (assert, setup_test, finish_test) => {
 	setup_test('edit page');
 	const test_page_title = 'Project:Sandbox';
@@ -94,18 +109,7 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 	}
 	// CeL.set_debug(0);
 
-	if (!result) {
-		// edit successed
-		// reget page to test.
-		let page = await enwiki.page(test_page_title);
-		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
-	} else if (result.edit && result.edit.captcha
-		|| result.error && result.error.code === 'globalblocking-ipblocked-range') {
-		// IP is blocked.
-		CeL.log('Skip blocked edit: ' + result.message);
-	} else {
-		assert([result.message, 'OK'], 'test edit page result');
-	}
+	handler_edit_result(test_page_title, test_wikitext, assert, result);
 
 	// console.log('Done.');
 	finish_test('edit page');
