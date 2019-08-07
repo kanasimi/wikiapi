@@ -90,7 +90,7 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 		if (result.edit && result.edit.captcha
 			|| result.error && result.error.code === 'globalblocking-ipblocked-range') {
 			// IP is blocked.
-			CeL.log('Skip blocked edit.');
+			CeL.log('Skip blocked edit: ' + result.message);
 		} else {
 			assert([result.message, 'OK'], 'test edit page result');
 		}
