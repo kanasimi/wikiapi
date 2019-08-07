@@ -26,8 +26,7 @@ CeL.test('edit page', async (assert) => {
 
 	let enwiki = new wikiapi;
 	await enwiki.login(bot_name, password, 'en');
-	await enwiki.page(test_page_title);
-	await enwiki.edit((page_data) => {
+	await enwiki.edit_page(test_page_title, (page_data) => {
 		// append text
 		return page_data.wikitext
 			+ test_wikitext;
