@@ -2,9 +2,11 @@
 
 // load module
 const wikiapi = require('../wikiapi.js');
-CeL.info('Using CeL version: ' + CeL.version);
 
 const CeL = global.CeL;
+CeL.info('Using CeL version: ' + CeL.version);
+
+// load modules for test
 CeL.run('application.debug.log');
 
 CeL.test('load page', async (assert) => {
