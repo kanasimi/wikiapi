@@ -17,8 +17,8 @@ let all_error_count = 0;
 let all_tests = 0;
 /** {ℕ⁰:Natural+0}tests done */
 let test_done = 0;
-
-let start_time = Date.now();
+/** {ℕ⁰:Natural}test start time value */
+let test_start_time = Date.now();
 
 function check_tests(recorder, error_count) {
 	all_error_count += error_count;
@@ -26,11 +26,13 @@ function check_tests(recorder, error_count) {
 		return;
 	}
 
+	// 耗時，經過時間
 	let elapsed_message = ' Elapsed time: '
-		+ Math.round((Date.now() - start_time) / 1000) + ' s.';
+		+ Math.round((Date.now() - test_start_time) / 1000) + ' s.';
 
 	if (all_error_count === 0) {
-		CeL.info('check_tests: All tests done.' + elapsed_message);
+		CeL.info('check_tests: All ' + all_tests + ' test groups done.' + elapsed_message);
+		// normal done. No error.
 		return;
 	}
 
@@ -74,32 +76,33 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 	await enwiki.login(bot_name, password, 'en');
 	await enwiki.page(test_page_title);
 
-	function modify_text(page_data) {
-		// append text
-		return page_data.wikitext
-			+ test_wikitext;
-	}
-
+	let result;
 	// CeL.set_debug(6);
 	try {
-		await enwiki.edit(modify_text, {
-			bot: 1,
-			summary: 'Test edit using wikiapi'
-		});
-		// CeL.set_debug(0);
+		await enwiki.edit((page_data) => {
+			// append text
+			return page_data.wikitext
+				+ test_wikitext;
+		}, {
+				bot: 1,
+				summary: 'Test edit using wikiapi'
+			});
+	} catch (error) {
+		// failed to edit
+		result = error;
+	}
+	// CeL.set_debug(0);
 
+	if (edit_successed) {
+		// reget page to test.
 		let page = await enwiki.page(test_page_title);
 		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
-
-	} catch (result) {
-		// CeL.set_debug(0);
-		if (result.edit && result.edit.captcha
-			|| result.error && result.error.code === 'globalblocking-ipblocked-range') {
-			// IP is blocked.
-			CeL.log('Skip blocked edit: ' + result.message);
-		} else {
-			assert([result.message, 'OK'], 'test edit page result');
-		}
+	} else if (result.edit && result.edit.captcha
+		|| result.error && result.error.code === 'globalblocking-ipblocked-range') {
+		// IP is blocked.
+		CeL.log('Skip blocked edit: ' + result.message);
+	} else {
+		assert([result.message, 'OK'], 'test edit page result');
 	}
 
 	// console.log('Done.');
