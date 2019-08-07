@@ -15,12 +15,12 @@ CeL.run('application.debug.log');
 let all_error_count = 0;
 /** {ℕ⁰:Natural+0}all tests count */
 let all_tests = 0;
-/** {ℕ⁰:Natural+0}tests still running */
-let still_running = 0;
+/** {ℕ⁰:Natural+0}tests done */
+let test_done = 0;
 
 function check_tests(recorder, error_count) {
 	all_error_count += error_count;
-	if (--still_running > 0) {
+	if (++test_done === all_tests) {
 		return;
 	}
 
@@ -40,7 +40,6 @@ function add_tests(test_name, conditions) {
 	}
 
 	all_tests++;
-	still_running++;
 	CeL.test(test_name, conditions, check_tests);
 }
 
@@ -82,6 +81,11 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 			bot: 1,
 			summary: 'Test edit using wikiapi'
 		});
+		// CeL.set_debug(0);
+
+		let page = await enwiki.page(test_page_title);
+		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
+
 	} catch (result) {
 		// CeL.set_debug(0);
 		if (result.edit && result.edit.captcha
@@ -92,10 +96,6 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 			assert([result.message, 'OK'], 'test edit page result');
 		}
 	}
-	// CeL.set_debug(0);
-
-	let page = await enwiki.page(test_page_title);
-	assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
 
 	// console.log('Done.');
 	finish_test('edit page');
