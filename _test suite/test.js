@@ -37,11 +37,12 @@ function finish_test() {
 function check_tests(recorder, error_count) {
 	all_error_count += error_count;
 	if (++test_done === all_tests) {
+		// setTimeout() will let the log message showing at the last.
 		setTimeout(finish_test, 0);
 	}
 }
 
-function add_tests(test_name, conditions) {
+function add_test(test_name, conditions) {
 	if (!conditions) {
 		// shift arguments: 跳過 test_name。
 		conditions = test_name;
@@ -54,7 +55,7 @@ function add_tests(test_name, conditions) {
 
 // ============================================================================
 
-add_tests('load page', async (assert, setup_test, finish_test) => {
+add_test('load page', async (assert, setup_test, finish_test) => {
 	setup_test('load page: [[w:en:Universe]]');
 	const wiki = new Wikiapi;
 	const page = await wiki.page('Universe');
@@ -68,11 +69,12 @@ add_tests('load page', async (assert, setup_test, finish_test) => {
 // ------------------------------------------------------------------
 
 function edit_blocked(result) {
+	// @see wiki_API.edit @ wiki.js
 	return result.edit && result.edit.captcha
 		|| result.error && result.error.code === 'globalblocking-ipblocked-range';
 }
 
-function edit_error_handler(assert, result) {
+function handle_edit_error(assert, result) {
 	if (edit_blocked(result)) {
 		// IP is blocked.
 		CeL.log('Skip blocked edit: ' + result.message);
@@ -82,7 +84,7 @@ function edit_error_handler(assert, result) {
 	assert([result.message, 'OK'], 'test edit page result');
 }
 
-add_tests('edit page', async (assert, setup_test, finish_test) => {
+add_test('edit page', async (assert, setup_test, finish_test) => {
 	setup_test('edit page');
 	const test_page_title = 'Project:Sandbox';
 	const test_wikitext = '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
@@ -110,7 +112,7 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
 	} catch (result) {
 		// failed to edit
-		edit_error_handler(assert, result);
+		handle_edit_error(assert, result);
 	}
 	// CeL.set_debug(0);
 
@@ -120,7 +122,7 @@ add_tests('edit page', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
-add_tests('parse page en', async (assert, setup_test, finish_test) => {
+add_test('parse page en', async (assert, setup_test, finish_test) => {
 	setup_test('parse page en');
 	const user_name = null;
 	const password = null;
@@ -137,7 +139,7 @@ add_tests('parse page en', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
-add_tests('parse page zh', async (assert, setup_test, finish_test) => {
+add_test('parse page zh', async (assert, setup_test, finish_test) => {
 	setup_test('parse page zh');
 	const zhwiki = new Wikiapi('zh');
 	const page = await zhwiki.page('宇宙');
@@ -150,7 +152,7 @@ add_tests('parse page zh', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
-add_tests('read wikidata', async (assert, setup_test, finish_test) => {
+add_test('read wikidata', async (assert, setup_test, finish_test) => {
 	setup_test('read wikidata');
 	const wiki = new Wikiapi;
 	// Q1: Universe
@@ -161,7 +163,7 @@ add_tests('read wikidata', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
-add_tests('read wikidata #2', async (assert, setup_test, finish_test) => {
+add_test('read wikidata #2', async (assert, setup_test, finish_test) => {
 	setup_test('read wikidata #2');
 	const wiki = new Wikiapi;
 	// P1419: shape
@@ -174,11 +176,21 @@ add_tests('read wikidata #2', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
-add_tests('get list of category', async (assert, setup_test, finish_test) => {
+add_test('get list of category', async (assert, setup_test, finish_test) => {
 	setup_test('get list of [[w:en:Category:Chemical_elements]]');
 	const wiki = new Wikiapi;
 	const list = await wiki.categorymembers('Chemical elements');
 	assert(list.map((page_data) => page_data.title).includes('Iron'), 'Iron is a chemical element');
 	finish_test('get list of [[w:en:Category:Chemical_elements]]');
+});
+
+// ------------------------------------------------------------------
+
+add_test('get pages transclude specified template', async (assert, setup_test, finish_test) => {
+	setup_test('get pages transclude {{w:en:Periodic table}}');
+	const wiki = new Wikiapi;
+	const list = await wiki.embeddedin('Template:Periodic table');
+	assert(list.map((page_data) => page_data.title).includes('Periodic table'), '[[w:en:Periodic table]] transclude {{w:en:Periodic table}}');
+	finish_test('get pages transclude {{w:en:Periodic table}}');
 });
 
