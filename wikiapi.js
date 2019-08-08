@@ -143,21 +143,21 @@ function wikiapi_data(key, property, options) {
 
 // --------------------------------------------------------
 
-function wikiapi_list(type, title, options) {
-	function wikiapi_list_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
-		wiki[type](title, function callback(list, error) {
-			if (error) {
-				reject(error);
-			} else {
-				resolve(list);
-			}
-		}, Object.assign({
-			limit: 'max'
-		}, options));
-	}
+function wikiapi_list_executor(title, options, resolve, reject) {
+	const method = this;
+	method(title, function callback(list, error) {
+		if (error) {
+			reject(error);
+		} else {
+			resolve(list);
+		}
+	}, Object.assign({
+		limit: 'max'
+	}, options));
+}
 
-	return new Promise(wikiapi_list_executor.bind(this));
+function wikiapi_list(type, title, options) {
+	return new Promise(wikiapi_list_executor.bind(this[KEY_wiki][type], title, options));
 }
 
 // --------------------------------------------------------
