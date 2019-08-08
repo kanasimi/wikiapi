@@ -8,24 +8,31 @@
 # JavaScript MidiaWiki API
 Simple way to access MidiaWiki API via JavaScript with simple wikitext parser.
 
+## Installation 安裝
+Install [node.js](https://nodejs.org/) first.
+
+``` sh
+npm install wikiapi
+```
+
 ## usage 運行方式
-Here lists the usage of this tool.
+Here lists some examples of this module.
 
 ### As node.js module
 ``` JavaScript
 // load module
-const wikiapi = require('wikiapi');
+const Wikiapi = require('wikiapi');
 
 // load page
 (async () => {
-	let wiki = new wikiapi;
+	let wiki = new Wikiapi;
 	let page = await wiki.page('ABC');
 	console.log(page.wikitext);
 })();
 
 // edit page
 (async () => {
-	let enwiki = new wikiapi;
+	let enwiki = new Wikiapi;
 	await enwiki.login('bot name', 'password', 'en');
 	let page = await enwiki.page('Wikipedia:Sandbox');
 	await enwiki.edit(function(page_data) {
@@ -35,9 +42,9 @@ const wikiapi = require('wikiapi');
 	console.log('Done.');
 })();
 
-// parse page (The parser is more powerful than the ecample here. Try yourself.)
+// parse page (The parser is more powerful than the example. Try yourself!)
 (async () => {
-	let zhwiki = new wikiapi('zh');
+	let zhwiki = new Wikiapi('zh');
 	await zhwiki.login('user', 'password');
 	let page = await zhwiki.page('ABC');
 	page.parse().each('template',
@@ -46,41 +53,40 @@ const wikiapi = require('wikiapi');
 
 // read wikidata
 (async () => {
-	let wiki = new wikiapi;
+	let wiki = new Wikiapi;
 	let page = await wiki.data('Q1');
 	console.assert(CeL.wiki.data.value_of(page.labels.zh) === '宇宙');
 })();
 
 // read wikidata
 (async () => {
-	let wiki = new wikiapi;
+	let wiki = new Wikiapi;
 	let data = await wiki.data('Universe', 'P1419');
 	console.assert(data.includes('shape of the universe'));
 })();
 
 // get list of [[w:en:Category:Chemical_elements]]
 (async () => {
-	let wiki = new wikiapi;
+	let wiki = new Wikiapi;
 	let list = await wiki.categorymembers('Chemical elements');
 	console.log(list);
 })();
 
 // get pages transclude {{w:en:Periodic table}}
 (async () => {
-	let wiki = new wikiapi;
+	let wiki = new Wikiapi;
 	let list = await wiki.embeddedin('Template:Periodic table');
 	console.log(list);
 })();
 
 ```
 
-More example: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/master/_test%20suite/test.js).
+More examples: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/master/_test%20suite/test.js).
 
-## Install
-``` sh
-npm install wikiapi
-```
-## OS support
+## Features
+* Auto-limited editing rate.
+
+## OS support 作業系統支援
 | Platform    | support |
 | ----------- | ------- |
 | Windows     | ✔️      |

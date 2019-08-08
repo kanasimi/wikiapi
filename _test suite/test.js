@@ -20,7 +20,15 @@ let test_done = 0;
 /** {ℕ⁰:Natural}test start time value */
 const test_start_time = Date.now();
 
-function finish_test() {
+
+function check_tests(recorder, error_count) {
+	all_error_count += error_count;
+	if (++test_done < all_tests) {
+		return;
+	}
+
+	// finish_test
+
 	// 耗時，經過時間
 	const elapsed_message = ' Elapsed time: '
 		+ Math.round((Date.now() - test_start_time) / 1000) + ' s.';
@@ -32,14 +40,6 @@ function finish_test() {
 	}
 
 	throw new Error('check_tests: All %error@1.' + elapsed_message, all_error_count);
-}
-
-function check_tests(recorder, error_count) {
-	all_error_count += error_count;
-	if (++test_done === all_tests) {
-		// setTimeout() will let the log message showing at the last.
-		setTimeout(finish_test, 0);
-	}
 }
 
 function add_test(test_name, conditions) {
