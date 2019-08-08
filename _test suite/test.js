@@ -67,10 +67,13 @@ add_tests('load page', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
-function edit_error_handler(assert, result) {
-	const is_blocked = result.edit && result.edit.captcha
+function edit_blocked(result) {
+	return result.edit && result.edit.captcha
 		|| result.error && result.error.code === 'globalblocking-ipblocked-range';
-	if (is_blocked) {
+}
+
+function edit_error_handler(assert, result) {
+	if (edit_blocked(result)) {
 		// IP is blocked.
 		CeL.log('Skip blocked edit: ' + result.message);
 		return;
