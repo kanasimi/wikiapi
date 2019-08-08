@@ -42,21 +42,19 @@ function wikiapi(API_URL) {
 	this[KEY_wiki] = new CeL_wiki(null, null, API_URL);
 }
 
-function general_callback(data, error) {
-	if (error) {
-		reject(error);
-	} else {
-		resolve(data);
-	}
-}
-
 // --------------------------------------------------------
 
 function wikiapi_login(user_name, user_password, API_URL) {
 	function wikiapi_login_executor(resolve, reject) {
 		this[KEY_wiki] = CeL_wiki.login(user_name, user_password, {
 			API_URL: API_URL || this[KEY_wiki].API_URL,
-			callback: general_callback,
+			callback(data, error) {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(data);
+				}
+			},
 			preserve_password: true
 		});
 	}
@@ -131,7 +129,13 @@ function wikiapi_data(key, property, options) {
 	function wikiapi_data_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		// using wikidata_entity() → wikidata_datavalue()
-		wiki.data(key, property, general_callback, options);
+		wiki.data(key, property, function callback(data, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(data);
+			}
+		}, options);
 	}
 
 	return new Promise(wikiapi_data_executor.bind(this));
@@ -142,7 +146,13 @@ function wikiapi_data(key, property, options) {
 function wikiapi_list(type, title, options) {
 	function wikiapi_list_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		wiki[type](title, general_callback, Object.assign({
+		wiki[type](title, function callback(list, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(list);
+			}
+		}, Object.assign({
 			limit: 'max'
 		}, options));
 	}
