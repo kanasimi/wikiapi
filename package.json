@@ -23,7 +23,7 @@
 	"main" : "wikiapi.js",
 	"scripts": {
 		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && cat coverage.lcov && codecov",
-		"test": "node \"_test suite/test.js\""
+		"test": "nyc node \"_test suite/test.js\""
 	},
 
 	"engines" : {
