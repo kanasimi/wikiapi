@@ -26,10 +26,6 @@
 		"test": "nyc node \"_test suite/test.js\""
 	},
 
-	"exclude": [
-		"wikiapi/_test suite/*"
-	],
-
 	"engines": {
 		"node": ">=10.16"
 	},
@@ -40,5 +36,11 @@
 	"devDependencies": {
 		"nyc": "latest",
 		"codecov": "latest"
+	},
+
+	"nyc": {
+		"exclude": [
+			"wikiapi/_test suite/*"
+		]
 	}
 }
