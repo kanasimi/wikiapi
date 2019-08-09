@@ -11,6 +11,11 @@
 # JavaScript MidiaWiki API
 Simple way to access MidiaWiki API via JavaScript with simple wikitext parser.
 
+## Features 特點
+*   read / edit pages
+*   get list of categorymembers, pages transclude specified template, and more...
+*   Auto-limited editing rate.
+
 ## Installation 安裝
 Install [node.js](https://nodejs.org/) first.
 
@@ -85,11 +90,6 @@ const Wikiapi = require('wikiapi');
 ```
 
 More examples: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/master/_test%20suite/test.js).
-
-## Features 特點
-*   read / edit pages
-*   get list
-*   Auto-limited editing rate.
 
 ## OS support 作業系統支援
 | Platform    | support |

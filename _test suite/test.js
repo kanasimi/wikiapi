@@ -191,6 +191,18 @@ add_test('parse page zh', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
+add_test('purge page', async (assert, setup_test, finish_test) => {
+	setup_test('purge page meta');
+	const metawiki = new Wikiapi('meta');
+	const page = await metawiki.page('Project:Sandbox');
+	// Not easy to test...
+	// assert();
+	console.log(page);
+	finish_test('purge page meta');
+});
+
+// ------------------------------------------------------------------
+
 add_test('read wikidata', async (assert, setup_test, finish_test) => {
 	setup_test('read wikidata');
 	const wiki = new Wikiapi;
@@ -219,7 +231,7 @@ add_test('read wikidata #2', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
-add_test('get list of category', async (assert, setup_test, finish_test) => {
+add_test('get list of categorymembers', async (assert, setup_test, finish_test) => {
 	setup_test('get list of [[w:en:Category:Chemical_elements]]');
 	const wiki = new Wikiapi;
 	const list = await wiki.categorymembers('Chemical elements');

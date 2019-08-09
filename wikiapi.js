@@ -118,6 +118,24 @@ function wikiapi_edit_page(title, content, options) {
 
 // --------------------------------------------------------
 
+function wikiapi_purge(title, options) {
+	function wikiapi_purge_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		// using wiki_API.purge
+		wiki.purge(title, function callback(data, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(data);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_purge_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
 function wikiapi_data(key, property, options) {
 	if (CeL.is_Object(property) && !options) {
 		// shift arguments.
@@ -170,6 +188,8 @@ Object.assign(wikiapi.prototype, {
 	edit(content, options) {
 		return this.edit_page(null, content, options);
 	},
+
+	purge: wikiapi_purge,
 
 	data: wikiapi_data,
 });

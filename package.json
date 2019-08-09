@@ -25,9 +25,14 @@
 		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
 		"test": "nyc node \"_test suite/test.js\""
 	},
+	"nyc": {
+		"exclude": [
+			"_test suite/*"
+		]
+	},
 
 	"engines": {
-		"node": ">=10.16"
+		"node": ">=10.0"
 	},
 
 	"dependencies": {
@@ -36,11 +41,5 @@
 	"devDependencies": {
 		"nyc": "latest",
 		"codecov": "latest"
-	},
-
-	"nyc": {
-		"exclude": [
-			"_test suite/*"
-		]
 	}
 }
