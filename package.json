@@ -22,7 +22,7 @@
 
 	"main" : "wikiapi.js",
 	"scripts": {
-		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && cat coverage.lcov && codecov",
 		"test": "node \"_test suite/test.js\""
 	},
 
@@ -35,7 +35,6 @@
 	},
 	"devDependencies": {
 		"nyc" : "latest",
-		"codecov" : "latest",
-		"istanbul" : "latest"
+		"codecov" : "latest"
 	}
 }
