@@ -86,7 +86,9 @@ const Wikiapi = require('wikiapi');
 
 More examples: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/master/_test%20suite/test.js).
 
-## Features
+## Features 特點
+* read / edit pages
+* get list
 * Auto-limited editing rate.
 
 ## OS support 作業系統支援
