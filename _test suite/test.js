@@ -194,7 +194,9 @@ add_test('read wikidata', async (assert, setup_test, finish_test) => {
 	setup_test('read wikidata');
 	const wiki = new Wikiapi;
 	// Q1: Universe
-	const page = await wiki.data('Q1');
+	const page = await wiki.data('Q1', {
+		props: 'labels'
+	});
 	assert([CeL.wiki.data.value_of(page.labels.zh), '宇宙'], 'zh label of Q1 is 宇宙');
 	finish_test('read wikidata');
 });
