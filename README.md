@@ -34,15 +34,15 @@ const Wikiapi = require('wikiapi');
 // load page
 (async () => {
 	let wiki = new Wikiapi;
-	let page = await wiki.page('ABC');
-	console.log(page.wikitext);
+	let page_data = await wiki.page('ABC');
+	console.log(page_data.wikitext);
 })();
 
 // edit page
 (async () => {
 	let enwiki = new Wikiapi;
 	await enwiki.login('bot name', 'password', 'en');
-	let page = await enwiki.page('Wikipedia:Sandbox');
+	let page_data = await enwiki.page('Wikipedia:Sandbox');
 	await enwiki.edit(function(page_data) {
 		return page_data.wikitext
 			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
@@ -54,16 +54,16 @@ const Wikiapi = require('wikiapi');
 (async () => {
 	let zhwiki = new Wikiapi('zh');
 	await zhwiki.login('user', 'password');
-	let page = await zhwiki.page('ABC');
-	page.parse().each('template',
+	let page_data = await zhwiki.page('ABC');
+	page_data.parse().each('template',
 		token => console.log(token.name));
 })();
 
 // read wikidata
 (async () => {
 	let wiki = new Wikiapi;
-	let page = await wiki.data('Q1');
-	console.assert(CeL.wiki.data.value_of(page.labels.zh) === '宇宙');
+	let page_data = await wiki.data('Q1');
+	console.assert(CeL.wiki.data.value_of(page_data.labels.zh) === '宇宙');
 })();
 
 // read wikidata

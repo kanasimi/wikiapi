@@ -119,10 +119,19 @@ function wikiapi_edit_page(title, content, options) {
 // --------------------------------------------------------
 
 function wikiapi_purge(title, options) {
+	if (CeL.is_Object(title) && !options) {
+		// shift arguments.
+		options = title;
+		title = null;
+	}
+
 	function wikiapi_purge_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
+		if (title) {
+			wiki.page(title);
+		}
 		// using wiki_API.purge
-		wiki.purge(title, function callback(data, error) {
+		wiki.purge(function callback(data, error) {
 			if (error) {
 				reject(error);
 			} else {

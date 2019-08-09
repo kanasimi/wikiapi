@@ -43,7 +43,8 @@ function check_tests(recorder, error_count) {
 	}
 
 	CeL.gettext.conversion['error'] = ['no %n', '1 %n', '%d %ns'];
-	throw new Error(CeL.gettext('All %error@1.', all_error_count) + elapsed_message);
+	var error_message = CeL.gettext('All %error@1.', all_error_count) + elapsed_message;
+	throw new Error(error_message);
 }
 
 function add_test(test_name, conditions) {
@@ -62,11 +63,11 @@ function add_test(test_name, conditions) {
 add_test('load page', async (assert, setup_test, finish_test) => {
 	setup_test('load page: [[w:en:Universe]]');
 	const wiki = new Wikiapi;
-	const page = await wiki.page('Universe');
+	const page_data = await wiki.page('Universe');
 	// console.log(CeL.wiki.title_link_of('Universe') + ':');
 	// console.log(page.wikitext);
-	assert(page.wikitext.includes('space]]')
-		&& page.wikitext.includes('time]]'), 'wikitext');
+	assert(page_data.wikitext.includes('space]]')
+		&& page_data.wikitext.includes('time]]'), 'wikitext');
 	finish_test('load page: [[w:en:Universe]]');
 });
 
@@ -112,8 +113,8 @@ add_test('edit page', async (assert, setup_test, finish_test) => {
 
 		// edit successed
 		// reget page to test.
-		const page = await enwiki.page(test_page_title);
-		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
+		const page_data = await enwiki.page(test_page_title);
+		assert(page_data.wikitext.endsWith(test_wikitext), 'test edit page result');
 	} catch (result) {
 		// failed to edit
 		handle_edit_error(assert, result);
@@ -147,8 +148,8 @@ add_test('edit page #2', async (assert, setup_test, finish_test) => {
 
 		// edit successed
 		// reget page to test.
-		const page = await zhwiki.page(test_page_title);
-		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
+		const page_data = await zhwiki.page(test_page_title);
+		assert(page_data.wikitext.endsWith(test_wikitext), 'test edit page result');
 	} catch (result) {
 		// failed to edit
 		handle_edit_error(assert, result);
@@ -168,9 +169,9 @@ add_test('parse page: en', async (assert, setup_test, finish_test) => {
 
 	const enwiki = new Wikiapi('en');
 	await enwiki.login(user_name, password);
-	const page = await enwiki.page('Universe');
+	const page_data = await enwiki.page('Universe');
 	const template_list = [];
-	page.parse().each('template',
+	page_data.parse().each('template',
 		(token) => template_list.push(token.name));
 	assert(template_list.includes('Infobox'), '[[w:en:Universe]] must includes {{Infobox}}');
 	finish_test('parse page: en');
@@ -181,9 +182,9 @@ add_test('parse page: en', async (assert, setup_test, finish_test) => {
 add_test('parse page: zh', async (assert, setup_test, finish_test) => {
 	setup_test('parse page: zh');
 	const zhwiki = new Wikiapi('zh');
-	const page = await zhwiki.page('宇宙');
+	const page_data = await zhwiki.page('宇宙');
 	const template_list = [];
-	page.parse().each('template',
+	page_data.parse().each('template',
 		(token) => template_list.push(token.name));
 	assert(template_list.includes('Infobox'), '[[w:zh:宇宙]] must includes {{Infobox}}');
 	finish_test('parse page: zh');
@@ -194,16 +195,15 @@ add_test('parse page: zh', async (assert, setup_test, finish_test) => {
 add_test('purge page', async (assert, setup_test, finish_test) => {
 	setup_test('purge page: meta');
 	const metawiki = new Wikiapi('meta');
-	const page_data = await metawiki.purge('Project:Sandbox');
-	console.log(page_data);
 
-	/** {Object}revision data. 修訂版本資料。 */
-	const revision = page_data && page_data.revisions
-		&& page_data.revisions[0];
-	const timestamp = Date.parse(revision && revision.timestamp);
+	let page_data = await metawiki.purge('Project:Sandbox');
+	// [ { ns: 4, title: 'Meta:Sandbox', purged: '' } ]
+	assert(page_data.title === 'Meta:Sandbox' && ('purged' in page_data), 'purge page: [[meta:Project:Sandbox]]');
 
-	// Not easy to test...
-	assert(timestamp > Date.parse('2019-08-08'), 'purge page: [[meta:Project:Sandbox]]');
+	await metawiki.page('Meta:Babel');
+	page_data = metawiki.purge();
+	assert(page_data.title === 'Meta:Babel' && ('purged' in page_data), 'purge page: [[meta:Meta:Babel]]');
+
 	finish_test('purge page: meta');
 });
 
@@ -213,12 +213,12 @@ add_test('read wikidata', async (assert, setup_test, finish_test) => {
 	setup_test('read wikidata');
 	const wiki = new Wikiapi;
 	// Q1: Universe
-	const page = await wiki.data('Q1', {
+	const page_data = await wiki.data('Q1', {
 		props: 'labels|sitelinks'
 	});
 	//CeL.info('page:');
 	//console.log(page);
-	assert([CeL.wiki.data.value_of(page.labels.zh), '宇宙'], 'zh label of Q1 is 宇宙');
+	assert([CeL.wiki.data.value_of(page_data.labels.zh), '宇宙'], 'zh label of Q1 is 宇宙');
 	finish_test('read wikidata');
 });
 
