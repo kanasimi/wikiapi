@@ -7,5 +7,13 @@ node_js:
   - "10"
   - "12"
 
+# https://github.com/codecov/example-node
 install:
-  - npm install
+  - npm install -g codecov
+
+script:
+  - istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
+  - codecov
+
+after_success:
+  - npm run coverage
