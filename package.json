@@ -40,7 +40,7 @@
 
 	"nyc": {
 		"exclude": [
-			"wikiapi/_test suite/*"
+			"_test suite/*"
 		]
 	}
 }
