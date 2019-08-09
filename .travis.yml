@@ -10,7 +10,6 @@ node_js:
 # https://github.com/codecov/example-node
 install:
   - npm install
-  - npm install -g codecov
 
 script:
   - npm test
