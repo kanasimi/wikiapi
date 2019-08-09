@@ -5,7 +5,7 @@ let CeL;
 try {
 	// Load CeJS library.
 	CeL = require('cejs');
-} catch (e) /* istanbul ignore next: only for debugging locally */{
+} catch (e) /* istanbul ignore next: only for debugging locally */ {
 	// https://github.com/gotwarlost/istanbul/blob/master/ignoring-code-for-coverage.md
 	// const wikiapi = require('./wikiapi.js');
 	require('./_CeL.loader.nodejs.js');
@@ -84,11 +84,10 @@ function wikiapi_page(title, options) {
 		wiki.page(title, function callback(page_data, error) {
 			if (error) {
 				reject(error);
-				return;
+			} else {
+				Object.defineProperties(page_data, page_data_attributes);
+				resolve(page_data);
 			}
-
-			Object.defineProperties(page_data, page_data_attributes);
-			resolve(page_data);
 		}, options);
 	}
 

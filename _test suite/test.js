@@ -196,7 +196,7 @@ add_test('read wikidata', async (assert, setup_test, finish_test) => {
 	const wiki = new Wikiapi;
 	// Q1: Universe
 	const page = await wiki.data('Q1', {
-		props: 'labels|sitelinks'
+		props: 'labels'
 	});
 	CeL.info('page:');
 	console.log(page);
