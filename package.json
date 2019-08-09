@@ -1,40 +1,44 @@
 {
-	"name" : "wikiapi",
-	"title" : "JavaScript MidiaWiki API for node.js",
-	"version" : "1.1.2",
-	"description" : "Simple way to access MidiaWiki API via JavaScript with simple wikitext parser.",
-	"keywords" : [ "MidiaWiki", "MidiaWiki API" ],
-	"author" : {
-		"name" : "vimunci",
-		"email" : "vimunci@gmail.com",
-		"url" : "https://github.com/kanasimi/CeJS"
+	"name": "wikiapi",
+	"title": "JavaScript MidiaWiki API for node.js",
+	"version": "1.1.2",
+	"description": "Simple way to access MidiaWiki API via JavaScript with simple wikitext parser.",
+	"keywords": [ "MidiaWiki", "MidiaWiki API" ],
+	"author": {
+		"name": "vimunci",
+		"email": "vimunci@gmail.com",
+		"url": "https://github.com/kanasimi/CeJS"
 	},
 	"contributors": [ "vimunci" ],
-	"license" : "BSD-3-Clause",
-	"bugs" : {
-		"url" : "https://github.com/kanasimi/wikiapi/issues"
+	"license": "BSD-3-Clause",
+	"bugs": {
+		"url": "https://github.com/kanasimi/wikiapi/issues"
 	},
-	"homepage" : "https://github.com/kanasimi/wikiapi",
-	"repository" : {
-		"type" : "git",
-		"url" : "git+https://github.com/kanasimi/wikiapi.git"
+	"homepage": "https://github.com/kanasimi/wikiapi",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/kanasimi/wikiapi.git"
 	},
 
-	"main" : "wikiapi.js",
+	"main": "wikiapi.js",
 	"scripts": {
-		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && cat coverage.lcov && codecov",
+		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
 		"test": "nyc node \"_test suite/test.js\""
 	},
 
-	"engines" : {
-		"node" : ">=10.16"
+	"exclude": [
+		"_test suite/*"
+	],
+
+	"engines": {
+		"node": ">=10.16"
 	},
 
-	"dependencies" : {
-		"cejs" : "latest"
+	"dependencies": {
+		"cejs": "latest"
 	},
 	"devDependencies": {
-		"nyc" : "latest",
-		"codecov" : "latest"
+		"nyc": "latest",
+		"codecov": "latest"
 	}
 }

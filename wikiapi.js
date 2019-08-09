@@ -143,6 +143,7 @@ function wikiapi_data(key, property, options) {
 
 // --------------------------------------------------------
 
+// Warning: Won't throw if title isn't existed!
 function wikiapi_list(type, title, options) {
 	function wikiapi_list_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
