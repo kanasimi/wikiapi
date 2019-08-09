@@ -9,9 +9,7 @@ CeL.info('Using CeJS version: ' + CeL.version);
 // load modules for test
 CeL.run(['application.debug.log',
 	// gettext(), and for .detect_HTML_language(), .time_zone_of_language()
-	'application.locale.gettext',
-	// for localized messages
-	'application.locale'
+	'application.locale.gettext'
 ]);
 
 // ============================================================================
@@ -44,6 +42,7 @@ function check_tests(recorder, error_count) {
 		return;
 	}
 
+	CeL.gettext.conversion['error'] = ['no %n', '1 %n', '%d %ns'];
 	throw new Error(CeL.gettext('All %error@1.', all_error_count) + elapsed_message);
 }
 
@@ -197,7 +196,7 @@ add_test('read wikidata', async (assert, setup_test, finish_test) => {
 	const wiki = new Wikiapi;
 	// Q1: Universe
 	const page = await wiki.data('Q1', {
-		props: 'labels'
+		props: 'labels|sitelinks'
 	});
 	CeL.info('page:');
 	console.log(page);
