@@ -14,7 +14,7 @@ try {
 // assert: typeof CeL === 'function'
 
 // Load modules.
-// @see `wiki loader.js`
+// @see `wiki loader.js`: https://github.com/kanasimi/wikibot/blob/master/wiki%20loader.js
 CeL.run(['interact.DOM', 'application.debug',
 	// 載入不同地區語言的功能 for wiki.work()。
 	'application.locale',

@@ -200,10 +200,15 @@ add_test('purge page', async (assert, setup_test, finish_test) => {
 	// [ { ns: 4, title: 'Meta:Sandbox', purged: '' } ]
 	assert(page_data.title === 'Meta:Sandbox' && ('purged' in page_data), 'purge page: [[meta:Project:Sandbox]]');
 
+	// -----------------------------------
+
 	await metawiki.page('Meta:Babel');
 	page_data = await metawiki.purge({
 		multi: true
 	});
+	// You may also using:
+	//page_data = await metawiki.purge(/* no options */);
+
 	//console.log(page_data);
 	assert(Array.isArray(page_data) && page_data.length === 1, 'purge page: [[meta:Meta:Babel]]: multi return {Array}');
 	page_data = page_data[0];

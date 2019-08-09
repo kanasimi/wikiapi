@@ -1,9 +1,9 @@
 {
 	"name": "wikiapi",
-	"title": "JavaScript MidiaWiki API for node.js",
-	"version": "1.1.2",
-	"description": "Simple way to access MidiaWiki API via JavaScript with simple wikitext parser.",
-	"keywords": [ "MidiaWiki", "MidiaWiki API" ],
+	"title": "JavaScript MediaWiki API for node.js",
+	"version": "1.2.0",
+	"description": "Simple way to access MediaWiki API via JavaScript with simple wikitext parser.",
+	"keywords": [ "MediaWiki", "MediaWiki API" ],
 	"author": {
 		"name": "vimunci",
 		"email": "vimunci@gmail.com",
@@ -22,8 +22,8 @@
 
 	"main": "wikiapi.js",
 	"scripts": {
-		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-		"test": "nyc node \"_test suite/test.js\""
+		"test": "nyc node \"_test suite/test.js\"",
+		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
 	},
 	"nyc": {
 		"exclude": [
@@ -35,11 +35,11 @@
 		"node": ">=10.0"
 	},
 
-	"dependencies": {
-		"cejs": "latest"
-	},
 	"devDependencies": {
 		"nyc": "latest",
 		"codecov": "latest"
+	},
+	"dependencies": {
+		"cejs": "latest"
 	}
 }
