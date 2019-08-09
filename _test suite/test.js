@@ -194,7 +194,8 @@ add_test('parse page: zh', async (assert, setup_test, finish_test) => {
 add_test('purge page', async (assert, setup_test, finish_test) => {
 	setup_test('purge page: meta');
 	const metawiki = new Wikiapi('meta');
-	const page_data = await metawiki.page('Project:Sandbox');
+	const page_data = await metawiki.purge('Project:Sandbox');
+	console.log(page_data);
 
 	/** {Object}revision data. 修訂版本資料。 */
 	const revision = page_data && page_data.revisions
