@@ -161,8 +161,8 @@ add_test('edit page #2', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
-add_test('parse page en', async (assert, setup_test, finish_test) => {
-	setup_test('parse page en');
+add_test('parse page: en', async (assert, setup_test, finish_test) => {
+	setup_test('parse page: en');
 	const user_name = null;
 	const password = null;
 
@@ -173,32 +173,37 @@ add_test('parse page en', async (assert, setup_test, finish_test) => {
 	page.parse().each('template',
 		(token) => template_list.push(token.name));
 	assert(template_list.includes('Infobox'), '[[w:en:Universe]] must includes {{Infobox}}');
-	finish_test('parse page en');
+	finish_test('parse page: en');
 });
 
 // ------------------------------------------------------------------
 
-add_test('parse page zh', async (assert, setup_test, finish_test) => {
-	setup_test('parse page zh');
+add_test('parse page: zh', async (assert, setup_test, finish_test) => {
+	setup_test('parse page: zh');
 	const zhwiki = new Wikiapi('zh');
 	const page = await zhwiki.page('宇宙');
 	const template_list = [];
 	page.parse().each('template',
 		(token) => template_list.push(token.name));
 	assert(template_list.includes('Infobox'), '[[w:zh:宇宙]] must includes {{Infobox}}');
-	finish_test('parse page zh');
+	finish_test('parse page: zh');
 });
 
 // ------------------------------------------------------------------
 
 add_test('purge page', async (assert, setup_test, finish_test) => {
-	setup_test('purge page meta');
+	setup_test('purge page: meta');
 	const metawiki = new Wikiapi('meta');
-	const page = await metawiki.page('Project:Sandbox');
+	const page_data = await metawiki.page('Project:Sandbox');
+
+	/** {Object}revision data. 修訂版本資料。 */
+	const revision = page_data && page_data.revisions
+		&& page_data.revisions[0];
+	const timestamp = Date.parse(revision && revision.timestamp);
+
 	// Not easy to test...
-	// assert();
-	console.log(page);
-	finish_test('purge page meta');
+	assert(timestamp > Date.parse('2019-08-08'), 'purge page: [[meta:Project:Sandbox]]');
+	finish_test('purge page: meta');
 });
 
 // ------------------------------------------------------------------
