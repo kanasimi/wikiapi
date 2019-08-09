@@ -7,7 +7,10 @@ const CeL = global.CeL;
 CeL.info('Using CeJS version: ' + CeL.version);
 
 // load modules for test
-CeL.run('application.debug.log');
+CeL.run(['application.debug.log',
+	// gettext(), and for .detect_HTML_language(), .time_zone_of_language()
+	'application.locale.gettext'
+]);
 
 // ============================================================================
 
@@ -39,7 +42,7 @@ function check_tests(recorder, error_count) {
 		return;
 	}
 
-	throw new Error('check_tests: All %error@1.' + elapsed_message, all_error_count);
+	throw new Error(CeL.gettext('All %error@1.', all_error_count) + elapsed_message);
 }
 
 function add_test(test_name, conditions) {
