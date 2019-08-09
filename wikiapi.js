@@ -6,7 +6,7 @@ try {
 	// Load CeJS library.
 	CeL = require('cejs');
 } catch (e) {
-	// for debug:
+	/* istanbul ignore next: only for debug locally */
 	// const wikiapi = require('./wikiapi.js');
 	require('./_CeL.loader.nodejs.js');
 	CeL = global.CeL;
