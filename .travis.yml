@@ -10,6 +10,9 @@ node_js:
 # https://github.com/codecov/example-node
 install:
   - npm install
+  # move to devDependencies @ package.json
+  #- npm install -g nyc
+  #- npm install -g codecov
 
 script:
   - npm test

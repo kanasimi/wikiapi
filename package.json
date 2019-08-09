@@ -35,6 +35,7 @@
 	},
 	"devDependencies": {
 		"nyc" : "latest",
-		"codecov" : "latest"
+		"codecov" : "latest",
+		"istanbul" : "latest"
 	}
 }
