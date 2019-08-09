@@ -27,7 +27,7 @@
 	},
 
 	"exclude": [
-		"_test suite/*"
+		"wikiapi/_test suite/*"
 	],
 
 	"engines": {
