@@ -5,8 +5,8 @@ let CeL;
 try {
 	// Load CeJS library.
 	CeL = require('cejs');
-} catch (e) {
-	/* istanbul ignore next: only for debug locally */
+} catch (e) /* istanbul ignore next: only for debug locally */{
+	// https://github.com/gotwarlost/istanbul/blob/master/ignoring-code-for-coverage.md
 	// const wikiapi = require('./wikiapi.js');
 	require('./_CeL.loader.nodejs.js');
 	CeL = global.CeL;

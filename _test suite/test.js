@@ -106,7 +106,7 @@ add_test('edit page', async (assert, setup_test, finish_test) => {
 				+ test_wikitext;
 		}, {
 				bot: 1,
-				summary: 'Test edit using wikiapi'
+				summary: 'Test edit using wikiapi module'
 			});
 
 		// edit successed
@@ -121,6 +121,41 @@ add_test('edit page', async (assert, setup_test, finish_test) => {
 
 	// console.log('Done.');
 	finish_test('edit page');
+});
+
+add_test('edit page #2', async (assert, setup_test, finish_test) => {
+	setup_test('edit page #2');
+	const test_page_title = 'Wikipedia:沙盒';
+	const test_wikitext = '\nTest edit using {{GitHub|kanasimi/wikiapi}} #2.';
+	const bot_name = null;
+	const password = null;
+
+	const zhwiki = new Wikiapi;
+	await zhwiki.login(bot_name, password, 'zh');
+
+	// CeL.set_debug(6);
+	try {
+		await zhwiki.edit_page(test_page_title, (page_data) => {
+			// append text
+			return page_data.wikitext
+				+ test_wikitext;
+		}, {
+				bot: 1,
+				summary: 'Test edit using wikiapi module'
+			});
+
+		// edit successed
+		// reget page to test.
+		const page = await zhwiki.page(test_page_title);
+		assert(page.wikitext.endsWith(test_wikitext), 'test edit page result');
+	} catch (result) {
+		// failed to edit
+		handle_edit_error(assert, result);
+	}
+	// CeL.set_debug(0);
+
+	// console.log('Done.');
+	finish_test('edit page #2');
 });
 
 // ------------------------------------------------------------------
