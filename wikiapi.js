@@ -70,6 +70,11 @@ const page_data_attributes = {
 			return CeL_wiki.content_of(this);
 		}
 	},
+	revision: {
+		value: function revision(revision_NO) {
+			return CeL_wiki.content_of(this, revision_NO);
+		}
+	},
 	parse: {
 		value: function parse(options) {
 			// function parse_page(options) @ CeL.wiki
@@ -88,7 +93,9 @@ function wikiapi_page(title, options) {
 				Object.defineProperties(page_data, page_data_attributes);
 				resolve(page_data);
 			}
-		}, options);
+		}, Object.assign({
+			rvlimit: options.revisions
+		}, options));
 	}
 
 	return new Promise(wikiapi_page_executor.bind(this));
@@ -197,7 +204,6 @@ Object.assign(wikiapi.prototype, {
 	edit(content, options) {
 		return this.edit_page(null, content, options);
 	},
-
 	purge: wikiapi_purge,
 
 	data: wikiapi_data,

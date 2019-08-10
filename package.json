@@ -3,7 +3,7 @@
 	"title": "JavaScript MediaWiki API for node.js",
 	"version": "1.2.0",
 	"description": "Simple way to access MediaWiki API via JavaScript with simple wikitext parser.",
-	"keywords": [ "MediaWiki", "MediaWiki API" ],
+	"keywords": [ "MediaWiki", "MediaWiki API", "ECMAScript 2017" ],
 	"author": {
 		"name": "vimunci",
 		"email": "vimunci@gmail.com",

@@ -61,14 +61,27 @@ function add_test(test_name, conditions) {
 // ============================================================================
 
 add_test('load page', async (assert, setup_test, finish_test) => {
-	setup_test('load page: [[w:en:Universe]]');
 	const wiki = new Wikiapi;
-	const page_data = await wiki.page('Universe');
-	// console.log(CeL.wiki.title_link_of('Universe') + ':');
+	let page_data;
+
+	setup_test('load page: [[w:en:Universe]]');
+	page_data = await wiki.page('Universe');
+	// console.log(CeL.wiki.title_link_of(page_data) + ':');
 	// console.log(page.wikitext);
 	assert(page_data.wikitext.includes('space]]')
 		&& page_data.wikitext.includes('time]]'), 'wikitext');
 	finish_test('load page: [[w:en:Universe]]');
+
+	setup_test('load page: [[w:en:Universe]]');
+	page_data = await wiki.page('Earth', {
+		revisions: 2
+	});
+	// console.log(CeL.wiki.title_link_of(page_data) + ':');
+	// console.log(page.revisions);
+	assert(page_data.revisions.length === 2
+		&& page_data.wikitext === page_data.revision(0)
+		&& page_data.wikitext !== page_data.revision(1), 'wikitext');
+	finish_test('load page: [[w:en:Earth]]');
 });
 
 // ------------------------------------------------------------------
@@ -169,11 +182,11 @@ add_test('parse page: en', async (assert, setup_test, finish_test) => {
 
 	const enwiki = new Wikiapi('en');
 	await enwiki.login(user_name, password);
-	const page_data = await enwiki.page('Universe');
+	const page_data = await enwiki.page('Human');
 	const template_list = [];
 	page_data.parse().each('template',
 		(token) => template_list.push(token.name));
-	assert(template_list.includes('Infobox'), '[[w:en:Universe]] must includes {{Infobox}}');
+	assert(template_list.includes('Speciesbox'), '[[w:en:Human]] must includes {{Speciesbox}}');
 	finish_test('parse page: en');
 });
 

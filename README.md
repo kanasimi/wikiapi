@@ -99,7 +99,7 @@ More examples: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/mas
 | UNIX, Linux | ✔️      |
 
 ## See also
-[wikibot](https://github.com/kanasimi/wikibot)
+For old style JavaScript, or general environment usage, please see [wikibot](https://github.com/kanasimi/wikibot).
 
 ## Contact 聯絡我們
 Contact us at [GitHub](https://github.com/kanasimi/wikiapi/issues).
