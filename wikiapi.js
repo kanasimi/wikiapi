@@ -94,7 +94,7 @@ function wikiapi_page(title, options) {
 				resolve(page_data);
 			}
 		}, Object.assign({
-			rvlimit: options.revisions
+			rvlimit: options && options.revisions
 		}, options));
 	}
 

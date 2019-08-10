@@ -34,7 +34,16 @@ const Wikiapi = require('wikiapi');
 // load page
 (async () => {
 	let wiki = new Wikiapi;
-	let page_data = await wiki.page('ABC');
+	let page_data = await wiki.page('Universe');
+	console.log(page_data.wikitext);
+})();
+
+(async () => {
+	let wiki = new Wikiapi;
+	let page_data = await wiki.page('Universe', {
+		// Get multi revisions
+		revisions: 2
+	});
 	console.log(page_data.wikitext);
 })();
 
@@ -54,7 +63,7 @@ const Wikiapi = require('wikiapi');
 (async () => {
 	let zhwiki = new Wikiapi('zh');
 	await zhwiki.login('user', 'password');
-	let page_data = await zhwiki.page('ABC');
+	let page_data = await zhwiki.page('Universe');
 	page_data.parse().each('template',
 		token => console.log(token.name));
 })();
