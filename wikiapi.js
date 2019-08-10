@@ -67,7 +67,7 @@ function wikiapi_login(user_name, user_password, API_URL) {
 const page_data_attributes = {
 	wikitext: {
 		get() {
-			return CeL_wiki.content_of(this);
+			return CeL_wiki.content_of(this, 0);
 		}
 	},
 	revision: {
