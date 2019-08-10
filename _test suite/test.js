@@ -67,7 +67,7 @@ add_test('load page', async (assert, setup_test, finish_test) => {
 	setup_test('load page: [[w:en:Universe]]');
 	page_data = await wiki.page('Universe');
 	// console.log(CeL.wiki.title_link_of(page_data) + ':');
-	// console.log(page.wikitext);
+	// console.log(page_data.wikitext);
 	assert(page_data.wikitext.includes('space]]')
 		&& page_data.wikitext.includes('time]]'), 'load page: wikitext');
 	finish_test('load page: [[w:en:Universe]]');
@@ -77,7 +77,7 @@ add_test('load page', async (assert, setup_test, finish_test) => {
 		revisions: 2
 	});
 	 console.log(CeL.wiki.title_link_of(page_data) + ':');
-	 console.log(page.revisions);
+	 console.log(page_data.revisions);
 	assert(page_data.revisions.length === 2
 		&& page_data.wikitext === page_data.revision(0)
 		&& page_data.wikitext !== page_data.revision(1), 'load page: revision');
