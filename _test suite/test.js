@@ -72,7 +72,7 @@ add_test('load page', async (assert, setup_test, finish_test) => {
 		&& page_data.wikitext.includes('time]]'), 'load page: wikitext');
 	finish_test('load page: [[w:en:Universe]]');
 
-	setup_test('load page: [[w:en:Universe]]');
+	setup_test('load page: [[w:en:Earth]]');
 	page_data = await wiki.page('Earth', {
 		revisions: 2
 	});
@@ -80,7 +80,7 @@ add_test('load page', async (assert, setup_test, finish_test) => {
 	// console.log(page_data.revisions);
 	assert([page_data.revisions.length, 2], 'load page: revisions.length');
 	assert([page_data.wikitext, page_data.revision(0)], 'load page: revision(0)');
-	assert([page_data.wikitext, page_data.revision(1)], 'load page: revision(1)');
+	assert(page_data.wikitext !== page_data.revision(1), 'load page: revision(1)');
 	finish_test('load page: [[w:en:Earth]]');
 });
 
