@@ -85,7 +85,7 @@ add_test('load page', async (assert, setup_test, finish_test) => {
 });
 
 add_test('load page of other wiki', async (assert, setup_test, finish_test) => {
-	const wiki = new Wikiapi;
+	const wiki = new Wikiapi('https://awoiaf.westeros.org/api.php');
 	let page_data;
 
 	setup_test('load page of other wiki: [[Game of Thrones]]');
