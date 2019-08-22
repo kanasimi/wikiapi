@@ -90,6 +90,7 @@ add_test('load page of other wiki', async (assert, setup_test, finish_test) => {
 
 	setup_test('load page of other wiki: [[Game of Thrones]]');
 	page_data = await wiki.page('Game of Thrones');
+	console.log(page_data.wikitext);
 	assert(page_data.wikitext.includes('[[es:Game of Thrones]]'), 'load page: wikitext of [[Game of Thrones]]');
 	finish_test('load page of other wiki: [[Game of Thrones]]');
 });
