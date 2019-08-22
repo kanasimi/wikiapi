@@ -82,6 +82,12 @@ add_test('load page', async (assert, setup_test, finish_test) => {
 	assert([page_data.wikitext, page_data.revision(0)], 'load page: revision(0)');
 	assert(page_data.wikitext !== page_data.revision(1), 'load page: revision(1)');
 	finish_test('load page: [[w:en:Earth]]');
+
+	setup_test('load page of other wiki: [[Game of Thrones]]');
+	page_data = await wiki.page('Game of Thrones');
+	assert(page_data.wikitext.includes('[[es:Game of Thrones]]'), 'load page: wikitext of [[Game of Thrones]]');
+	finish_test('load page of other wiki: [[Game of Thrones]]');
+
 });
 
 // ------------------------------------------------------------------
@@ -194,6 +200,7 @@ add_test('parse page: en', async (assert, setup_test, finish_test) => {
 
 add_test('parse page: zh', async (assert, setup_test, finish_test) => {
 	setup_test('parse page: zh');
+	// Usage with other language
 	const zhwiki = new Wikiapi('zh');
 	const page_data = await zhwiki.page('宇宙');
 	const template_list = [];
@@ -241,6 +248,8 @@ add_test('read wikidata', async (assert, setup_test, finish_test) => {
 	});
 	//CeL.info('page:');
 	//console.log(page);
+
+	// Work with other language
 	assert([CeL.wiki.data.value_of(page_data.labels.zh), '宇宙'], 'zh label of Q1 is 宇宙');
 	finish_test('read wikidata');
 });

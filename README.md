@@ -11,19 +11,19 @@
 # JavaScript MediaWiki API
 Simple way to access MediaWiki API via JavaScript with simple wikitext parser.
 
-## Features 特點
+## Features
 *   read / edit pages
 *   get list of categorymembers, pages transclude specified template, and more...
 *   Auto-limited editing rate.
 
-## Installation 安裝
+## Installation
 Install [node.js](https://nodejs.org/) first.
 
 ``` sh
 npm install wikiapi
 ```
 
-## usage 運行方式
+## Usage
 Here lists some examples of this module.
 
 ### As node.js module
@@ -33,13 +33,20 @@ const Wikiapi = require('wikiapi');
 
 // load page
 (async () => {
-	let wiki = new Wikiapi;
+	const wiki = new Wikiapi;
 	let page_data = await wiki.page('Universe');
 	console.log(page_data.wikitext);
 })();
 
+// load page of other wiki
 (async () => {
-	let wiki = new Wikiapi;
+	const wiki = new Wikiapi('https://awoiaf.westeros.org/api.php');
+	let page_data = await wiki.page('Game of Thrones');
+	console.log(page_data.wikitext);
+})();
+
+(async () => {
+	const wiki = new Wikiapi;
 	let page_data = await wiki.page('Universe', {
 		// Get multi revisions
 		revisions: 2
@@ -49,7 +56,7 @@ const Wikiapi = require('wikiapi');
 
 // edit page
 (async () => {
-	let enwiki = new Wikiapi;
+	const enwiki = new Wikiapi;
 	await enwiki.login('bot name', 'password', 'en');
 	let page_data = await enwiki.page('Wikipedia:Sandbox');
 	await enwiki.edit(function(page_data) {
@@ -59,9 +66,10 @@ const Wikiapi = require('wikiapi');
 	console.log('Done.');
 })();
 
-// parse page (The parser is more powerful than the example. Try yourself!)
+// parse wiki page (The parser is more powerful than the example. Try yourself!)
 (async () => {
-	let zhwiki = new Wikiapi('zh');
+	// Usage with other language
+	const zhwiki = new Wikiapi('zh');
 	await zhwiki.login('user', 'password');
 	let page_data = await zhwiki.page('Universe');
 	page_data.parse().each('template',
@@ -70,28 +78,29 @@ const Wikiapi = require('wikiapi');
 
 // read wikidata
 (async () => {
-	let wiki = new Wikiapi;
+	const wiki = new Wikiapi;
 	let page_data = await wiki.data('Q1');
+	// Work with other language
 	console.assert(CeL.wiki.data.value_of(page_data.labels.zh) === '宇宙');
 })();
 
 // read wikidata
 (async () => {
-	let wiki = new Wikiapi;
+	const wiki = new Wikiapi;
 	let data = await wiki.data('Universe', 'P1419');
 	console.assert(data.includes('shape of the universe'));
 })();
 
 // get list of [[w:en:Category:Chemical_elements]]
 (async () => {
-	let wiki = new Wikiapi;
+	const wiki = new Wikiapi;
 	let list = await wiki.categorymembers('Chemical elements');
 	console.log(list);
 })();
 
 // get pages transclude {{w:en:Periodic table}}
 (async () => {
-	let wiki = new Wikiapi;
+	const wiki = new Wikiapi;
 	let list = await wiki.embeddedin('Template:Periodic table');
 	console.log(list);
 })();
@@ -100,7 +109,7 @@ const Wikiapi = require('wikiapi');
 
 More examples: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/master/_test%20suite/test.js).
 
-## OS support 作業系統支援
+## OS support
 | Platform    | support |
 | ----------- | ------- |
 | Windows     | ✔️      |
@@ -110,7 +119,7 @@ More examples: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/mas
 ## See also
 For old style JavaScript, or general environment usage, please see [wikibot](https://github.com/kanasimi/wikibot).
 
-## Contact 聯絡我們
+## Contact
 Contact us at [GitHub](https://github.com/kanasimi/wikiapi/issues).
 
 [![logo](https://raw.githubusercontent.com/kanasimi/CeJS/master/_test%20suite/misc/logo.jpg)](http://lyrics.meicho.com.tw/)
