@@ -12,9 +12,10 @@
 Simple way to access MediaWiki API via JavaScript with simple wikitext parser.
 
 ## Features
-*   read / edit pages
-*   get list of categorymembers, pages transclude specified template, and more...
+*   Read / edit pages.
+*   Get list of categorymembers, pages transclude specified template, and more...
 *   Auto-limited editing rate.
+*   Parse wikitext / pages. You may modify parts of the wikitext, then regenerate the page just using .toString().
 
 ## Installation
 Install [node.js](https://nodejs.org/) first.
@@ -33,7 +34,7 @@ const Wikiapi = require('wikiapi');
 
 // load page
 (async () => {
-	const wiki = new Wikiapi;
+	const wiki = new Wikiapi('en');
 	let page_data = await wiki.page('Universe');
 	console.log(page_data.wikitext);
 })();

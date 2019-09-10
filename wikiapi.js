@@ -180,6 +180,25 @@ function wikiapi_data(key, property, options) {
 function wikiapi_list(type, title, options) {
 	function wikiapi_list_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
+		// 應使用循環取得資料版:
+		wiki.cache({
+			type: type,
+			list: title
+		}, function (list, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(list);
+			}
+		}, Object.assign({
+			// default options === this
+			//namespace : '0|1'
+
+			// Do not write cache file to disk.
+			cache: false
+		}, options));
+
+		/** NG: 不應使用單次版 <code>
 		wiki[type](title, function callback(list, error) {
 			if (error) {
 				reject(error);
@@ -189,6 +208,7 @@ function wikiapi_list(type, title, options) {
 		}, Object.assign({
 			limit: 'max'
 		}, options));
+		</code> */
 	}
 
 	return new Promise(wikiapi_list_executor.bind(this));
@@ -209,9 +229,17 @@ Object.assign(wikiapi.prototype, {
 	data: wikiapi_data,
 });
 
+wikiapi.for_each = Object.create(null);
+
 CeL.wiki.list.type_list.forEach((type) => {
 	wikiapi.prototype[type] = function (title, options) {
 		return wikiapi_list.call(this, type, title, options);
+	};
+
+	wikiapi.for_each[type] = function (title, for_each, options) {
+		return wikiapi_list.call(this, type, title, Object.assign({
+			for_each: for_each
+		}, options));
 	};
 });
 
