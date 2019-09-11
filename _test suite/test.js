@@ -296,21 +296,54 @@ add_test('get pages transclude specified template', async (assert, setup_test, f
 // ------------------------------------------------------------------
 
 add_test('get list of categorymembers using for_each', async (assert, setup_test, finish_test) => {
-	setup_test('get list of [[w:ja:Category:Wikimedia Cloud Services]]');
+	setup_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each');
 
 	const wiki = new Wikiapi('en');
 	let has_category_count = 0;
-	const list_proto = await wiki.for_each('categorymembers', 'Wikimedia Cloud Services', async function (category) {
+	const page_list_proto = await wiki.for_each('categorymembers', 'Wikimedia Cloud Services', async function (category) {
 		const page_data = await wiki.page(category);
 		const parsed = page_data.parse();
 		const to_exit = parsed.each.exit;
 		//console.log(page_data.revisions[0].slots.main['*']);
 		//console.log(parsed);
-		parsed.each('category', (token) => { if (token.name === 'Wikimedia Cloud Services') { has_category_count++; return to_exit; } });
+		parsed.each('category', (token) => {
+			if (token.name === 'Wikimedia Cloud Services') {
+				has_category_count++;
+				return to_exit;
+			}
+		});
 	});
-	//console.log(list_proto);
-	//console.log([list_proto.length, has_category_count]);
+	//console.log(page_list_proto);
+	//console.log([page_list_proto.length, has_category_count]);
 
-	assert([list_proto.length, has_category_count], 'Count of [[w:ja:Category:Wikimedia Cloud Services]]');
-	finish_test('get list of [[w:ja:Category:Wikimedia Cloud Services]]');
+	assert([page_list_proto.length, has_category_count], 'Count of [[w:en:Category:Wikimedia Cloud Services]] using for_each');
+	finish_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each');
+});
+
+// ------------------------------------------------------------------
+
+add_test('get list of categorymembers using for_each_page', async (assert, setup_test, finish_test) => {
+	setup_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
+
+	const wiki = new Wikiapi('en');
+	let has_category_count = 0;
+	let has_category_count = 0;
+	const page_list = await wiki.categorymembers('Wikimedia Cloud Services');
+	wiki.for_each_page(page_list, (page_data) => {
+		const parsed = page_data.parse();
+		//console.log(parsed);
+		assert([CeL.wiki.content_of(page_data), parsed.toString()], 'parser check');
+		let has_category;
+		parsed.each('category', (token) => {
+			if (token.name === 'Wikimedia Cloud Services') {
+				has_category = true;
+			}
+		});
+		if (has_category) {
+			has_category_count++;
+		}
+	});
+
+	assert([page_list.length, has_category_count], 'Count of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
+	finish_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
 });

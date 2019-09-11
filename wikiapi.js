@@ -33,8 +33,7 @@ CeL_wiki.set_language('en');
 
 const KEY_wiki = 'wiki';
 
-/**
- * wikiapi operator 操作子.
+/** * wikiapi operator 操作子.
  * 
  * @param {String}[API_URL] language code or API URL of MediaWiki project
  */
@@ -229,6 +228,53 @@ function wikiapi_list(list_type, title, options) {
 	return new Promise(wikiapi_list_executor.bind(this));
 }
 
+function wikiapi_for_each(type, title, for_each, options) {
+	return wikiapi_list.call(this, type, title, Object.assign({
+		for_each
+	}, options));
+}
+
+// --------------------------------------------------------
+
+/**
+ * Edit pages list in page_list
+ * @param {Array}page_list
+ * @param {Function}for_each_page
+ * @param {Object}[options]
+ */
+function wikiapi_for_each_page(page_list, for_each_page, options) {
+	function wikiapi_for_each_page_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		// 一次取得多個頁面內容，以節省傳輸次數。
+		wiki.work(Object.assign({
+			//no_edit: true
+		}, options, {
+				each(page_data/* , messages, config*/) {
+					Object.defineProperties(page_data, page_data_attributes);
+					try {
+						for_each_page.call(this, page_data/* , messages, config*/);
+					} catch (e) {
+						reject(e);
+					}
+				},
+				//summary: '',
+				last() {
+					if (typeof options.last === 'function') {
+						try {
+							options.last();
+						} catch (e) {
+							reject(e);
+							return;
+						}
+					}
+					resolve();
+				}
+			}), page_list);
+	}
+
+	return new Promise(wikiapi_for_each_page_executor.bind(this));
+}
+
 // --------------------------------------------------------
 
 Object.assign(wikiapi.prototype, {
@@ -241,14 +287,12 @@ Object.assign(wikiapi.prototype, {
 	},
 	purge: wikiapi_purge,
 
+	for_each_page: wikiapi_for_each_page,
+
+	for_each: wikiapi_for_each,
+
 	data: wikiapi_data,
 });
-
-wikiapi.prototype.for_each = function for_each(type, title, for_each, options) {
-	return wikiapi_list.call(this, type, title, Object.assign({
-		for_each
-	}, options));
-};
 
 CeL.wiki.list.type_list.forEach((type) => {
 	wikiapi.prototype[type] = function (title, options) {
