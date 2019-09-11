@@ -327,7 +327,6 @@ add_test('get list of categorymembers using for_each_page', async (assert, setup
 
 	const wiki = new Wikiapi('en');
 	let has_category_count = 0;
-	let has_category_count = 0;
 	const page_list = await wiki.categorymembers('Wikimedia Cloud Services');
 	wiki.for_each_page(page_list, (page_data) => {
 		const parsed = page_data.parse();
