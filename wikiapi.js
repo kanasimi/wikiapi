@@ -240,7 +240,7 @@ function wikiapi_for_each(type, title, for_each, options) {
  * Edit pages list in page_list
  * @param {Array}page_list
  * @param {Function}for_each_page
- * @param {Object}[options] options = { last(): run after all }
+ * @param {Object}[options]
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
 	function wikiapi_for_each_page_executor(resolve, reject) {
@@ -259,14 +259,7 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 				},
 				//summary: '',
 				last() {
-					if (options && typeof options.last === 'function') {
-						try {
-							options.last();
-						} catch (e) {
-							reject(e);
-							return;
-						}
-					}
+					// Run after all list got.
 					resolve();
 				}
 			}), page_list);
