@@ -342,6 +342,7 @@ add_test('get list of categorymembers using for_each_page', async (assert, setup
 			has_category_count++;
 		}
 	});
+	//console.log([page_list.length, has_category_count]);
 
 	assert([page_list.length, has_category_count], 'Count of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
 	finish_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
