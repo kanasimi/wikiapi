@@ -177,14 +177,29 @@ function wikiapi_data(key, property, options) {
 // --------------------------------------------------------
 
 // Warning: Won't throw if title isn't existed!
-function wikiapi_list(type, title, options) {
+function wikiapi_list(list_type, title, options) {
 	function wikiapi_list_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		// 應使用循環取得資料版:
+		CeL.wiki.list(title, function (list/* , target, options */) {
+			//console.trace(list);
+			if (list.error) {
+				reject(list.error);
+			} else {
+				resolve(list);
+			}
+		}, Object.assign({
+			// [KEY_SESSION]
+			session: wiki,
+			type: list_type
+		}, options));
+
+		/** <code>
+
+		// method 2: 使用循環取得資料版:
 		wiki.cache({
 			// Do not write cache file to disk.
 			cache: false,
-			type: type,
+			type: list_type,
 			list: title
 		}, function (list, error) {
 			if (error) {
@@ -197,8 +212,8 @@ function wikiapi_list(type, title, options) {
 			//{ namespace : '0|1' }
 			options);
 
-		/** NG: 不應使用單次版 <code>
-		wiki[type](title, function callback(list, error) {
+		// NG: 不應使用單次版
+		wiki[list_type](title, function callback(list, error) {
 			if (error) {
 				reject(error);
 			} else {
@@ -207,6 +222,7 @@ function wikiapi_list(type, title, options) {
 		}, Object.assign({
 			limit: 'max'
 		}, options));
+
 		</code> */
 	}
 
@@ -230,7 +246,7 @@ Object.assign(wikiapi.prototype, {
 
 wikiapi.prototype.for_each = function for_each(type, title, for_each, options) {
 	return wikiapi_list.call(this, type, title, Object.assign({
-		for_each: for_each
+		for_each
 	}, options));
 };
 

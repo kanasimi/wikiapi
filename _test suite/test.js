@@ -26,7 +26,8 @@ const test_start_time = Date.now();
 
 function check_tests(recorder, error_count) {
 	all_error_count += error_count;
-	if (++test_done < all_tests) {
+	++test_done;
+	if (test_done < all_tests) {
 		return;
 	}
 
