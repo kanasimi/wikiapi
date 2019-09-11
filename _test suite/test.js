@@ -320,15 +320,13 @@ add_test('get list of categorymembers using for_each', async (assert, setup_test
 	finish_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each');
 });
 
-// ------------------------------------------------------------------
-
 add_test('get list of categorymembers using for_each_page', async (assert, setup_test, finish_test) => {
 	setup_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
 
 	const wiki = new Wikiapi('en');
 	let has_category_count = 0;
 	const page_list = await wiki.categorymembers('Wikimedia Cloud Services');
-	wiki.for_each_page(page_list, (page_data) => {
+	await wiki.for_each_page(page_list, (page_data) => {
 		const parsed = page_data.parse();
 		//console.log(parsed);
 		assert([CeL.wiki.content_of(page_data), parsed.toString()], 'parser check');
