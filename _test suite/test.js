@@ -292,3 +292,24 @@ add_test('get pages transclude specified template', async (assert, setup_test, f
 	finish_test('get pages transclude {{w:en:Periodic table}}');
 });
 
+// ------------------------------------------------------------------
+
+add_test('get list of categorymembers using for_each', async (assert, setup_test, finish_test) => {
+	setup_test('get list of [[w:ja:Category:Wikimedia Cloud Services]]');
+
+	const wiki = new Wikiapi('en');
+	let has_category_count = 0;
+	const list_proto = await wiki.for_each('categorymembers', 'Wikimedia Cloud Services', async function (category) {
+		const page_data = await wiki.page(category);
+		const parsed = page_data.parse();
+		const to_exit = parsed.each.exit;
+		//console.log(page_data.revisions[0].slots.main['*']);
+		//console.log(parsed);
+		parsed.each('category', (token) => { if (token.name === 'Wikimedia Cloud Services') { has_category_count++; return to_exit; } });
+	});
+	//console.log(list_proto);
+	//console.log([list_proto.length, has_category_count]);
+
+	assert([list_proto.length, has_category_count], 'Count of [[w:ja:Category:Wikimedia Cloud Services]]');
+	finish_test('get list of [[w:ja:Category:Wikimedia Cloud Services]]');
+});
