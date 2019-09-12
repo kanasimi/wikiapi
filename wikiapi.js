@@ -243,16 +243,21 @@ function wikiapi_for_each(type, title, for_each, options) {
  * @param {Object}[options]
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
+	if (!options || !options.summary) {
+		CeL.warn('Did not set options.summary!');
+	}
+
 	function wikiapi_for_each_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		// 一次取得多個頁面內容，以節省傳輸次數。
 		wiki.work(Object.assign({
-			//no_edit: true
+			//no_edit: true,
+			log_to: null
 		}, options, {
 				each(page_data/* , messages, config*/) {
 					Object.defineProperties(page_data, page_data_attributes);
 					try {
-						for_each_page.call(this, page_data/* , messages, config*/);
+						return for_each_page.call(this, page_data/* , messages, config*/);
 					} catch (e) {
 						reject(e);
 					}

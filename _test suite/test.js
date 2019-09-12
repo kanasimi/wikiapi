@@ -339,6 +339,8 @@ add_test('get list of categorymembers using for_each_page', async (assert, setup
 		if (has_category) {
 			has_category_count++;
 		}
+	}, {
+		no_edit: true
 	});
 	//console.log([page_list.length, has_category_count]);
 
