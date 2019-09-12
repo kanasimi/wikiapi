@@ -44,7 +44,7 @@ function check_tests(recorder, error_count) {
 	}
 
 	CeL.gettext.conversion['error'] = ['no %n', '1 %n', '%d %ns'];
-	var error_message = CeL.gettext('All %error@1.', all_error_count) + elapsed_message;
+	const error_message = CeL.gettext('All %error@1.', all_error_count) + elapsed_message;
 	throw new Error(error_message);
 }
 
