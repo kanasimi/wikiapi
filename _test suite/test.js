@@ -225,9 +225,10 @@ add_test('move page', async (assert, setup_test, finish_test) => {
 	const move_from_title = 'move test from';
 	const move_to_title = 'move test to';
 	const reason = 'move test';
+	let result;
 	try {
 		await testwiki.page(move_from_title);
-		await testwiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true });
+		result = await testwiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true });
 		// revert
 		await testwiki.page(move_to_title);
 		await testwiki.move_to(move_from_title, { reason: reason, noredirect: true, movetalk: true });
@@ -242,8 +243,8 @@ add_test('move page', async (assert, setup_test, finish_test) => {
 		}
 	}
 
-	assert(page_data.title === 'Meta:Babel' && ('purged' in page_data), 'purge page: [[meta:Meta:Babel]]');
-
+	assert([result.from, move_from_title], 'move page: [[testwiki:' + move_from_title + ']]');
+	assert([result.to, move_to_title], 'move page: [[testwiki:' + move_from_title + ']]');
 	finish_test('move page: testwiki');
 });
 
