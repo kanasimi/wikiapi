@@ -140,6 +140,10 @@ function wikiapi_edit_page(title, content, options) {
  * @param {Object}[options]
  */
 function wikiapi_move_to(move_to_title, options) {
+	if (!options || !options.reason) {
+		CeL.warn('wikiapi_move_to: Should set reason when moving page!');
+	}
+
 	function wikiapi_move_to_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		if (!wiki.last_page) {
