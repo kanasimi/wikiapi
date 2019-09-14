@@ -132,12 +132,12 @@ function wikiapi_edit_page(title, content, options) {
  * @example <code>
 
 	page_data = await wiki.page(move_from_title);
-	await wiki.move_to(move_to_title);
+	try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
 
   * </code>
  * 
- * @param {any} move_to_title
- * @param {any} options
+ * @param {Object|String}[move_to_title]
+ * @param {Object}[options]
  */
 function wikiapi_move_to(move_to_title, options) {
 	function wikiapi_move_to_executor(resolve, reject) {
@@ -150,8 +150,11 @@ function wikiapi_move_to(move_to_title, options) {
 		// using wiki_API.move_to
 		wiki.move_to(move_to_title, options, function callback(data, error) {
 			if (error) {
+				// e.g., { code: 'articleexists', info: 'A page of that name already exists, or the name you have chosen is not valid. Please choose another name.', '*': '...' }
+				// e.g., { code: 'missingtitle', info: "The page you specified doesn't exist.", '*': '...' }
 				reject(error);
 			} else {
+				// e.g., { from: 'from', to: 'to', reason: 'move', redirectcreated: '' }
 				resolve(data);
 			}
 		}, options);
