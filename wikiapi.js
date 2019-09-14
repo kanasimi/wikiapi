@@ -147,8 +147,7 @@ function wikiapi_move_to(move_to_title, options) {
 
 	function wikiapi_move_to_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		if (!wiki.last_page) {
-			/* istanbul ignore next: error exit */
+		if (!wiki.last_page) /* istanbul ignore next: error exit */ {
 			reject(new Error('wikiapi_move_to: Must call .page() first!'
 				+ ' Can not move to ' + CeL.wiki.title_link_of(move_to_title)));
 			return;
