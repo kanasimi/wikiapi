@@ -9,7 +9,7 @@ try {
 	// https://github.com/gotwarlost/istanbul/blob/master/ignoring-code-for-coverage.md
 	// const wikiapi = require('./wikiapi.js');
 	require('./_CeL.loader.nodejs.js');
-	CeL = global.CeL;
+	CeL = globalThis.CeL;
 }
 // assert: typeof CeL === 'function'
 
@@ -34,8 +34,8 @@ CeL_wiki.set_language('en');
 
 const KEY_wiki = Symbol('wiki');
 
-/** * wikiapi operator 操作子.
- * 
+/**
+ * main wikiapi operator 操作子.
  * @param {String}[API_URL] language code or API URL of MediaWiki project
  */
 function wikiapi(API_URL) {
@@ -126,6 +126,42 @@ function wikiapi_edit_page(title, content, options) {
 
 // --------------------------------------------------------
 
+/**
+ * Move to `move_to_title`. Must call `wiki.page(move_from_title)` first!
+ * 
+ * @example <code>
+
+	page_data = await wiki.page(move_from_title);
+	await wiki.move_to(move_to_title);
+
+  * </code>
+ * 
+ * @param {any} move_to_title
+ * @param {any} options
+ */
+function wikiapi_move_to(move_to_title, options) {
+	function wikiapi_move_to_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		if (!wiki.last_page) {
+			reject(new Error('wikiapi_move_to: Must call .page() first!'
+				+ ' Can not move to ' + CeL.wiki.title_link_of(move_to_title)));
+			return;
+		}
+		// using wiki_API.move_to
+		wiki.move_to(move_to_title, options, function callback(data, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(data);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_move_to_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
 function wikiapi_purge(title, options) {
 	if (CeL.is_Object(title) && !options) {
 		// shift arguments.
@@ -190,6 +226,7 @@ function wikiapi_list(list_type, title, options) {
 				// [KEY_SESSION]
 				session: wiki,
 				type: list_type,
+				//namespace: '0|1',
 				...options
 			});
 
@@ -242,11 +279,11 @@ function wikiapi_for_each(type, title, for_each, options) {
  * Edit pages list in page_list
  * @param {Array}page_list
  * @param {Function}for_each_page
- * @param {Object}[options]
+ * @param {Object}[options] e.g., { page_options: { rvprop: 'ids|content|timestamp|user' } }
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
-	if (!options || !options.summary) {
-		CeL.warn('Did not set options.summary!');
+	if (!options || !options.summary && !options.no_edit) {
+		CeL.warn('wikiapi_for_each_page: Did not set options.summary!');
 	}
 
 	function wikiapi_for_each_page_executor(resolve, reject) {
@@ -286,6 +323,7 @@ Object.assign(wikiapi.prototype, {
 	edit(content, options) {
 		return this.edit_page(null, content, options);
 	},
+	move_to: wikiapi_move_to,
 	purge: wikiapi_purge,
 
 	for_each_page: wikiapi_for_each_page,

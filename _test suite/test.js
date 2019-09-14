@@ -329,7 +329,7 @@ add_test('get list of categorymembers using for_each_page', async (assert, setup
 	await wiki.for_each_page(page_list, (page_data) => {
 		const parsed = page_data.parse();
 		//console.log(parsed);
-		assert([CeL.wiki.content_of(page_data), parsed.toString()], 'parser check');
+		assert([page_data.wikitext, parsed.toString()], 'wikitext parser check');
 		let has_category;
 		parsed.each('category', (token) => {
 			if (token.name === 'Wikimedia Cloud Services') {
@@ -340,8 +340,8 @@ add_test('get list of categorymembers using for_each_page', async (assert, setup
 			has_category_count++;
 		}
 	}, {
-		no_edit: true
-	});
+			no_edit: true
+		});
 	//console.log([page_list.length, has_category_count]);
 
 	assert([page_list.length, has_category_count], 'Count of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
