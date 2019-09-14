@@ -124,6 +124,12 @@ function wikiapi_edit_page(title, content, options) {
 	return new Promise(wikiapi_edit_page_executor.bind(this));
 }
 
+// return Wikiapi.skip_edit as a symbol to skip this edit, do not generate warning message.
+// 可以利用 ((return [ CeL.wiki.edit.cancel, 'reason' ];)) 來回傳 reason。
+// ((return [ CeL.wiki.edit.cancel, 'skip' ];)) 來跳過 (skip) 本次編輯動作，不特別顯示或處理。
+// 被 skip/pass 的話，連警告都不顯現，當作正常狀況。
+wikiapi.skip_edit = [CeL_wiki.edit.cancel, 'skip'];
+
 // --------------------------------------------------------
 
 /**
