@@ -243,7 +243,9 @@ add_test('move page', async (assert, setup_test, finish_test) => {
 				console.trace(e);
 			}
 		}
-		assert(e.code && e.code !== 'missingtitle' && e.code !== 'articleexists', 'move page from: [[testwiki:' + move_from_title + ']]');
+		assert(e === 'No csrftoken specified'
+			|| e.code && e.code !== 'missingtitle' && e.code !== 'articleexists',
+			'move page from: [[testwiki:' + move_from_title + ']]');
 	}
 
 	finish_test('move page: testwiki');
