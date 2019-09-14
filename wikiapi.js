@@ -141,12 +141,14 @@ function wikiapi_edit_page(title, content, options) {
  */
 function wikiapi_move_to(move_to_title, options) {
 	if (!options || !options.reason) {
+		/* istanbul ignore next: warning message */
 		CeL.warn('wikiapi_move_to: Should set reason when moving page!');
 	}
 
 	function wikiapi_move_to_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		if (!wiki.last_page) {
+			/* istanbul ignore next: error exit */
 			reject(new Error('wikiapi_move_to: Must call .page() first!'
 				+ ' Can not move to ' + CeL.wiki.title_link_of(move_to_title)));
 			return;
@@ -290,6 +292,7 @@ function wikiapi_for_each(type, title, for_each, options) {
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
 	if (!options || !options.summary && !options.no_edit) {
+		/* istanbul ignore next: warning message */
 		CeL.warn('wikiapi_for_each_page: Did not set options.summary!');
 	}
 
