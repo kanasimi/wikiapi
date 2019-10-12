@@ -19,7 +19,9 @@ CeL.run(['interact.DOM', 'application.debug',
 	// 載入不同地區語言的功能 for wiki.work()。
 	'application.locale',
 	// 載入操作維基百科的主要功能。
-	'application.net.wiki',
+	'application.net.wiki.parser',
+	'application.net.wiki.edit', 'application.net.wiki.list',
+	'application.net.wiki.data', 'application.net.wiki.admin',
 	// Add color to console messages. 添加主控端報告的顏色。
 	'interact.console',
 	// for 'application.platform.nodejs': CeL.env.arg_hash, CeL.wiki.cache(),
@@ -27,11 +29,12 @@ CeL.run(['interact.DOM', 'application.debug',
 	'application.storage']);
 
 // syntactic sugar
-const CeL_wiki = CeL.wiki;
+const wiki_API = CeL.net.wiki;
 
 // Set default language. 改變預設之語言。
-CeL_wiki.set_language('en');
+wiki_API.set_language('en');
 
+/** @inner */
 const KEY_wiki = Symbol('wiki');
 
 /**
@@ -39,14 +42,14 @@ const KEY_wiki = Symbol('wiki');
  * @param {String}[API_URL] language code or API URL of MediaWiki project
  */
 function wikiapi(API_URL) {
-	this[KEY_wiki] = new CeL_wiki(null, null, API_URL);
+	this[KEY_wiki] = new wiki_API(null, null, API_URL);
 }
 
 // --------------------------------------------------------
 
 function wikiapi_login(user_name, user_password, API_URL) {
 	function wikiapi_login_executor(resolve, reject) {
-		this[KEY_wiki] = CeL_wiki.login(user_name, user_password, {
+		this[KEY_wiki] = wiki_API.login(user_name, user_password, {
 			API_URL: API_URL || this[KEY_wiki].API_URL,
 			callback(data, error) {
 				if (error) {
@@ -67,18 +70,18 @@ function wikiapi_login(user_name, user_password, API_URL) {
 const page_data_attributes = {
 	wikitext: {
 		get() {
-			return CeL_wiki.content_of(this, 0);
+			return wiki_API.content_of(this, 0);
 		}
 	},
 	revision: {
 		value: function revision(revision_NO) {
-			return CeL_wiki.content_of(this, revision_NO);
+			return wiki_API.content_of(this, revision_NO);
 		}
 	},
 	parse: {
 		value: function parse(options) {
 			// function parse_page(options) @ CeL.wiki
-			return CeL_wiki.parser(this).parse(options);
+			return wiki_API.parser(this).parse(options);
 		}
 	},
 };
@@ -94,9 +97,9 @@ function wikiapi_page(title, options) {
 				resolve(page_data);
 			}
 		}, {
-				rvlimit: options && options.revisions,
-				...options
-			});
+			rvlimit: options && options.revisions,
+			...options
+		});
 	}
 
 	return new Promise(wikiapi_page_executor.bind(this));
@@ -128,7 +131,7 @@ function wikiapi_edit_page(title, content, options) {
 // 可以利用 ((return [ CeL.wiki.edit.cancel, 'reason' ];)) 來回傳 reason。
 // ((return [ CeL.wiki.edit.cancel, 'skip' ];)) 來跳過 (skip) 本次編輯動作，不特別顯示或處理。
 // 被 skip/pass 的話，連警告都不顯現，當作正常狀況。
-wikiapi.skip_edit = [CeL_wiki.edit.cancel, 'skip'];
+wikiapi.skip_edit = [wiki_API.edit.cancel, 'skip'];
 
 // --------------------------------------------------------
 
@@ -229,7 +232,7 @@ function wikiapi_data(key, property, options) {
 function wikiapi_list(list_type, title, options) {
 	function wikiapi_list_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		CeL.wiki.list(title, function (list/* , target, options */) {
+		CeL.wiki.list(title, (list/* , target, options */) => {
 			//console.trace(list);
 			if (list.error) {
 				reject(list.error);
@@ -237,12 +240,12 @@ function wikiapi_list(list_type, title, options) {
 				resolve(list);
 			}
 		}, {
-				// [KEY_SESSION]
-				session: wiki,
-				type: list_type,
-				//namespace: '0|1',
-				...options
-			});
+			// [KEY_SESSION]
+			session: wiki,
+			type: list_type,
+			//namespace: '0|1',
+			...options
+		});
 
 		/** <code>
 
@@ -252,7 +255,7 @@ function wikiapi_list(list_type, title, options) {
 			cache: false,
 			type: list_type,
 			list: title
-		}, function (list, error) {
+		}, (list, error) => {
 			if (error) {
 				reject(error);
 			} else {
@@ -330,6 +333,38 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 
 // --------------------------------------------------------
 
+// May only test in the [https://tools.wmflabs.org/ Wikimedia Toolforge]
+function wikiapi_run_SQL(SQL, for_each_row/* , options */) {
+	function wikiapi_run_SQL_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		function run_callback() {
+			wiki.SQL_session.SQL(SQL, function (error, rows/* , fields */) {
+				if (error) {
+					reject(error);
+				} else {
+					rows.forEach(for_each_row);
+				}
+			});
+			resolve();
+		}
+		if (wiki.SQL_session) {
+			run_callback();
+			return;
+		}
+		wiki.SQL_session = new wiki_API.SQL((error, rows, fields) => {
+			if (error) {
+				reject(error);
+			} else {
+				run_callback();
+			}
+		}, wiki);
+	}
+
+	return new Promise(wikiapi_run_SQL_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
 Object.assign(wikiapi.prototype, {
 	login: wikiapi_login,
 
@@ -346,13 +381,17 @@ Object.assign(wikiapi.prototype, {
 	for_each: wikiapi_for_each,
 
 	data: wikiapi_data,
+
+	run_SQL: wikiapi_run_SQL,
 });
 
-CeL.wiki.list.type_list.forEach((type) => {
+for (let type of CeL.wiki.list.type_list) {
+	// Can not use `= (title, options) {}` !
+	// arrow function expression DO NOT has this, arguments, super, or new.target keywords.
 	wikiapi.prototype[type] = function (title, options) {
 		return wikiapi_list.call(this, type, title, options);
 	};
-});
+}
 
 module.exports = wikiapi;
 
