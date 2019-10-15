@@ -292,6 +292,24 @@ function wikiapi_for_each(type, title, for_each, options) {
 
 // --------------------------------------------------------
 
+function wikiapi_search(key, options) {
+	function wikiapi_search_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		// using wiki_API.search
+		wiki.search(function callback(list, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(list);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_search_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
 /**
  * Edit pages list in page_list
  * @param {Array}page_list
@@ -316,7 +334,9 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 			each(page_data/* , messages, config*/) {
 				Object.defineProperties(page_data, page_data_attributes);
 				try {
-					return for_each_page.call(this, page_data/* , messages, config*/);
+					return for_each_page.call(this, page_data
+						// , messages, config
+					);
 				} catch (e) {
 					reject(e);
 				}
@@ -375,6 +395,8 @@ Object.assign(wikiapi.prototype, {
 	},
 	move_to: wikiapi_move_to,
 	purge: wikiapi_purge,
+
+	search: wikiapi_search,
 
 	for_each_page: wikiapi_for_each_page,
 

@@ -132,9 +132,9 @@ add_test('edit page', async (assert, setup_test, finish_test) => {
 			return page_data.wikitext
 				+ test_wikitext;
 		}, {
-				bot: 1,
-				summary: 'Test edit using wikiapi module'
-			});
+			bot: 1,
+			summary: 'Test edit using wikiapi module'
+		});
 
 		// edit successed
 		// reget page to test.
@@ -167,9 +167,9 @@ add_test('edit page #2', async (assert, setup_test, finish_test) => {
 			return page_data.wikitext
 				+ test_wikitext;
 		}, {
-				bot: 1,
-				summary: 'Test edit using wikiapi module'
-			});
+			bot: 1,
+			summary: 'Test edit using wikiapi module'
+		});
 
 		// edit successed
 		// reget page to test.
@@ -336,7 +336,7 @@ add_test('get list of categorymembers using for_each', async (assert, setup_test
 
 	const wiki = new Wikiapi('en');
 	let has_category_count = 0;
-	const page_list_proto = await wiki.for_each('categorymembers', 'Wikimedia Cloud Services', async function (category) {
+	const page_list_proto = await wiki.for_each('categorymembers', 'Wikimedia Cloud Services', async (category) => {
 		const page_data = await wiki.page(category);
 		const parsed = page_data.parse();
 		const to_exit = parsed.each.exit;
@@ -376,10 +376,21 @@ add_test('get list of categorymembers using for_each_page', async (assert, setup
 			has_category_count++;
 		}
 	}, {
-			no_edit: true
-		});
+		no_edit: true
+	});
 	//console.log([page_list.length, has_category_count]);
 
 	assert([page_list.length, has_category_count], 'Count of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
 	finish_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
+});
+
+// ------------------------------------------------------------------
+
+add_test('search key', async (assert, setup_test, finish_test) => {
+	setup_test('search key: 霍金');
+
+	const zhwikinews = new Wikiapi('zh.wikinews');
+	const page_list = zhwikinews.search('"霍金"');
+	assert(page_list.some(page_data => page_data.title === '霍金访问香港'), 'search key: "霍金" must includes [[n:zh:霍金访问香港]]');
+	finish_test('search key: 霍金');
 });
