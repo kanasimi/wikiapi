@@ -296,7 +296,7 @@ function wikiapi_search(key, options) {
 	function wikiapi_search_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		// using wiki_API.search
-		wiki.search(function callback(list, error) {
+		wiki.search(key, function callback(list, error) {
 			if (error) {
 				reject(error);
 			} else {
