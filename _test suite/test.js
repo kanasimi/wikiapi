@@ -390,7 +390,7 @@ add_test('search key', async (assert, setup_test, finish_test) => {
 	setup_test('search key: 霍金');
 
 	const zhwikinews = new Wikiapi('zh.wikinews');
-	const page_list = zhwikinews.search('"霍金"');
+	const page_list = await zhwikinews.search('"霍金"');
 	assert(page_list.some(page_data => page_data.title === '霍金访问香港'), 'search key: "霍金" must includes [[n:zh:霍金访问香港]]');
 	finish_test('search key: 霍金');
 });
