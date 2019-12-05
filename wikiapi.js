@@ -5,7 +5,7 @@ let CeL;
 try {
 	// Load CeJS library.
 	CeL = require('cejs');
-} catch (e) /* istanbul ignore next: only for debugging locally */ {
+} catch (e) /* istanbul ignore next: Only for debugging locally */ {
 	// https://github.com/gotwarlost/istanbul/blob/master/ignoring-code-for-coverage.md
 	// const wikiapi = require('./wikiapi.js');
 	require('./_CeL.loader.nodejs.js');
@@ -14,7 +14,8 @@ try {
 // assert: typeof CeL === 'function'
 
 // Load modules.
-// @see `wiki loader.js`: https://github.com/kanasimi/wikibot/blob/master/wiki%20loader.js
+// @see `wiki loader.js`:
+// https://github.com/kanasimi/wikibot/blob/master/wiki%20loader.js
 CeL.run(['interact.DOM', 'application.debug',
 	// 載入不同地區語言的功能 for wiki.work()。
 	'application.locale',
@@ -39,7 +40,9 @@ const KEY_wiki = Symbol('wiki');
 
 /**
  * main wikiapi operator 操作子.
- * @param {String}[API_URL] language code or API URL of MediaWiki project
+ * 
+ * @param {String}[API_URL]
+ *            language code or API URL of MediaWiki project
  */
 function wikiapi(API_URL) {
 	this[KEY_wiki] = new wiki_API(null, null, API_URL);
@@ -127,7 +130,8 @@ function wikiapi_edit_page(title, content, options) {
 	return new Promise(wikiapi_edit_page_executor.bind(this));
 }
 
-// return Wikiapi.skip_edit as a symbol to skip this edit, do not generate warning message.
+// return Wikiapi.skip_edit as a symbol to skip this edit, do not generate
+// warning message.
 // 可以利用 ((return [ CeL.wiki.edit.cancel, 'reason' ];)) 來回傳 reason。
 // ((return [ CeL.wiki.edit.cancel, 'skip' ];)) 來跳過 (skip) 本次編輯動作，不特別顯示或處理。
 // 被 skip/pass 的話，連警告都不顯現，當作正常狀況。
@@ -150,13 +154,12 @@ wikiapi.skip_edit = [wiki_API.edit.cancel, 'skip'];
  */
 function wikiapi_move_to(move_to_title, options) {
 	if (!options || !options.reason) {
-		/* istanbul ignore next: warning message */
 		CeL.warn('wikiapi_move_to: Should set reason when moving page!');
 	}
 
 	function wikiapi_move_to_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		if (!wiki.last_page) /* istanbul ignore next: error exit */ {
+		if (!wiki.last_page) {
 			reject(new Error('wikiapi_move_to: Must call .page() first!'
 				+ ' Can not move to ' + CeL.wiki.title_link_of(move_to_title)));
 			return;
@@ -164,11 +167,23 @@ function wikiapi_move_to(move_to_title, options) {
 		// using wiki_API.move_to
 		wiki.move_to(move_to_title, options, function callback(data, error) {
 			if (error) {
-				// e.g., { code: 'articleexists', info: 'A page of that name already exists, or the name you have chosen is not valid. Please choose another name.', '*': '...' }
-				// e.g., { code: 'missingtitle', info: "The page you specified doesn't exist.", '*': '...' }
+				/**
+				 * <code>
+
+				e.g., { code: 'articleexists', info: 'A page of that name already exists, or the name you have chosen is not valid. Please choose another name.', '*': '...' }
+				e.g., { code: 'missingtitle', info: "The page you specified doesn't exist.", '*': '...' }
+
+				</code>
+				 */
 				reject(error);
 			} else {
-				// e.g., { from: 'from', to: 'to', reason: 'move', redirectcreated: '' }
+				/**
+				 * <code>
+
+				e.g., { from: 'from', to: 'to', reason: 'move', redirectcreated: '' }
+
+				</code>
+				 */
 				resolve(data);
 			}
 		}, options);
@@ -233,7 +248,7 @@ function wikiapi_list(list_type, title, options) {
 	function wikiapi_list_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		CeL.wiki.list(title, (list/* , target, options */) => {
-			//console.trace(list);
+			// console.trace(list);
 			if (list.error) {
 				reject(list.error);
 			} else {
@@ -243,11 +258,12 @@ function wikiapi_list(list_type, title, options) {
 			// [KEY_SESSION]
 			session: wiki,
 			type: list_type,
-			//namespace: '0|1',
+			// namespace: '0|1',
 			...options
 		});
 
-		/** <code>
+		/**
+		 * <code>
 
 		// method 2: 使用循環取得資料版:
 		wiki.cache({
@@ -277,7 +293,8 @@ function wikiapi_list(list_type, title, options) {
 				limit: 'max', ...options
 			});
 
-		</code> */
+		</code>
+		 */
 	}
 
 	return new Promise(wikiapi_list_executor.bind(this));
@@ -288,6 +305,24 @@ function wikiapi_for_each(type, title, for_each, options) {
 		for_each,
 		...options
 	});
+}
+
+// --------------------------------------------------------
+
+function wikiapi_category_tree(root_category, options) {
+	function wikiapi_category_tree_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		// using wiki_API.search
+		wiki.category_tree(root_category, function callback(list, error) {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(list);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_category_tree_executor.bind(this));
 }
 
 // --------------------------------------------------------
@@ -312,26 +347,27 @@ function wikiapi_search(key, options) {
 
 /**
  * Edit pages list in page_list
+ * 
  * @param {Array}page_list
  * @param {Function}for_each_page
- * @param {Object}[options] e.g., { page_options: { rvprop: 'ids|content|timestamp|user' } }
+ * @param {Object}[options]
+ *            e.g., { page_options: { rvprop: 'ids|content|timestamp|user' } }
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
 	if (!options || !options.summary && !options.no_edit) {
-		/* istanbul ignore next: warning message */
-		CeL.warn('wikiapi_for_each_page: Did not set options.summary!');
+		CeL.warn('wikiapi_for_each_page: Did not set options.summary! Set options.no_edit if no edit need.');
 	}
 
 	function wikiapi_for_each_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		// 一次取得多個頁面內容，以節省傳輸次數。
 		wiki.work({
-			//no_edit: true,
+			// no_edit: true,
 			log_to: null,
 
 			...options,
 
-			each(page_data/* , messages, config*/) {
+			each(page_data/* , messages, config */) {
 				Object.defineProperties(page_data, page_data_attributes);
 				try {
 					return for_each_page.call(this, page_data
@@ -396,6 +432,7 @@ Object.assign(wikiapi.prototype, {
 	move_to: wikiapi_move_to,
 	purge: wikiapi_purge,
 
+	category_tree: wikiapi_category_tree,
 	search: wikiapi_search,
 
 	for_each_page: wikiapi_for_each_page,
@@ -407,11 +444,32 @@ Object.assign(wikiapi.prototype, {
 	run_SQL: wikiapi_run_SQL,
 });
 
+function for_each_list_item(page_list, for_each_page, options) {
+	return this.for_each_page(page_list, for_each_page, Object.assign({
+		no_edit: true
+	}, options));
+};
+
 for (let type of CeL.wiki.list.type_list) {
 	// Can not use `= (title, options) {}` !
-	// arrow function expression DO NOT has this, arguments, super, or new.target keywords.
+	// arrow function expression DO NOT has this, arguments, super, or
+	// new.target keywords.
 	wikiapi.prototype[type] = function (title, options) {
-		return wikiapi_list.call(this, type, title, options);
+		var _this = this;
+		/**
+		 * @example <code>
+		
+		const page_list = await wiki.embeddedin(template_name);
+		await page_list.each((page_data) => { });
+
+		 * </code>
+		 */
+		return wikiapi_list.call(this, type, title, options)
+			.then((page_list) => {
+				//console.log(page_list);
+				page_list.each = for_each_list_item.bind(_this, page_list);
+				return page_list;
+			});
 	};
 }
 
