@@ -153,10 +153,6 @@ wikiapi.skip_edit = [wiki_API.edit.cancel, 'skip'];
  * @param {Object}[options]
  */
 function wikiapi_move_to(move_to_title, options) {
-	if (!options || !options.reason) {
-		CeL.warn('wikiapi_move_to: Should set reason when moving page!');
-	}
-
 	function wikiapi_move_to_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		if (!wiki.last_page) {
@@ -312,7 +308,7 @@ function wikiapi_for_each(type, title, for_each, options) {
 function wikiapi_category_tree(root_category, options) {
 	function wikiapi_category_tree_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		// using wiki_API.search
+		// using wiki.prototype.category_tree
 		wiki.category_tree(root_category, function callback(list, error) {
 			if (error) {
 				reject(error);
