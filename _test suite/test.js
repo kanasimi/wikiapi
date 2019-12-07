@@ -375,13 +375,23 @@ add_test('get list of categorymembers using for_each_page', async (assert, setup
 		if (has_category) {
 			has_category_count++;
 		}
-	}, {
-		no_edit: true
 	});
 	//console.log([page_list.length, has_category_count]);
 
 	assert([page_list.length, has_category_count], 'Count of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
 	finish_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
+});
+
+// ------------------------------------------------------------------
+
+add_test('list category tree', async (assert, setup_test, finish_test) => {
+	setup_test('list category tree: Countries in North America');
+
+	const enwiki = new Wikiapi('en');
+	const page_list = await enwiki.category_tree('Countries in North America', 1);
+	assert(page_list.some(page_data => page_data.title === 'United States'), 'list category tree: [[Category:Countries in North America]] must includes [[United States]]');
+	assert('Mexico' in page_list.subcategories, 'list category tree: [[Category:Mexico]] is a subcategory of [[Category:Countries in North America]]');
+	finish_test('list category tree: Countries in North America');
 });
 
 // ------------------------------------------------------------------

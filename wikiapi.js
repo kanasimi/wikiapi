@@ -351,25 +351,23 @@ function wikiapi_search(key, options) {
  * @param {Array}page_list
  * @param {Function}for_each_page
  * @param {Object}[options]
- *            e.g., { page_options: { rvprop: 'ids|content|timestamp|user' } }
+ *            e.g., { page_options: { redirects: true, rvprop: 'ids|content|timestamp|user' } }
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
-	if (!options || !options.summary && !options.no_edit) {
-		CeL.warn('wikiapi_for_each_page: Did not set options.summary! Set options.no_edit if no edit need.');
-	}
-
 	function wikiapi_for_each_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		// 一次取得多個頁面內容，以節省傳輸次數。
 		wiki.work({
-			// no_edit: true,
-			log_to: null,
+			//log_to: null,
+			//no_edit: true,
+			no_message: true,
 
 			...options,
 
 			each(page_data/* , messages, config */) {
-				Object.defineProperties(page_data, page_data_attributes);
 				try {
+					// `page_data` maybe non-object when error occurres.
+					Object.defineProperties(page_data, page_data_attributes);
 					return for_each_page.call(this, page_data
 						// , messages, config
 					);
@@ -444,12 +442,6 @@ Object.assign(wikiapi.prototype, {
 	run_SQL: wikiapi_run_SQL,
 });
 
-function for_each_list_item(page_list, for_each_page, options) {
-	return this.for_each_page(page_list, for_each_page, Object.assign({
-		no_edit: true
-	}, options));
-};
-
 for (let type of CeL.wiki.list.type_list) {
 	// Can not use `= (title, options) {}` !
 	// arrow function expression DO NOT has this, arguments, super, or
@@ -459,15 +451,15 @@ for (let type of CeL.wiki.list.type_list) {
 		/**
 		 * @example <code>
 		
-		const page_list = await wiki.embeddedin(template_name);
-		await page_list.each((page_data) => { });
+		const page_list = await wiki.embeddedin(template_name, options);
+		await page_list.each((page_data) => { }, options);
 
 		 * </code>
 		 */
 		return wikiapi_list.call(this, type, title, options)
 			.then((page_list) => {
 				//console.log(page_list);
-				page_list.each = for_each_list_item.bind(_this, page_list);
+				page_list.each = wikiapi_for_each_page.bind(_this, page_list);
 				return page_list;
 			});
 	};
