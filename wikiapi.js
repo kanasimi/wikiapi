@@ -352,6 +352,7 @@ function wikiapi_search(key, options) {
 function wikiapi_for_each_page(page_list, for_each_page, options) {
 	function wikiapi_for_each_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
+		const promises = [];
 		// 一次取得多個頁面內容，以節省傳輸次數。
 		wiki.work({
 			//log_to: null,
@@ -364,16 +365,20 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 				try {
 					// `page_data` maybe non-object when error occurres.
 					Object.defineProperties(page_data, page_data_attributes);
-					return for_each_page.call(this, page_data
-						// , messages, config
-					);
+					const result = for_each_page.call(this, page_data/* , messages, config*/);
+					// Promise.isPromise()
+					if (result && typeof result.then === 'function') {
+						promises.push(result);
+					} else {
+						return result;
+					}
 				} catch (e) {
 					reject(e);
 				}
 			},
+			// Run after all list got.
 			last() {
-				// Run after all list got.
-				resolve();
+				Promise.all(promises).then(resolve).catch(reject);
 			}
 		}, page_list);
 	}
