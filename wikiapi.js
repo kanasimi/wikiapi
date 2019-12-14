@@ -110,6 +110,7 @@ function wikiapi_page(title, options) {
 
 // --------------------------------------------------------
 
+// for page list, you had better use wiki.for_each_page(page_list)
 function wikiapi_edit_page(title, content, options) {
 	function wikiapi_edit_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
@@ -119,8 +120,9 @@ function wikiapi_edit_page(title, content, options) {
 		// wiki.edit(page contents, options, callback)
 		wiki.edit(content, options, function callback(title, error, result) {
 			if (error) {
-				result.message = error;
-				reject(result);
+				if (typeof error === 'object')
+					error.result = result;
+				reject(error);
 			} else {
 				resolve(title);
 			}
@@ -147,7 +149,7 @@ wikiapi.skip_edit = [wiki_API.edit.cancel, 'skip'];
 	page_data = await wiki.page(move_from_title);
 	try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
 
-  * </code>
+ * </code>
  * 
  * @param {Object|String}[move_to_title]
  * @param {Object}[options]
@@ -296,6 +298,7 @@ function wikiapi_list(list_type, title, options) {
 	return new Promise(wikiapi_list_executor.bind(this));
 }
 
+// functions for several kinds of lists
 function wikiapi_for_each(type, title, for_each, options) {
 	return wikiapi_list.call(this, type, title, {
 		for_each,
@@ -342,12 +345,15 @@ function wikiapi_search(key, options) {
 // --------------------------------------------------------
 
 /**
- * Edit pages list in page_list
+ * Edit / process pages listing in `page_list`.
  * 
  * @param {Array}page_list
+ *            title list or page_data list
  * @param {Function}for_each_page
+ *            processor for each page. for_each_page(page_data with contents)
  * @param {Object}[options]
- *            e.g., { page_options: { redirects: true, rvprop: 'ids|content|timestamp|user' } }
+ *            e.g., { page_options: { redirects: true, rvprop:
+ *            'ids|content|timestamp|user' } }
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
 	function wikiapi_for_each_page_executor(resolve, reject) {
@@ -355,8 +361,8 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 		const promises = [];
 		// 一次取得多個頁面內容，以節省傳輸次數。
 		wiki.work({
-			//log_to: null,
-			//no_edit: true,
+			// log_to: null,
+			// no_edit: true,
 			no_message: true,
 
 			...options,
@@ -365,7 +371,8 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 				try {
 					// `page_data` maybe non-object when error occurres.
 					Object.defineProperties(page_data, page_data_attributes);
-					const result = for_each_page.call(this, page_data/* , messages, config*/);
+					const result = for_each_page.call(this, page_data
+						/* , messages, config */);
 					// Promise.isPromise()
 					if (result && typeof result.then === 'function') {
 						promises.push(result);
@@ -419,6 +426,7 @@ function wikiapi_run_SQL(SQL, for_each_row/* , options */) {
 }
 
 // --------------------------------------------------------
+// exports
 
 Object.assign(wikiapi.prototype, {
 	login: wikiapi_login,
@@ -459,7 +467,7 @@ for (let type of CeL.wiki.list.type_list) {
 		 */
 		return wikiapi_list.call(this, type, title, options)
 			.then((page_list) => {
-				//console.log(page_list);
+				// console.log(page_list);
 				page_list.each = wikiapi_for_each_page.bind(_this, page_list);
 				return page_list;
 			});
