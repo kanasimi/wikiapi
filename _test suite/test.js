@@ -104,7 +104,7 @@ function edit_blocked(result) {
 		|| result.error && result.error.code === 'globalblocking-ipblocked-range';
 }
 
-function handle_edit_error(assert, result) {
+function handle_edit_error(assert, error) {
 	const result = error.result;
 	if (edit_blocked(result)) {
 		// IP is blocked.

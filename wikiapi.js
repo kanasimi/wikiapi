@@ -120,8 +120,10 @@ function wikiapi_edit_page(title, content, options) {
 		// wiki.edit(page contents, options, callback)
 		wiki.edit(content, options, function callback(title, error, result) {
 			if (error) {
-				if (typeof error === 'string')
+				if (typeof error === 'string') {
 					error = new Error(error);
+					error.from_string = true;
+				}
 				if (typeof error === 'object')
 					error.result = result;
 				reject(error);
