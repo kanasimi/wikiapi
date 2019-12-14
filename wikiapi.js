@@ -315,7 +315,6 @@ function wikiapi_for_each(type, title, for_each, options) {
 function wikiapi_category_tree(root_category, options) {
 	function wikiapi_category_tree_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		console.log(wiki);
 		// using CeL.wiki.prototype.category_tree
 		wiki.category_tree(root_category, function callback(list, error) {
 			if (error) {
