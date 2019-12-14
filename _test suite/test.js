@@ -105,13 +105,14 @@ function edit_blocked(result) {
 }
 
 function handle_edit_error(assert, result) {
+	const result = error.result;
 	if (edit_blocked(result)) {
 		// IP is blocked.
 		CeL.log('Skip blocked edit: ' + result.message);
 		return;
 	}
 
-	assert([result.message, 'OK'], 'test edit page result');
+	assert([error.message, 'OK'], 'test edit page result');
 }
 
 add_test('edit page', async (assert, setup_test, finish_test) => {
@@ -140,9 +141,9 @@ add_test('edit page', async (assert, setup_test, finish_test) => {
 		// reget page to test.
 		const page_data = await enwiki.page(test_page_title);
 		assert(page_data.wikitext.endsWith(test_wikitext), 'test edit page result');
-	} catch (result) {
+	} catch (error) {
 		// failed to edit
-		handle_edit_error(assert, result);
+		handle_edit_error(assert, error);
 	}
 	// CeL.set_debug(0);
 
@@ -269,9 +270,9 @@ add_test('purge page', async (assert, setup_test, finish_test) => {
 		multi: true
 	});
 	// You may also using:
-	//page_data = await testwiki.purge(/* no options */);
+	// page_data = await testwiki.purge(/* no options */);
 
-	//console.log(page_data);
+	// console.log(page_data);
 	assert(Array.isArray(page_data) && page_data.length === 1, 'purge page: [[meta:Meta:Babel]]: multi return {Array}');
 	page_data = page_data[0];
 	assert(page_data.title === 'Meta:Babel' && ('purged' in page_data), 'purge page: [[meta:Meta:Babel]]');
@@ -288,8 +289,8 @@ add_test('read wikidata', async (assert, setup_test, finish_test) => {
 	const page_data = await wiki.data('Q1', {
 		props: 'labels|sitelinks'
 	});
-	//CeL.info('page:');
-	//console.log(page);
+	// CeL.info('page:');
+	// console.log(page);
 
 	// Work with other language
 	assert([CeL.wiki.data.value_of(page_data.labels.zh), '宇宙'], 'zh label of Q1 is 宇宙');
@@ -340,8 +341,8 @@ add_test('get list of categorymembers using for_each', async (assert, setup_test
 		const page_data = await wiki.page(category);
 		const parsed = page_data.parse();
 		const to_exit = parsed.each.exit;
-		//console.log(page_data.revisions[0].slots.main['*']);
-		//console.log(parsed);
+		// console.log(page_data.revisions[0].slots.main['*']);
+		// console.log(parsed);
 		parsed.each('category', (token) => {
 			if (token.name === 'Wikimedia Cloud Services') {
 				has_category_count++;
@@ -349,8 +350,8 @@ add_test('get list of categorymembers using for_each', async (assert, setup_test
 			}
 		});
 	});
-	//console.log(page_list_proto);
-	//console.log([page_list_proto.length, has_category_count]);
+	// console.log(page_list_proto);
+	// console.log([page_list_proto.length, has_category_count]);
 
 	assert([page_list_proto.length, has_category_count], 'Count of [[w:en:Category:Wikimedia Cloud Services]] using for_each');
 	finish_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each');
@@ -364,7 +365,7 @@ add_test('get list of categorymembers using for_each_page', async (assert, setup
 	const page_list = await wiki.categorymembers('Wikimedia Cloud Services');
 	await wiki.for_each_page(page_list, (page_data) => {
 		const parsed = page_data.parse();
-		//console.log(parsed);
+		// console.log(parsed);
 		assert([page_data.wikitext, parsed.toString()], 'wikitext parser check');
 		let has_category;
 		parsed.each('category', (token) => {
@@ -376,7 +377,7 @@ add_test('get list of categorymembers using for_each_page', async (assert, setup
 			has_category_count++;
 		}
 	});
-	//console.log([page_list.length, has_category_count]);
+	// console.log([page_list.length, has_category_count]);
 
 	assert([page_list.length, has_category_count], 'Count of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
 	finish_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each_page');
