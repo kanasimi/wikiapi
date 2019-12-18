@@ -356,8 +356,8 @@ function wikiapi_search(key, options) {
  * @param {Function}for_each_page
  *            processor for each page. for_each_page(page_data with contents)
  * @param {Object}[options]
- *            e.g., { page_options: { redirects: true, rvprop:
- *            'ids|content|timestamp|user' } }
+ *            e.g., { no_message: true, no_warning: true,
+ *            page_options: { redirects: true, rvprop: 'ids|content|timestamp|user' } }
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
 	function wikiapi_for_each_page_executor(resolve, reject) {
@@ -367,7 +367,7 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 		wiki.work({
 			// log_to: null,
 			// no_edit: true,
-			no_message: true,
+			no_message: options && options.no_edit,
 
 			...options,
 
