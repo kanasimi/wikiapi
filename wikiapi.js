@@ -92,11 +92,12 @@ const page_data_attributes = {
 function wikiapi_page(title, options) {
 	function wikiapi_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		wiki.page(title, function callback(page_data, error) {
+		wiki.page(title, (page_data, error) => {
 			if (error) {
 				reject(error);
 			} else {
-				Object.defineProperties(page_data, page_data_attributes);
+				if (page_data)
+					Object.defineProperties(page_data, page_data_attributes);
 				resolve(page_data);
 			}
 		}, {
@@ -118,7 +119,7 @@ function wikiapi_edit_page(title, content, options) {
 			wiki.page(title);
 		}
 		// wiki.edit(page contents, options, callback)
-		wiki.edit(content, options, function callback(title, error, result) {
+		wiki.edit(content, options, (title, error, result) => {
 			if (error) {
 				if (typeof error === 'string') {
 					error = new Error(error);
@@ -167,7 +168,7 @@ function wikiapi_move_to(move_to_title, options) {
 			return;
 		}
 		// using wiki_API.move_to
-		wiki.move_to(move_to_title, options, function callback(data, error) {
+		wiki.move_to(move_to_title, options, (data, error) => {
 			if (error) {
 				/**
 				 * <code>
@@ -208,7 +209,7 @@ function wikiapi_purge(title, options) {
 			wiki.page(title);
 		}
 		// using wiki_API.purge
-		wiki.purge(function callback(data, error) {
+		wiki.purge((data, error) => {
 			if (error) {
 				reject(error);
 			} else {
@@ -231,7 +232,7 @@ function wikiapi_data(key, property, options) {
 	function wikiapi_data_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		// using wikidata_entity() → wikidata_datavalue()
-		wiki.data(key, property, function callback(data, error) {
+		wiki.data(key, property, (data, error) => {
 			if (error) {
 				reject(error);
 			} else {
@@ -285,7 +286,7 @@ function wikiapi_list(list_type, title, options) {
 			options);
 
 		// NG: 不應使用單次版
-		wiki[list_type](title, function callback(list, error) {
+		wiki[list_type](title, (list, error) => {
 			if (error) {
 				reject(error);
 			} else {
@@ -312,20 +313,20 @@ function wikiapi_for_each(type, title, for_each, options) {
 
 // --------------------------------------------------------
 
-function list_executor(type, resolve, reject) {
-	const wiki = this[KEY_wiki];
-	wiki[type](root_category, function callback(list, error) {
-		if (error) {
-			reject(error);
-		} else {
-			resolve(list);
-		}
-	}, options);
-}
-
 function wikiapi_category_tree(root_category, options) {
-	// using CeL.wiki.prototype.category_tree
-	return new Promise(list_executor.bind(this, 'category_tree'));
+	function wikiapi_category_tree_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		// using CeL.wiki.prototype.category_tree
+		wiki.category_tree(root_category, (list, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(list);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_category_tree_executor.bind(this));
 }
 
 // export 子分類 subcategory
@@ -336,8 +337,19 @@ wikiapi.KEY_subcategories = wiki_API.KEY_subcategories;
 // --------------------------------------------------------
 
 function wikiapi_search(key, options) {
-	// using wiki_API.search
-	return new Promise(list_executor.bind(this, 'search'));
+	function wikiapi_search_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		// using wiki_API.search
+		wiki.search(key, (list, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(list);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_search_executor.bind(this));
 }
 
 // --------------------------------------------------------
@@ -399,7 +411,7 @@ function wikiapi_run_SQL(SQL, for_each_row/* , options */) {
 	function wikiapi_run_SQL_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		function run_callback() {
-			wiki.SQL_session.SQL(SQL, function (error, rows/* , fields */) {
+			wiki.SQL_session.SQL(SQL, (error, rows/* , fields */) => {
 				if (error) {
 					reject(error);
 				} else {
