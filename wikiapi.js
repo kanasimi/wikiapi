@@ -312,20 +312,20 @@ function wikiapi_for_each(type, title, for_each, options) {
 
 // --------------------------------------------------------
 
-function wikiapi_category_tree(root_category, options) {
-	function wikiapi_category_tree_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
-		// using CeL.wiki.prototype.category_tree
-		wiki.category_tree(root_category, function callback(list, error) {
-			if (error) {
-				reject(error);
-			} else {
-				resolve(list);
-			}
-		}, options);
-	}
+function list_executor(type, resolve, reject) {
+	const wiki = this[KEY_wiki];
+	wiki[type](root_category, function callback(list, error) {
+		if (error) {
+			reject(error);
+		} else {
+			resolve(list);
+		}
+	}, options);
+}
 
-	return new Promise(wikiapi_category_tree_executor.bind(this));
+function wikiapi_category_tree(root_category, options) {
+	// using CeL.wiki.prototype.category_tree
+	return new Promise(list_executor.bind(this, 'category_tree'));
 }
 
 // export 子分類 subcategory
@@ -336,19 +336,8 @@ wikiapi.KEY_subcategories = wiki_API.KEY_subcategories;
 // --------------------------------------------------------
 
 function wikiapi_search(key, options) {
-	function wikiapi_search_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
-		// using wiki_API.search
-		wiki.search(key, function callback(list, error) {
-			if (error) {
-				reject(error);
-			} else {
-				resolve(list);
-			}
-		}, options);
-	}
-
-	return new Promise(wikiapi_search_executor.bind(this));
+	// using wiki_API.search
+	return new Promise(list_executor.bind(this, 'search'));
 }
 
 // --------------------------------------------------------
