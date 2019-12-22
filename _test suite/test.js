@@ -38,7 +38,7 @@ function check_tests(recorder, error_count) {
 		+ Math.round((Date.now() - test_start_time) / 1000) + ' s.';
 
 	if (all_error_count === 0) {
-		CeL.info('check_tests: All ' + all_tests + ' test groups done.' + elapsed_message);
+		CeL.info(`check_tests: All ${all_tests} test groups done.${elapsed_message}`);
 		// normal done. No error.
 		return;
 	}
@@ -108,11 +108,12 @@ function handle_edit_error(assert, error) {
 	const result = error.result;
 	if (edit_blocked(result)) {
 		// IP is blocked.
-		CeL.log('Skip blocked edit: ' + result.message);
+		CeL.log(`Skip blocked edit: ${result.message}`);
 		return;
 	}
 
-	assert([error.message, 'OK'], 'test edit page result');
+	assert(error.message === '[blocked] You have been blocked from editing.'
+		|| error.message === 'OK', 'test edit page result');
 }
 
 add_test('edit page', async (assert, setup_test, finish_test) => {
@@ -234,19 +235,19 @@ add_test('move page', async (assert, setup_test, finish_test) => {
 		await testwiki.page(move_to_title);
 		await testwiki.move_to(move_from_title, { reason: reason, noredirect: true, movetalk: true });
 
-		assert([result.from, move_from_title], 'move page from: [[testwiki:' + move_from_title + ']]');
-		assert([result.to, move_to_title], 'move page to: [[testwiki:' + move_to_title + ']]');
+		assert([result.from, move_from_title], `move page from: [[testwiki:${move_from_title}]]`);
+		assert([result.to, move_to_title], `move page to: [[testwiki:${move_to_title}]]`);
 	} catch (e) {
 		if (e.code !== 'missingtitle' && e.code !== 'articleexists') {
 			if (e.code) {
-				CeL.error('[' + e.code + '] ' + e.info);
+				CeL.error(`[${e.code}] ${e.info}`);
 			} else {
 				console.trace(e);
 			}
 		}
 		assert(e === 'No csrftoken specified'
 			|| e.code && e.code !== 'missingtitle' && e.code !== 'articleexists',
-			'move page from: [[testwiki:' + move_from_title + ']]');
+			`move page from: [[testwiki:${move_from_title}]]`);
 	}
 
 	finish_test('move page: testwiki');

@@ -136,7 +136,7 @@ function wikiapi_edit_page(title, content, options) {
 	return new Promise(wikiapi_edit_page_executor.bind(this));
 }
 
-// return Wikiapi.skip_edit as a symbol to skip this edit, do not generate
+// `return Wikiapi.skip_edit;` as a symbol to skip this edit, do not generate
 // warning message.
 // 可以利用 ((return [ CeL.wiki.edit.cancel, 'reason' ];)) 來回傳 reason。
 // ((return [ CeL.wiki.edit.cancel, 'skip' ];)) 來跳過 (skip) 本次編輯動作，不特別顯示或處理。
@@ -328,6 +328,11 @@ function wikiapi_category_tree(root_category, options) {
 	return new Promise(wikiapi_category_tree_executor.bind(this));
 }
 
+// export 子分類 subcategory
+wikiapi.KEY_subcategories = wiki_API.KEY_subcategories;
+// To use:
+//const KEY_subcategories = Wikiapi.KEY_subcategories;
+
 // --------------------------------------------------------
 
 function wikiapi_search(key, options) {
@@ -374,7 +379,8 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 			each(page_data/* , messages, config */) {
 				try {
 					// `page_data` maybe non-object when error occurres.
-					Object.defineProperties(page_data, page_data_attributes);
+					if (page_data)
+						Object.defineProperties(page_data, page_data_attributes);
 					const result = for_each_page.call(this, page_data
 						/* , messages, config */);
 					// Promise.isPromise()
