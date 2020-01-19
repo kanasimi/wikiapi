@@ -120,7 +120,7 @@ function wikiapi_edit_page(title, content, options) {
 		}
 		// wiki.edit(page contents, options, callback)
 		wiki.edit(content, options, (title, error, result) => {
-			if (error) {
+			if (error && error !== /* 'skip' */ wikiapi.skip_edit[1]) {
 				if (typeof error === 'string') {
 					error = new Error(error);
 					error.from_string = true;
