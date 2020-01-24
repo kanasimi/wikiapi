@@ -120,6 +120,7 @@ function wikiapi_edit_page(title, content, options) {
 		}
 		// wiki.edit(page contents, options, callback)
 		wiki.edit(content, options, (title, error, result) => {
+			// skip_edit is not error
 			if (error && error !== /* 'skip' */ wikiapi.skip_edit[1]) {
 				if (typeof error === 'string') {
 					error = new Error(error);
@@ -332,7 +333,7 @@ function wikiapi_category_tree(root_category, options) {
 // export 子分類 subcategory
 wikiapi.KEY_subcategories = wiki_API.KEY_subcategories;
 // To use:
-//const KEY_subcategories = Wikiapi.KEY_subcategories;
+// const KEY_subcategories = Wikiapi.KEY_subcategories;
 
 // --------------------------------------------------------
 
@@ -362,8 +363,8 @@ function wikiapi_search(key, options) {
  * @param {Function}for_each_page
  *            processor for each page. for_each_page(page_data with contents)
  * @param {Object}[options]
- *            e.g., { no_message: true, no_warning: true,
- *            page_options: { redirects: true, rvprop: 'ids|content|timestamp|user' } }
+ *            e.g., { no_message: true, no_warning: true, page_options: {
+ *            redirects: true, rvprop: 'ids|content|timestamp|user' } }
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
 	function wikiapi_for_each_page_executor(resolve, reject) {
@@ -437,6 +438,51 @@ function wikiapi_run_SQL(SQL, for_each_row/* , options */) {
 }
 
 // --------------------------------------------------------
+
+/**
+ * Get featured content.
+ * 
+ * @example<code>
+
+// MUST including wiki.featured_content first to get featured content!
+CeL.run('application.net.wiki.featured_content');
+...
+const FC_data_hash = await wiki.get_featured_content();
+FC_data_hash === wiki.FC_data_hash;
+
+ </code>
+ * 
+ * @param {String|Object}[options]
+ *            {String}type (FFA|GA|FA|FL) or options: {type,on_conflict(FC_title, {from,to})}
+ */
+function wikiapi_get_featured_content(options) {
+	if (!options || !options.type) {
+		const session = this;
+		let promise = Promise.resolve();
+		wikiapi_get_featured_content.default_types.forEach(type => {
+			promise = promise.then(wikiapi_get_featured_content.bind(session, { ...options, type }));
+		});
+		return promise;
+	}
+
+	function wikiapi_get_featured_content_executor(resolve, reject) {
+		const wiki = this[KEY_wiki];
+		wiki.get_featured_content(options, (FC_data_hash) => {
+			try {
+				this.FC_data_hash = FC_data_hash;
+				resolve(FC_data_hash);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+
+	return new Promise(wikiapi_get_featured_content_executor.bind(this));
+}
+
+wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
+
+// --------------------------------------------------------
 // exports
 
 Object.assign(wikiapi.prototype, {
@@ -453,6 +499,8 @@ Object.assign(wikiapi.prototype, {
 	category_tree: wikiapi_category_tree,
 	search: wikiapi_search,
 
+	get_featured_content: wikiapi_get_featured_content,
+
 	for_each_page: wikiapi_for_each_page,
 
 	for_each: wikiapi_for_each,
@@ -461,6 +509,15 @@ Object.assign(wikiapi.prototype, {
 
 	run_SQL: wikiapi_run_SQL,
 });
+
+'namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main'
+	// wrapper for sync functions
+	.split('|').forEach(function (function_name) {
+		wikiapi.prototype[function_name] = function wrapper() {
+			const wiki = this[KEY_wiki];
+			return wiki[function_name].apply(wiki, this.arguments);
+		}
+	});
 
 for (let type of CeL.wiki.list.type_list) {
 	// Can not use `= (title, options) {}` !
