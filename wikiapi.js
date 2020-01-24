@@ -514,8 +514,8 @@ Object.assign(wikiapi.prototype, {
 	// wrapper for sync functions
 	.split('|').forEach(function (function_name) {
 		wikiapi.prototype[function_name] = function wrapper() {
-			//const wiki = this[KEY_wiki];
-			return wiki[function_name].apply(this[KEY_wiki], arguments);
+			const wiki = this[KEY_wiki];
+			return wiki[function_name].apply(wiki, arguments);
 		};
 	});
 
