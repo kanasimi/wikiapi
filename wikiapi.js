@@ -453,7 +453,8 @@ FC_data_hash === wiki.FC_data_hash;
  </code>
  * 
  * @param {String|Object}[options]
- *            {String}type (FFA|GA|FA|FL) or options: {type,on_conflict(FC_title, {from,to})}
+ *            {String}type (FFA|GA|FA|FL) or options:
+ *            {type,on_conflict(FC_title, {from,to})}
  */
 function wikiapi_get_featured_content(options) {
 	if (!options || !options.type) {
@@ -519,12 +520,20 @@ Object.assign(wikiapi.prototype, {
 		};
 	});
 
+// wrapper for sync functions
+for (let function_name of 'namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main'.split('|')) {
+	wikiapi.prototype[function_name] = function wrapper() {
+		const wiki = this[KEY_wiki];
+		return wiki[function_name].apply(wiki, arguments);
+	};
+}
+
 for (let type of CeL.wiki.list.type_list) {
 	// Can not use `= (title, options) {}` !
 	// arrow function expression DO NOT has this, arguments, super, or
 	// new.target keywords.
 	wikiapi.prototype[type] = function (title, options) {
-		var _this = this;
+		const _this = this;
 		/**
 		 * @example <code>
 		
