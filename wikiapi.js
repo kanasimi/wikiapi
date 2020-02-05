@@ -511,17 +511,18 @@ Object.assign(wikiapi.prototype, {
 	run_SQL: wikiapi_run_SQL,
 });
 
-'namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main'
-	// wrapper for sync functions
-	.split('|').forEach(function (function_name) {
-		wikiapi.prototype[function_name] = function wrapper() {
-			const wiki = this[KEY_wiki];
-			return wiki[function_name].apply(wiki, arguments);
-		};
-	});
+if (false)
+	'namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main'
+		// wrapper for sync functions
+		.split('|').forEach(function (function_name) {
+			wikiapi.prototype[function_name] = function wrapper() {
+				const wiki = this[KEY_wiki];
+				return wiki[function_name].apply(wiki, arguments);
+			};
+		});
 
 // wrapper for sync functions
-for (let function_name of 'namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main'.split('|')) {
+for (let function_name of 'namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|get_featured_content_configurations'.split('|')) {
 	wikiapi.prototype[function_name] = function wrapper() {
 		const wiki = this[KEY_wiki];
 		return wiki[function_name].apply(wiki, arguments);
