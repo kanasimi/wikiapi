@@ -367,18 +367,8 @@ function wikiapi_search(key, options) {
  *            redirects: true, rvprop: 'ids|content|timestamp|user' } }
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
-	const promises = [];
-	function call_for_each_page() {
-		const result = for_each_page.apply(this, arguments);
-		// Promise.isPromise()
-		if (CeL.is_thenable(result)) {
-			promises.push(result);
-		}
-		// wiki.work() will wait for result.then() calling back if CeL.is_thenable(result).
-		return result;
-	}
-
 	function wikiapi_for_each_page_executor(resolve, reject) {
+		const promises = [];
 		const wiki = this[KEY_wiki];
 		// 一次取得多個頁面內容，以節省傳輸次數。
 		wiki.work({
@@ -393,15 +383,13 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 					// `page_data` maybe non-object when error occurres.
 					if (page_data)
 						Object.defineProperties(page_data, page_data_attributes);
-					if (CeL.is_async_function(for_each_page)) {
-						const _this = this, _arguments = arguments;
-						//利用setTimeout()跳出本執行緒，
-						// 跳出wiki_API.next，預防content/text再度呼叫wiki_API.next。
-						return new Promise(resolve =>
-							setTimeout(() => call_for_each_page.apply(_this, _arguments).then(resolve, reject), 0)
-						);
+					const result = for_each_page.apply(this, arguments);
+					// Promise.isPromise()
+					if (CeL.is_thenable(result)) {
+						promises.push(result);
 					}
-					return call_for_each_page.apply(this, arguments);
+					// wiki.next() will wait for result.then() calling back if CeL.is_thenable(result).
+					return result;
 				} catch (e) {
 					reject(e);
 					//re-throw to wiki.work()
@@ -528,7 +516,7 @@ Object.assign(wikiapi.prototype, {
 });
 
 // wrapper for sync functions
-for (let function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main'
+for (let function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title'
 	//CeL.run('application.net.wiki.featured_content');
 	//[].map(wiki.to_talk_page.bind(wiki))
 	+ '|get_featured_content_configurations').split('|')) {
