@@ -370,11 +370,12 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 	function wikiapi_for_each_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
 		const promises = [];
+		const no_edit = options && options.no_edit;
 		// 一次取得多個頁面內容，以節省傳輸次數。
 		wiki.work({
 			// log_to: null,
-			// no_edit: true,
-			no_message: options && options.no_edit,
+			// no_edit,
+			no_message: no_edit,
 
 			...options,
 
@@ -386,9 +387,10 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 					const result = for_each_page.call(this, page_data
 						/* , messages, config */);
 					// Promise.isPromise()
-					if (result && typeof result.then === 'function') {
+					if (no_edit && CeL.is_thenable(result)) {
 						promises.push(result);
 					} else {
+						// CeL.wiki.edit() will wait for result.then() calling back if CeL.is_thenable(result).
 						return result;
 					}
 				} catch (e) {
@@ -397,7 +399,7 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 			},
 			// Run after all list got.
 			last() {
-				Promise.all(promises).then(resolve).catch(reject);
+				Promise.all(promises).then(resolve).catch(reject).then(options.last);
 			}
 		}, page_list);
 	}
@@ -511,18 +513,11 @@ Object.assign(wikiapi.prototype, {
 	run_SQL: wikiapi_run_SQL,
 });
 
-if (false)
-	'namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main'
-		// wrapper for sync functions
-		.split('|').forEach(function (function_name) {
-			wikiapi.prototype[function_name] = function wrapper() {
-				const wiki = this[KEY_wiki];
-				return wiki[function_name].apply(wiki, arguments);
-			};
-		});
-
 // wrapper for sync functions
-for (let function_name of 'namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|get_featured_content_configurations'.split('|')) {
+for (let function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main'
+	//CeL.run('application.net.wiki.featured_content');
+	//[].map(wiki.to_talk_page.bind(wiki))
+	+ '|get_featured_content_configurations').split('|')) {
 	wikiapi.prototype[function_name] = function wrapper() {
 		const wiki = this[KEY_wiki];
 		return wiki[function_name].apply(wiki, arguments);
