@@ -37,6 +37,8 @@ wiki_API.set_language('en');
 
 /** @inner */
 const KEY_wiki = Symbol('wiki');
+//for debug
+//wikiapi.KEY_wiki = KEY_wiki;
 
 /**
  * main wikiapi operator 操作子.
@@ -71,6 +73,10 @@ function wikiapi_login(user_name, user_password, API_URL) {
 // --------------------------------------------------------
 
 const page_data_attributes = {
+	/**
+	 * {String}page content, maybe undefined. 條目/頁面內容 =
+	 * CeL.wiki.revision_content(revision)
+	 */
 	wikitext: {
 		get() {
 			return wiki_API.content_of(this, 0);
@@ -111,6 +117,22 @@ function wikiapi_page(title, options) {
 
 // --------------------------------------------------------
 
+function reject_edit_error(reject, error, result) {
+	// skip_edit is not error
+	if (error && error !== /* 'skip' */ wikiapi.skip_edit[1]
+		//@see wiki_API_edit.check_data
+		&& error !== 'empty' && error !== 'cancel') {
+		if (typeof error === 'string') {
+			error = new Error(error);
+			error.from_string = true;
+		}
+		if (result && typeof error === 'object')
+			error.result = result;
+		reject(error);
+		return true;
+	}
+}
+
 // for page list, you had better use wiki.for_each_page(page_list)
 function wikiapi_edit_page(title, content, options) {
 	function wikiapi_edit_page_executor(resolve, reject) {
@@ -120,18 +142,15 @@ function wikiapi_edit_page(title, content, options) {
 		}
 		// wiki.edit(page contents, options, callback)
 		wiki.edit(content, options, (title, error, result) => {
-			// skip_edit is not error
-			if (error && error !== /* 'skip' */ wikiapi.skip_edit[1]) {
-				if (typeof error === 'string') {
-					error = new Error(error);
-					error.from_string = true;
-				}
-				if (typeof error === 'object')
-					error.result = result;
-				reject(error);
-			} else {
+			//console.trace('wikiapi_edit_page: callbacked');
+			//console.log(title);
+			//console.log(wiki.running);
+			//CeL.set_debug(6);
+
+			if (!reject_edit_error(reject, error, result)) {
 				resolve(title);
 			}
+			//console.trace('wikiapi_edit_page: return');
 		});
 	}
 
@@ -363,47 +382,88 @@ function wikiapi_search(key, options) {
  * @param {Function}for_each_page
  *            processor for each page. for_each_page(page_data with contents)
  * @param {Object}[options]
- *            e.g., { no_message: true, no_warning: true, page_options: {
- *            redirects: true, rvprop: 'ids|content|timestamp|user' } }
+ *            e.g., { no_edit: true, no_warning: true, page_options: {
+ *            redirects: 1, rvprop: 'ids|content|timestamp|user' } }
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
 	function wikiapi_for_each_page_executor(resolve, reject) {
 		const promises = [];
 		const wiki = this[KEY_wiki];
-		// 一次取得多個頁面內容，以節省傳輸次數。
-		wiki.work({
+		const work_options = {
 			// log_to: null,
 			// no_edit: true,
 			no_message: options && options.no_edit,
 
 			...options,
 
+			onerror(error) {
+				//console.trace('Get error: ' + error);
+				if (reject_edit_error(reject, error)
+					&& options && options.onerror) {
+					options.onerror(error);
+				}
+			},
 			each(page_data/* , messages, config */) {
 				try {
 					// `page_data` maybe non-object when error occurres.
 					if (page_data)
 						Object.defineProperties(page_data, page_data_attributes);
-					const result = for_each_page.apply(this, arguments);
+
+					if (work_options.will_call_methods) {
+						//** 這邊的操作在 wiki.next() 中會因 .will_call_methods 先執行一次。
+
+						// 因為接下來的操作可能會呼叫 this.next() 本身，
+						// 因此必須把正在執行的標記消掉。
+						//wiki.running = false;
+						// 每次都設定 `wiki.running = false`，在這會出問題:
+						// 20200209.「S.P.A.L.」関連ページの貼り換えのbot作業依頼.js
+					}
+					const result = for_each_page.apply(work_options, arguments);
 					// Promise.isPromise()
 					if (CeL.is_thenable(result)) {
 						promises.push(result);
+
+						//https://stackoverflow.com/questions/30564053/how-can-i-synchronously-determine-a-javascript-promises-state
+						//https://github.com/kudla/promise-status-async/blob/master/lib/promiseState.js
+						const fulfilled = Object.create(null);
+						//Promise.race([result, fulfilled]).then(v => { status = v === t ? "pending" : "fulfilled" }, () => { status = "rejected" });
+						Promise.race([result, fulfilled]).then(first_fulfilled => {
+							// wiki.running === true
+							//console.trace(`wiki.running = ${wiki.running}`);
+							if (first_fulfilled === fulfilled) {
+								//assert: result is pending
+								//e.g.,
+								//await wiki.for_each_page(need_check_redirected_list, ...)
+								//@ await wiki.for_each_page(vital_articles_list, for_each_list_page, ...)
+								//@ 20200122.update_vital_articles.js
+
+								//console.trace('call wiki.next()');
+								wiki.next();
+							}
+						}, () => { /*Do not catch error here.*/ });
 					}
 					// wiki.next() will wait for result.then() calling back if CeL.is_thenable(result).
+					// e.g., async function for_each_list_page(list_page_data) @ 20200122.update_vital_articles.js
 					return result;
 				} catch (e) {
+					//console.trace('Get error: ' + e);
 					reject(e);
 					//re-throw to wiki.work()
-					throw e;
+					//throw e;
 				}
 			},
 			// Run after all list got.
 			last() {
+				//警告: 用 Promise.allSettled(promises)，result 假如 throw 可能會 catch 不到!
 				Promise.all(promises)
-					.then(resolve)
-					.then(options && options.last)
-					.catch(reject);
+					.then(resolve, reject)
+					.then(options && typeof options.last === 'function' && options.last.bind(work_options));
+				//console.trace('wikiapi_for_each_page_executor finish:');
+				//console.log(options);
 			}
-		}, page_list);
+		};
+		// 一次取得多個頁面內容，以節省傳輸次數。
+		wiki.work(work_options, page_list);
 	}
 
 	return new Promise(wikiapi_for_each_page_executor.bind(this));
