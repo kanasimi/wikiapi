@@ -269,6 +269,7 @@ function wikiapi_data(key, property, options) {
 // Warning: Won't throw if title isn't existed!
 function wikiapi_list(list_type, title, options) {
 	function wikiapi_list_executor(resolve, reject) {
+		options = CeL.setup_options(options);
 		const wiki = this[KEY_wiki];
 		CeL.wiki.list(title, (list/* , target, options */) => {
 			// console.trace(list);
@@ -418,7 +419,7 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 						// 每次都設定 `wiki.running = false`，在這會出問題:
 						// 20200209.「S.P.A.L.」関連ページの貼り換えのbot作業依頼.js
 					}
-					const result = for_each_page.apply(work_options, arguments);
+					const result = for_each_page.apply(this, arguments);
 					// Promise.isPromise()
 					if (CeL.is_thenable(result)) {
 						promises.push(result);
@@ -457,7 +458,7 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 				//警告: 用 Promise.allSettled(promises)，result 假如 throw 可能會 catch 不到!
 				Promise.all(promises)
 					.then(resolve, reject)
-					.then(options && typeof options.last === 'function' && options.last.bind(work_options));
+					.then(options && typeof options.last === 'function' && options.last.bind(this));
 				//console.trace('wikiapi_for_each_page_executor finish:');
 				//console.log(options);
 			}

@@ -10,7 +10,7 @@
 
 # JavaScript MediaWiki API
 A simple way to access MediaWiki API via JavaScript with simple wikitext parser.
-This is basically a modern syntax version of [MediaWiki module](https://github.com/kanasimi/CeJS/blob/master/application/net/wiki). For example, using [async functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function).
+This is basically a modern syntax version of [CeJS MediaWiki module](https://github.com/kanasimi/CeJS/blob/master/application/net/wiki). For example, using [async functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function).
 
 ## Features
 *   Read / edit pages.
