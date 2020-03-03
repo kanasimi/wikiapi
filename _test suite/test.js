@@ -101,7 +101,7 @@ add_test('load page of other wiki', async (assert, setup_test, finish_test) => {
 function edit_blocked(result) {
 	// @see wiki_API.edit @ wiki.js
 	return result.edit && result.edit.captcha
-		|| result.error && result.error.code === 'globalblocking-ipblocked-range';
+		|| result.error && (result.error.code === 'globalblocking-ipblocked-range' || result.error.code === 'wikimedia-globalblocking-ipblocked-range');
 }
 
 function handle_edit_error(assert, error) {
