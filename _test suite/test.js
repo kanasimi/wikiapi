@@ -108,7 +108,7 @@ function normally_blocked_edit(result) {
 function handle_edit_error(assert, error) {
 	const result = error.result;
 	if (normally_blocked_edit(result)) {
-		CeL.log(`Skip blocked edit: ${result.message}`);
+		CeL.log(`Skip blocked edit: ${result.message || esult.error && result.error.code || JSON.stringify(result)}`);
 		return;
 	}
 
@@ -227,7 +227,7 @@ add_test('featured content: en', async (assert, setup_test, finish_test) => {
 	const enwiki = new Wikiapi('en');
 	// get only type: featured article
 	enwiki.get_featured_content.default_types = ['FA'];
-	// wiki.FC_data_hash[page_title]
+	// FC_data_hash === wiki.FC_data_hash[page_title]
 	const FC_data_hash = await enwiki.get_featured_content({
 		// get only type: featured article
 		//type: 'FA',
@@ -237,7 +237,7 @@ add_test('featured content: en', async (assert, setup_test, finish_test) => {
 	});
 	assert(FC_data_hash['Sun'].type === 'FA', '[[w:en:Sun]] is featured article');
 
-	enwiki.for_each_page(Object.keys(FC_data_hash).filter(title => FC_data_hash[title].type === 'FA').slice(0, 4), async page_data => {
+	await enwiki.for_each_page(Object.keys(FC_data_hash).filter(title => FC_data_hash[title].type === 'FA').slice(0, 4), async page_data => {
 		const talk_page_data = await enwiki.page(enwiki.to_talk_page(page_data));
 		let has_ArticleHistory;
 		talk_page_data.parse().each('template',
