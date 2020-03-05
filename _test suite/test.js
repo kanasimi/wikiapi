@@ -108,7 +108,7 @@ function normally_blocked_edit(result) {
 function handle_edit_error(assert, error) {
 	const result = error.result;
 	if (normally_blocked_edit(result)) {
-		CeL.log(`Skip blocked edit: ${result.message || result.error && result.error.code || JSON.stringify(result)}`);
+		CeL.log(`handle_edit_error: Skip blocked edit: ${result.message || result.error && result.error.code || JSON.stringify(result)}`);
 		return;
 	}
 
@@ -221,8 +221,8 @@ add_test('parse page: zh', async (assert, setup_test, finish_test) => {
 // ------------------------------------------------------------------
 
 add_test('featured content: en', async (assert, setup_test, finish_test) => {
-	CeL.run('application.net.wiki.featured_content');
 	setup_test('featured content: en');
+	CeL.run('application.net.wiki.featured_content');
 	// Usage with other language
 	const enwiki = new Wikiapi('en');
 	// get only type: featured article
