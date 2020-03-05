@@ -98,16 +98,16 @@ add_test('load page of other wiki', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
-function edit_blocked(result) {
+function normally_blocked_edit(result) {
 	// @see wiki_API.edit @ wiki.js
 	return result.edit && result.edit.captcha
+		// e.g., [[m:NOP|Open Proxy]] is blocked.
 		|| result.error && (result.error.code === 'globalblocking-ipblocked-range' || result.error.code === 'wikimedia-globalblocking-ipblocked-range');
 }
 
 function handle_edit_error(assert, error) {
 	const result = error.result;
-	if (edit_blocked(result)) {
-		// IP is blocked.
+	if (normally_blocked_edit(result)) {
 		CeL.log(`Skip blocked edit: ${result.message}`);
 		return;
 	}
@@ -216,6 +216,33 @@ add_test('parse page: zh', async (assert, setup_test, finish_test) => {
 		(token) => template_list.push(token.name));
 	assert(template_list.includes('Infobox'), '[[w:zh:宇宙]] must includes {{Infobox}}');
 	finish_test('parse page: zh');
+});
+
+// ------------------------------------------------------------------
+
+add_test('featured content: en', async (assert, setup_test, finish_test) => {
+	CeL.run('application.net.wiki.featured_content');
+	setup_test('featured content: en');
+	// Usage with other language
+	const enwiki = new Wikiapi('en');
+	// wiki.FC_data_hash[page_title]
+	const FC_data_hash = await enwiki.get_featured_content({
+		// get only type: featured article
+		type: 'FA',
+		on_conflict(FC_title, data) {
+			CeL.warn(`Category conflict: ${data.from}→${CeL.wiki.title_link_of('Category:' + data.category, data.to)}`);
+		}
+	});
+	assert('Sun' in FC_data_hash, '[[w:en:Sun]] is featured article');
+
+	enwiki.for_each_page(Object.keys(FC_data_hash).filter(title => FC_data_hash[title].type === 'FA').slice(0, 4), async page_data => {
+		const talk_page_data = await enwiki.page(enwiki.to_talk_page(page_data));
+		let has_ArticleHistory;
+		talk_page_data.parse().each('template',
+			(token) => { if (token.name === 'ArticleHistory') has_ArticleHistory = true; });
+		assert(has_ArticleHistory, `${CeL.wiki.title_link_of(talk_page_data)} has {{ArticleHistory}}`);
+	});
+	finish_test('featured content: en');
 });
 
 // ------------------------------------------------------------------

@@ -187,6 +187,7 @@ function wikiapi_move_to(move_to_title, options) {
 				+ ' Can not move to ' + CeL.wiki.title_link_of(move_to_title)));
 			return;
 		}
+
 		// using wiki_API.move_to
 		wiki.move_to(move_to_title, options, (data, error) => {
 			if (error) {
