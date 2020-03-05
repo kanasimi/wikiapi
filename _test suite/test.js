@@ -225,6 +225,8 @@ add_test('featured content: en', async (assert, setup_test, finish_test) => {
 	setup_test('featured content: en');
 	// Usage with other language
 	const enwiki = new Wikiapi('en');
+	// get only type: featured article
+	enwiki.get_featured_content.default_types = ['FA'];
 	// wiki.FC_data_hash[page_title]
 	const FC_data_hash = await enwiki.get_featured_content({
 		// get only type: featured article
