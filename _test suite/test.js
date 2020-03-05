@@ -228,12 +228,12 @@ add_test('featured content: en', async (assert, setup_test, finish_test) => {
 	// wiki.FC_data_hash[page_title]
 	const FC_data_hash = await enwiki.get_featured_content({
 		// get only type: featured article
-		type: 'FA',
+		//type: 'FA',
 		on_conflict(FC_title, data) {
 			CeL.warn(`Category conflict: ${data.from}→${CeL.wiki.title_link_of('Category:' + data.category, data.to)}`);
 		}
 	});
-	assert('Sun' in FC_data_hash, '[[w:en:Sun]] is featured article');
+	assert(FC_data_hash['Sun'].type === 'FA', '[[w:en:Sun]] is featured article');
 
 	enwiki.for_each_page(Object.keys(FC_data_hash).filter(title => FC_data_hash[title].type === 'FA').slice(0, 4), async page_data => {
 		const talk_page_data = await enwiki.page(enwiki.to_talk_page(page_data));
