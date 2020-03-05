@@ -108,7 +108,7 @@ function normally_blocked_edit(result) {
 function handle_edit_error(assert, error) {
 	const result = error.result;
 	if (normally_blocked_edit(result)) {
-		CeL.log(`Skip blocked edit: ${result.message || esult.error && result.error.code || JSON.stringify(result)}`);
+		CeL.log(`Skip blocked edit: ${result.message || result.error && result.error.code || JSON.stringify(result)}`);
 		return;
 	}
 
