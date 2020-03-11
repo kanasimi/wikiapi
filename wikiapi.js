@@ -577,6 +577,15 @@ Object.assign(wikiapi.prototype, {
 	run_SQL: wikiapi_run_SQL,
 });
 
+Object.defineProperties(wikiapi.prototype, {
+	latest_task_configuration: {
+		get() {
+			const wiki = this[KEY_wiki];
+			return wiki.latest_task_configuration;
+		}
+	},
+});
+
 // wrapper for sync functions
 for (let function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title'
 	//CeL.run('application.net.wiki.featured_content');
