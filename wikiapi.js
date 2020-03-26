@@ -137,9 +137,12 @@ function reject_edit_error(reject, error, result) {
 function wikiapi_edit_page(title, content, options) {
 	function wikiapi_edit_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
+		//console.trace([title, content]);
+		//CeL.set_debug(3);
 		if (title) {
 			wiki.page(title);
 		}
+		//console.trace(wiki);
 		// wiki.edit(page contents, options, callback)
 		wiki.edit(content, options, (title, error, result) => {
 			//console.trace('wikiapi_edit_page: callbacked');
@@ -390,6 +393,7 @@ function wikiapi_search(key, options) {
 function wikiapi_for_each_page(page_list, for_each_page, options) {
 	function wikiapi_for_each_page_executor(resolve, reject) {
 		const promises = [];
+		let error;
 		const wiki = this[KEY_wiki];
 		const work_options = {
 			// log_to: null,
@@ -398,11 +402,11 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 
 			...options,
 
-			onerror(error) {
-				//console.trace('Get error: ' + error);
-				if (reject_edit_error(reject, error)
+			onerror(_error) {
+				//console.trace('Get error (onerror): ' + _error);
+				if (reject_edit_error(_error => { if (!error) error = _error; }, _error)
 					&& options && options.onerror) {
-					options.onerror(error);
+					options.onerror(_error);
 				}
 			},
 			each(page_data/* , messages, config */) {
@@ -447,19 +451,21 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 					// wiki.next() will wait for result.then() calling back if CeL.is_thenable(result).
 					// e.g., async function for_each_list_page(list_page_data) @ 20200122.update_vital_articles.js
 					return result;
-				} catch (e) {
-					//console.trace('Get error: ' + e);
-					reject(e);
+				} catch (_error) {
+					//console.trace('Get error (catch): ' + _error);
+					if (!error) error = _error;
+
 					//re-throw to wiki.work()
-					//throw e;
+					//throw _error;
 				}
 			},
-			// Run after all list got.
-			last() {
-				//警告: 用 Promise.allSettled(promises)，result 假如 throw 可能會 catch 不到!
-				Promise.all(promises)
-					.then(resolve, reject)
-					.then(options && typeof options.last === 'function' && options.last.bind(this));
+			// Run after all list items (pages) processed.
+			last(options) {
+				Promise.allSettled(promises)
+					// 提早執行 resolve(), reject() 的話，可能導致後續的程式碼 `options.last` 延後執行，程式碼順序錯亂。
+					.catch(_error => { if (!error) error = _error; })
+					.then(options && typeof options.last === 'function' && options.last.bind(this))
+					.then(() => error ? reject(error) : resolve(this), reject);
 				//console.trace('wikiapi_for_each_page_executor finish:');
 				//console.log(options);
 			}
