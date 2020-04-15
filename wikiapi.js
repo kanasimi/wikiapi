@@ -140,7 +140,7 @@ function wikiapi_edit_page(title, content, options) {
 		//console.trace([title, content]);
 		//CeL.set_debug(3);
 		if (title) {
-			wiki.page(title);
+			wiki.page(title, options);
 		}
 		//console.trace(wiki);
 		// wiki.edit(page contents, options, callback)
