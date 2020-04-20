@@ -37,8 +37,8 @@ wiki_API.set_language('en');
 
 /** @inner */
 const KEY_wiki = Symbol('wiki');
-//for debug
-//wikiapi.KEY_wiki = KEY_wiki;
+// for debug
+// wikiapi.KEY_wiki = KEY_wiki;
 
 /**
  * main wikiapi operator 操作子.
@@ -120,7 +120,7 @@ function wikiapi_page(title, options) {
 function reject_edit_error(reject, error, result) {
 	// skip_edit is not error
 	if (error && error !== /* 'skip' */ wikiapi.skip_edit[1]
-		//@see wiki_API_edit.check_data
+		// @see wiki_API_edit.check_data
 		&& error !== 'empty' && error !== 'cancel') {
 		if (typeof error === 'string') {
 			error = new Error(error);
@@ -137,24 +137,46 @@ function reject_edit_error(reject, error, result) {
 function wikiapi_edit_page(title, content, options) {
 	function wikiapi_edit_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki];
-		//console.trace([title, content]);
-		//CeL.set_debug(3);
+
+		// console.trace([title, content]);
+		// console.log(`wikiapi_edit_page 1: ${title}, ${wiki.actions.length}
+		// actions, ${wiki.running}/${wiki.thread_count}.`);
+		// console.trace(title);
+		// CeL.set_debug(3);
 		if (title) {
-			wiki.page(title, options);
+			// console.trace(wiki);
+			options = CeL.setup_options(options);
+			// options.page_to_edit = title;
+			// call wiki_API_prototype_method() @ CeL.application.net.wiki.list
+			wiki.page(title, (page_data, error) => {
+				// console.trace('Set .page_to_edit:');
+				// console.log([title, page_data, error]);
+				// console.log(wiki.actions[0]);
+
+				// 手動指定要編輯的頁面。避免多執行續打亂 wiki.last_page。
+				options.page_to_edit = page_data;
+			}, options);
 		}
-		//console.trace(wiki);
+		// console.log(`wikiapi_edit_page 2: ${title}, ${wiki.actions.length}
+		// actions, ${wiki.running}/${wiki.thread_count}.`);
+		// console.trace(wiki);
+		// console.trace(wiki.last_page);
+
 		// wiki.edit(page contents, options, callback)
 		wiki.edit(content, options, (title, error, result) => {
-			//console.trace('wikiapi_edit_page: callbacked');
-			//console.log(title);
-			//console.log(wiki.running);
-			//CeL.set_debug(6);
+			// console.trace('wikiapi_edit_page: callbacked');
+			// console.log(title);
+			// console.log(wiki.running);
+			// CeL.set_debug(6);
 
 			if (!reject_edit_error(reject, error, result)) {
 				resolve(title);
 			}
-			//console.trace('wikiapi_edit_page: return');
+			// console.trace('wikiapi_edit_page: return');
 		});
+
+		// console.log(`wikiapi_edit_page 3: ${title}, ${wiki.actions.length}
+		// actions, ${wiki.running}/${wiki.thread_count}.`);
 	}
 
 	return new Promise(wikiapi_edit_page_executor.bind(this));
@@ -403,7 +425,7 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 			...options,
 
 			onerror(_error) {
-				//console.trace('Get error (onerror): ' + _error);
+				// console.trace('Get error (onerror): ' + _error);
 				if (reject_edit_error(_error => { if (!error) error = _error; }, _error)
 					&& options && options.onerror) {
 					options.onerror(_error);
@@ -416,11 +438,11 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 						Object.defineProperties(page_data, page_data_attributes);
 
 					if (work_options.will_call_methods) {
-						//** 這邊的操作在 wiki.next() 中會因 .will_call_methods 先執行一次。
+						// ** 這邊的操作在 wiki.next() 中會因 .will_call_methods 先執行一次。
 
 						// 因為接下來的操作可能會呼叫 this.next() 本身，
 						// 因此必須把正在執行的標記消掉。
-						//wiki.running = false;
+						// wiki.running = false;
 						// 每次都設定 `wiki.running = false`，在這會出問題:
 						// 20200209.「S.P.A.L.」関連ページの貼り換えのbot作業依頼.js
 					}
@@ -429,45 +451,60 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 					if (CeL.is_thenable(result)) {
 						promises.push(result);
 
-						//https://stackoverflow.com/questions/30564053/how-can-i-synchronously-determine-a-javascript-promises-state
-						//https://github.com/kudla/promise-status-async/blob/master/lib/promiseState.js
+						// https://stackoverflow.com/questions/30564053/how-can-i-synchronously-determine-a-javascript-promises-state
+						// https://github.com/kudla/promise-status-async/blob/master/lib/promiseState.js
 						const fulfilled = Object.create(null);
-						//Promise.race([result, fulfilled]).then(v => { status = v === t ? "pending" : "fulfilled" }, () => { status = "rejected" });
+						// Promise.race([result, fulfilled])
+						// .then(v => { status = v === t ? "pending" :
+						// "fulfilled" },
+						// () => { status = "rejected" });
 						Promise.race([result, fulfilled]).then(first_fulfilled => {
 							// wiki.running === true
-							//console.trace(`wiki.running = ${wiki.running}`);
+							// console.trace(`wiki.running = ${wiki.running}`);
 							if (first_fulfilled === fulfilled) {
-								//assert: result is pending
-								//e.g.,
-								//await wiki.for_each_page(need_check_redirected_list, ...)
-								//@ await wiki.for_each_page(vital_articles_list, for_each_list_page, ...)
-								//@ 20200122.update_vital_articles.js
+								// assert: result is pending
+								// e.g.,
+								// await
+								// wiki.for_each_page(need_check_redirected_list,
+								// ...)
+								// @ await
+								// wiki.for_each_page(vital_articles_list,
+								// for_each_list_page, ...)
+								// @ 20200122.update_vital_articles.js
 
-								//console.trace('call wiki.next()');
+								// console.trace('call wiki.next()');
 								wiki.next();
 							}
-						}, () => { /*Do not catch error here.*/ });
+						}, () => { /* Do not catch error here. */ });
 					}
-					// wiki.next() will wait for result.then() calling back if CeL.is_thenable(result).
-					// e.g., async function for_each_list_page(list_page_data) @ 20200122.update_vital_articles.js
+					// wiki.next() will wait for result.then() calling back
+					// if CeL.is_thenable(result).
+					// e.g., async function for_each_list_page(list_page_data) @
+					// 20200122.update_vital_articles.js
 					return result;
 				} catch (_error) {
-					//console.trace('Get error (catch): ' + _error);
+					// console.trace('Get error (catch): ' + _error);
 					if (!error) error = _error;
 
-					//re-throw to wiki.work()
-					//throw _error;
+					// re-throw to wiki.work()
+					// throw _error;
 				}
 			},
 			// Run after all list items (pages) processed.
-			last(options) {
+			last() {
+				// this === options
 				Promise.allSettled(promises)
-					// 提早執行 resolve(), reject() 的話，可能導致後續的程式碼 `options.last` 延後執行，程式碼順序錯亂。
+					// 提早執行 resolve(), reject() 的話，可能導致後續的程式碼 `options.last`
+					// 延後執行，程式碼順序錯亂。
 					.catch(_error => { if (!error) error = _error; })
 					.then(options && typeof options.last === 'function' && options.last.bind(this))
+					// .then(() => { console.trace(
+					// 'wikiapi_for_each_page_executor Promise finished.'); })
 					.then(() => error ? reject(error) : resolve(this), reject);
-				//console.trace('wikiapi_for_each_page_executor finish:');
-				//console.log(options);
+				// console.trace('wikiapi_for_each_page_executor finish:');
+				// console.log(options);
+				// console.log(
+				// 'wikiapi_for_each_page_executor last() finished');
 			}
 		};
 		// 一次取得多個頁面內容，以節省傳輸次數。
@@ -594,8 +631,8 @@ Object.defineProperties(wikiapi.prototype, {
 
 // wrapper for sync functions
 for (let function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title'
-	//CeL.run('application.net.wiki.featured_content');
-	//[].map(wiki.to_talk_page.bind(wiki))
+	// CeL.run('application.net.wiki.featured_content');
+	// [].map(wiki.to_talk_page.bind(wiki))
 	+ '|get_featured_content_configurations').split('|')) {
 	wikiapi.prototype[function_name] = function wrapper() {
 		const wiki = this[KEY_wiki];

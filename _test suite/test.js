@@ -230,7 +230,7 @@ add_test('featured content: en', async (assert, setup_test, finish_test) => {
 	// FC_data_hash === wiki.FC_data_hash[page_title]
 	const FC_data_hash = await enwiki.get_featured_content({
 		// get only type: featured article
-		//type: 'FA',
+		// type: 'FA',
 		on_conflict(FC_title, data) {
 			CeL.warn(`Category conflict: ${data.from}→${CeL.wiki.title_link_of('Category:' + data.category, data.to)}`);
 		}
