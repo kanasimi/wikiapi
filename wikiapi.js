@@ -52,9 +52,20 @@ function wikiapi(API_URL) {
 
 // --------------------------------------------------------
 
-function wikiapi_login(user_name, user_password, API_URL) {
+function wikiapi_login(user_name, password, API_URL) {
+	let options;
+	if (!password && !API_URL && typeof user_name === 'object') {
+		options = user_name;
+		// user_password
+		password = options.password;
+		API_URL = options.API_URL;
+		user_name = options.user_name;
+	}
+
 	function wikiapi_login_executor(resolve, reject) {
-		this[KEY_wiki] = wiki_API.login(user_name, user_password, {
+		this[KEY_wiki] = wiki_API.login(user_name, password, {
+			...options,
+
 			API_URL: API_URL || this[KEY_wiki].API_URL,
 			callback(data, error) {
 				if (error) {
@@ -63,7 +74,8 @@ function wikiapi_login(user_name, user_password, API_URL) {
 					resolve(data);
 				}
 			},
-			preserve_password: true
+			preserve_password: true,
+			//task_configuration_page: 'page title',
 		});
 	}
 
@@ -621,6 +633,7 @@ Object.assign(wikiapi.prototype, {
 });
 
 Object.defineProperties(wikiapi.prototype, {
+	// latest raw task raw configuration
 	latest_task_configuration: {
 		get() {
 			const wiki = this[KEY_wiki];
