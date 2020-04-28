@@ -36,9 +36,9 @@ const wiki_API = CeL.net.wiki;
 wiki_API.set_language('en');
 
 /** @inner */
-const KEY_wiki = Symbol('wiki');
+const KEY_wiki_session = Symbol('wiki');
 // for debug
-// wikiapi.KEY_wiki = KEY_wiki;
+// wikiapi.KEY_wiki_session = KEY_wiki_session;
 
 /**
  * main wikiapi operator 操作子.
@@ -47,7 +47,7 @@ const KEY_wiki = Symbol('wiki');
  *            language code or API URL of MediaWiki project
  */
 function wikiapi(API_URL) {
-	this[KEY_wiki] = new wiki_API(null, null, API_URL);
+	this[KEY_wiki_session] = new wiki_API(null, null, API_URL);
 }
 
 // --------------------------------------------------------
@@ -63,10 +63,10 @@ function wikiapi_login(user_name, password, API_URL) {
 	}
 
 	function wikiapi_login_executor(resolve, reject) {
-		this[KEY_wiki] = wiki_API.login(user_name, password, {
+		this[KEY_wiki_session] = wiki_API.login(user_name, password, {
 			...options,
 
-			API_URL: API_URL || this[KEY_wiki].API_URL,
+			API_URL: API_URL || this[KEY_wiki_session].API_URL,
 			callback(data, error) {
 				if (error) {
 					reject(error);
@@ -109,7 +109,7 @@ const page_data_attributes = {
 
 function wikiapi_page(title, options) {
 	function wikiapi_page_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		wiki.page(title, (page_data, error) => {
 			if (error) {
 				reject(error);
@@ -148,7 +148,7 @@ function reject_edit_error(reject, error, result) {
 // for page list, you had better use wiki.for_each_page(page_list)
 function wikiapi_edit_page(title, content, options) {
 	function wikiapi_edit_page_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 
 		// console.trace([title, content]);
 		// console.log(`wikiapi_edit_page 1: ${title}, ${wiki.actions.length}
@@ -218,7 +218,7 @@ wikiapi.skip_edit = [wiki_API.edit.cancel, 'skip'];
  */
 function wikiapi_move_to(move_to_title, options) {
 	function wikiapi_move_to_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		if (!wiki.last_page) {
 			reject(new Error('wikiapi_move_to: Must call .page() first!'
 				+ ' Can not move to ' + CeL.wiki.title_link_of(move_to_title)));
@@ -262,7 +262,7 @@ function wikiapi_purge(title, options) {
 	}
 
 	function wikiapi_purge_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		if (title) {
 			wiki.page(title);
 		}
@@ -288,7 +288,7 @@ function wikiapi_data(key, property, options) {
 	}
 
 	function wikiapi_data_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		// using wikidata_entity() → wikidata_datavalue()
 		wiki.data(key, property, (data, error) => {
 			if (error) {
@@ -308,7 +308,7 @@ function wikiapi_data(key, property, options) {
 function wikiapi_list(list_type, title, options) {
 	function wikiapi_list_executor(resolve, reject) {
 		options = CeL.setup_options(options);
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		CeL.wiki.list(title, (list/* , target, options */) => {
 			// console.trace(list);
 			if (list.error) {
@@ -374,7 +374,7 @@ function wikiapi_for_each(type, title, for_each, options) {
 
 function wikiapi_category_tree(root_category, options) {
 	function wikiapi_category_tree_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		// using CeL.wiki.prototype.category_tree
 		wiki.category_tree(root_category, (list, error) => {
 			if (error) {
@@ -397,7 +397,7 @@ wikiapi.KEY_subcategories = wiki_API.KEY_subcategories;
 
 function wikiapi_search(key, options) {
 	function wikiapi_search_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		// using wiki_API.search
 		wiki.search(key, (list, error) => {
 			if (error) {
@@ -428,7 +428,7 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 	function wikiapi_for_each_page_executor(resolve, reject) {
 		const promises = [];
 		let error;
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		const work_options = {
 			// log_to: null,
 			// no_edit: true,
@@ -531,7 +531,7 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 // May only test in the [https://tools.wmflabs.org/ Wikimedia Toolforge]
 function wikiapi_run_SQL(SQL, for_each_row/* , options */) {
 	function wikiapi_run_SQL_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		function run_callback() {
 			wiki.SQL_session.SQL(SQL, (error, rows/* , fields */) => {
 				if (error) {
@@ -588,7 +588,7 @@ function wikiapi_get_featured_content(options) {
 	}
 
 	function wikiapi_get_featured_content_executor(resolve, reject) {
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		wiki.get_featured_content(options, (FC_data_hash) => {
 			try {
 				this.FC_data_hash = FC_data_hash;
@@ -632,15 +632,15 @@ Object.assign(wikiapi.prototype, {
 	run_SQL: wikiapi_run_SQL,
 });
 
-Object.defineProperties(wikiapi.prototype, {
-	// latest raw task raw configuration
-	latest_task_configuration: {
+// wrapper for properties
+for (let property_name of ('task_configuration|latest_task_configuration').split('|')) {
+	Object.defineProperty(wikiapi.prototype, property_name, {
 		get() {
-			const wiki = this[KEY_wiki];
-			return wiki.latest_task_configuration;
+			const wiki = this[KEY_wiki_session];
+			return wiki[property_name];
 		}
-	},
-});
+	});
+}
 
 // wrapper for sync functions
 for (let function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title'
@@ -648,7 +648,7 @@ for (let function_name of ('namespace|remove_namespace|is_namespace|to_namespace
 	// [].map(wiki.to_talk_page.bind(wiki))
 	+ '|get_featured_content_configurations').split('|')) {
 	wikiapi.prototype[function_name] = function wrapper() {
-		const wiki = this[KEY_wiki];
+		const wiki = this[KEY_wiki_session];
 		return wiki[function_name].apply(wiki, arguments);
 	};
 }
