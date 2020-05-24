@@ -20,8 +20,8 @@ CeL.run(['interact.DOM', 'application.debug',
 	// 載入不同地區語言的功能 for wiki.work()。
 	'application.locale',
 	// 載入操作維基百科的主要功能。
-	'application.net.wiki.parser',
-	'application.net.wiki.edit', 'application.net.wiki.list',
+	'application.net.wiki',
+	// Optional 可選功能
 	'application.net.wiki.data', 'application.net.wiki.admin',
 	// Add color to console messages. 添加主控端報告的顏色。
 	'interact.console',
@@ -31,6 +31,7 @@ CeL.run(['interact.DOM', 'application.debug',
 
 // syntactic sugar
 const wiki_API = CeL.net.wiki;
+const KEY_SESSION = wiki_API.KEY_SESSION;
 
 // Set default language. 改變預設之語言。
 wiki_API.set_language('en');
@@ -75,7 +76,7 @@ function wikiapi_login(user_name, password, API_URL) {
 				}
 			},
 			preserve_password: true,
-			//task_configuration_page: 'page title',
+			// task_configuration_page: 'page title',
 		});
 	}
 
@@ -135,8 +136,12 @@ function reject_edit_error(reject, error, result) {
 		// @see wiki_API_edit.check_data
 		&& error !== 'empty' && error !== 'cancel') {
 		if (typeof error === 'string') {
-			error = new Error(error);
-			error.from_string = true;
+			// console.log('' + reject);
+			// console.trace(error);
+			const error_object = new Error(error);
+			error_object.from_string = error;
+			error = error_object
+			// console.log(error);
 		}
 		if (result && typeof error === 'object')
 			error.result = result;
@@ -317,8 +322,7 @@ function wikiapi_list(list_type, title, options) {
 				resolve(list);
 			}
 		}, {
-			// [KEY_SESSION]
-			session: wiki,
+			[KEY_SESSION]: wiki,
 			type: list_type,
 			// namespace: '0|1',
 			...options
@@ -411,6 +415,56 @@ function wikiapi_search(key, options) {
 	return new Promise(wikiapi_search_executor.bind(this));
 }
 
+
+// --------------------------------------------------------
+
+function wikiapi_redirects_root(title, options) {
+	function wikiapi_redirects_root_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		// using wiki_API.redirects_root
+		wiki_API.redirects_root(title, (_title, page_data, error) => {
+			if (error) {
+				reject(error);
+			} else if (options && options.get_page) {
+				page_data.query_title = title;
+				resolve(page_data);
+			} else {
+				resolve(_title);
+			}
+		}, {
+			[KEY_SESSION]: wiki,
+			...options
+		});
+	}
+
+	return new Promise(wikiapi_redirects_root_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
+function wikiapi_redirects_here(title, options) {
+	function wikiapi_redirects_here_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		// using wiki_API.redirects_here
+		wiki_API.redirects_here(title, (root_page_data, redirect_list, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				// assert: root_page_data.redirects === redirect_list
+				// console.log([root_page_data, redirect_list]);
+				resolve(redirect_list);
+			}
+		}, {
+			[KEY_SESSION]: wiki,
+			// redirect_list[0] === root_page_data
+			include_root: true,
+			...options
+		});
+	}
+
+	return new Promise(wikiapi_redirects_here_executor.bind(this));
+}
+
 // --------------------------------------------------------
 
 /**
@@ -430,8 +484,9 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 		let error;
 		const wiki = this[KEY_wiki_session];
 		const work_options = {
-			// log_to: null,
+			// log_to: log_to,
 			// no_edit: true,
+			// tags: 'bot trial',
 			no_message: options && options.no_edit,
 
 			...options,
@@ -495,16 +550,22 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 					// 20200122.update_vital_articles.js
 					return result;
 				} catch (_error) {
-					// console.trace('Get error (catch): ' + _error);
+					if (typeof _error === 'object')
+						console.error(_error);
+					else
+						CeL.error('wikiapi_for_each_page: Catched error: ' + _error);
 					if (!error) error = _error;
 
 					// re-throw to wiki.work()
 					// throw _error;
+
+					// return wikiapi.skip_edit;
 				}
 			},
 			// Run after all list items (pages) processed.
 			last() {
 				// this === options
+				// console.trace('last()');
 				Promise.allSettled(promises)
 					// 提早執行 resolve(), reject() 的話，可能導致後續的程式碼 `options.last`
 					// 延後執行，程式碼順序錯亂。
@@ -512,7 +573,15 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 					.then(options && typeof options.last === 'function' && options.last.bind(this))
 					// .then(() => { console.trace(
 					// 'wikiapi_for_each_page_executor Promise finished.'); })
-					.then(() => error ? reject(error) : resolve(this), reject);
+					.then(() => {
+						if (error) {
+							if (options.throw_error)
+								reject(error);
+							else
+								console.error(error);
+						}
+						resolve(this);
+					}, reject);
 				// console.trace('wikiapi_for_each_page_executor finish:');
 				// console.log(options);
 				// console.log(
@@ -556,6 +625,20 @@ function wikiapi_run_SQL(SQL, for_each_row/* , options */) {
 	}
 
 	return new Promise(wikiapi_run_SQL_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
+function wikiapi_setup_layout_elements(options) {
+	function wikiapi_setup_layout_elements_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		wiki_API.setup_layout_elements(resolve, {
+			[KEY_SESSION]: wiki,
+			...options
+		});
+	}
+
+	return new Promise(wikiapi_setup_layout_elements_executor.bind(this));
 }
 
 // --------------------------------------------------------
@@ -605,9 +688,17 @@ function wikiapi_get_featured_content(options) {
 wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
 
 // --------------------------------------------------------
+
+function wikiapi_site_name() {
+	const wiki = this[KEY_wiki_session];
+	return wiki_API.site_name(wiki);
+}
+
+// --------------------------------------------------------
 // exports
 
 Object.assign(wikiapi.prototype, {
+	site_name: wikiapi_site_name,
 	login: wikiapi_login,
 
 	page: wikiapi_page,
@@ -621,6 +712,11 @@ Object.assign(wikiapi.prototype, {
 	category_tree: wikiapi_category_tree,
 	search: wikiapi_search,
 
+	redirects_root: wikiapi_redirects_root,
+	// Warning: 採用 wiki_API.redirects_here(title) 才能追溯重新導向的標的。
+	// wiki.redirects() 無法追溯重新導向的標的！
+	redirects_here: wikiapi_redirects_here,
+
 	get_featured_content: wikiapi_get_featured_content,
 
 	for_each_page: wikiapi_for_each_page,
@@ -630,10 +726,12 @@ Object.assign(wikiapi.prototype, {
 	data: wikiapi_data,
 
 	run_SQL: wikiapi_run_SQL,
+
+	setup_layout_elements: wikiapi_setup_layout_elements,
 });
 
 // wrapper for properties
-for (let property_name of ('task_configuration|latest_task_configuration').split('|')) {
+for (const property_name of ('task_configuration|latest_task_configuration').split('|')) {
 	Object.defineProperty(wikiapi.prototype, property_name, {
 		get() {
 			const wiki = this[KEY_wiki_session];
@@ -643,7 +741,7 @@ for (let property_name of ('task_configuration|latest_task_configuration').split
 }
 
 // wrapper for sync functions
-for (let function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title'
+for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title'
 	// CeL.run('application.net.wiki.featured_content');
 	// [].map(wiki.to_talk_page.bind(wiki))
 	+ '|get_featured_content_configurations').split('|')) {
@@ -653,7 +751,7 @@ for (let function_name of ('namespace|remove_namespace|is_namespace|to_namespace
 	};
 }
 
-for (let type of CeL.wiki.list.type_list) {
+for (const type of CeL.wiki.list.type_list) {
 	// Can not use `= (title, options) {}` !
 	// arrow function expression DO NOT has this, arguments, super, or
 	// new.target keywords.
