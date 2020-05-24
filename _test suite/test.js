@@ -66,8 +66,8 @@ add_test('load page', async (assert, setup_test, finish_test) => {
 	let page_data;
 
 	setup_test('load page: [[w:en:Universe]]');
-	assert(['enwiki', wiki.site_name()], '.site_name() #1');
-	assert(['zhwiki', wiki.site_name('zh')], '.site_name() #2');
+	assert(['enwiki', enwiki.site_name()], '.site_name() #1');
+	assert(['zhwiki', enwiki.site_name('zh')], '.site_name() #2');
 
 	page_data = await enwiki.page('Universe');
 	// console.log(CeL.wiki.title_link_of(page_data) + ':');
