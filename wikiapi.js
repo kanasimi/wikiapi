@@ -55,19 +55,20 @@ function wikiapi(API_URL) {
 
 function wikiapi_login(user_name, password, API_URL) {
 	let options;
-	if (!password && !API_URL && typeof user_name === 'object') {
+	if (!password && !API_URL && CeL.is_Object(user_name)) {
 		options = user_name;
-		// user_password
-		password = options.password;
-		API_URL = options.API_URL;
-		user_name = options.user_name;
+	} else if (CeL.is_Object(API_URL)) {
+		options = { ...API_URL, user_name, password };
+	} else {
+		options = { user_name, password, API_URL };
 	}
 
 	function wikiapi_login_executor(resolve, reject) {
-		this[KEY_wiki_session] = wiki_API.login(user_name, password, {
+		this[KEY_wiki_session] = wiki_API.login({
+			preserve_password: true,
 			...options,
 
-			API_URL: API_URL || this[KEY_wiki_session].API_URL,
+			API_URL: options.API_URL || this[KEY_wiki_session].API_URL,
 			callback(data, error) {
 				if (error) {
 					reject(error);
@@ -75,7 +76,6 @@ function wikiapi_login(user_name, password, API_URL) {
 					resolve(data);
 				}
 			},
-			preserve_password: true,
 			// task_configuration_page: 'page title',
 		});
 	}
@@ -689,9 +689,9 @@ wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
 
 // --------------------------------------------------------
 
-function wikiapi_site_name() {
+function wikiapi_site_name(language, options) {
 	const wiki = this[KEY_wiki_session];
-	return wiki_API.site_name(wiki);
+	return wiki_API.site_name(language, { [KEY_SESSION]: wiki, ...options });
 }
 
 // --------------------------------------------------------

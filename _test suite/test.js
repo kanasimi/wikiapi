@@ -62,11 +62,14 @@ function add_test(test_name, conditions) {
 // ============================================================================
 
 add_test('load page', async (assert, setup_test, finish_test) => {
-	const wiki = new Wikiapi;
+	const enwiki = new Wikiapi;
 	let page_data;
 
 	setup_test('load page: [[w:en:Universe]]');
-	page_data = await wiki.page('Universe');
+	assert(['enwiki', wiki.site_name()], '.site_name() #1');
+	assert(['zhwiki', wiki.site_name('zh')], '.site_name() #2');
+
+	page_data = await enwiki.page('Universe');
 	// console.log(CeL.wiki.title_link_of(page_data) + ':');
 	// console.log(page_data.wikitext);
 	assert(page_data.wikitext.includes('space]]')
@@ -74,7 +77,7 @@ add_test('load page', async (assert, setup_test, finish_test) => {
 	finish_test('load page: [[w:en:Universe]]');
 
 	setup_test('load page: [[w:en:Earth]]');
-	page_data = await wiki.page('Earth', {
+	page_data = await enwiki.page('Earth', {
 		revisions: 2
 	});
 	// console.log(CeL.wiki.title_link_of(page_data) + ':');
@@ -82,6 +85,14 @@ add_test('load page', async (assert, setup_test, finish_test) => {
 	assert([page_data.revisions.length, 2], 'load page: revisions.length');
 	assert([page_data.wikitext, page_data.revision(0)], 'load page: revision(0)');
 	assert(page_data.wikitext !== page_data.revision(1), 'load page: revision(1)');
+
+	const redirects_taregt = await enwiki.redirects_root('WP:SB');
+	assert(['Wikipedia:Sandbox', redirects_taregt], '.redirects_root()');
+	const redirects_list = await enwiki.redirects_here('WP:SB');
+	assert(['WP:SB', redirects_list.query_title], '.redirects_here() #1');
+	assert(redirects_list.length > 1, '.redirects_here() #2');
+	assert(['Wikipedia:Sandbox', redirects_list[0].title], '.redirects_here() #3');
+
 	finish_test('load page: [[w:en:Earth]]');
 });
 
