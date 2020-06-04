@@ -208,6 +208,38 @@ wikiapi.skip_edit = [wiki_API.edit.cancel, 'skip'];
 
 // --------------------------------------------------------
 
+function wikiapi_move_page(move_from_title, move_to_title, options) {
+	function wikiapi_move_page_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		// using wiki_API.prototype.move_page()
+		wiki.move_page(move_from_title, move_to_title, options, (data, error) => {
+			if (error) {
+				/**
+				 * <code>
+
+				e.g., { code: 'articleexists', info: 'A page of that name already exists, or the name you have chosen is not valid. Please choose another name.', '*': '...' }
+				e.g., { code: 'missingtitle', info: "The page you specified doesn't exist.", '*': '...' }
+
+				</code>
+				 */
+				reject(error);
+			} else {
+				/**
+				 * <code>
+
+				e.g., { from: 'from', to: 'to', reason: 'move', redirectcreated: '', moveoverredirect: '' }
+
+				</code>
+				 */
+				resolve(data);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_move_page_executor.bind(this));
+
+}
+
 /**
  * Move to `move_to_title`. Must call `wiki.page(move_from_title)` first!
  * 
@@ -230,7 +262,7 @@ function wikiapi_move_to(move_to_title, options) {
 			return;
 		}
 
-		// using wiki_API.move_to
+		// using wiki_API.prototype.move_to()
 		wiki.move_to(move_to_title, options, (data, error) => {
 			if (error) {
 				/**
@@ -246,7 +278,7 @@ function wikiapi_move_to(move_to_title, options) {
 				/**
 				 * <code>
 
-				e.g., { from: 'from', to: 'to', reason: 'move', redirectcreated: '' }
+				e.g., { from: 'from', to: 'to', reason: 'move', redirectcreated: '', moveoverredirect: '' }
 
 				</code>
 				 */
@@ -707,6 +739,7 @@ Object.assign(wikiapi.prototype, {
 		return this.edit_page(null, content, options);
 	},
 	move_to: wikiapi_move_to,
+	move_page: wikiapi_move_page,
 	purge: wikiapi_purge,
 
 	category_tree: wikiapi_category_tree,

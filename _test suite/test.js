@@ -269,6 +269,10 @@ add_test('move page', async (assert, setup_test, finish_test) => {
 	const reason = 'move test';
 	let result;
 	try {
+		result = await testwiki.move_page(move_from_title, move_to_title, { reason: reason });
+		assert([result.to, move_to_title], `move page: [[testwiki:${move_from_title}]]→[[testwiki:${move_to_title}]]`);
+
+
 		await testwiki.page(move_from_title);
 		result = await testwiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true });
 		// revert
@@ -277,6 +281,7 @@ add_test('move page', async (assert, setup_test, finish_test) => {
 
 		assert([result.from, move_from_title], `move page from: [[testwiki:${move_from_title}]]`);
 		assert([result.to, move_to_title], `move page to: [[testwiki:${move_to_title}]]`);
+
 	} catch (e) {
 		if (e.code !== 'missingtitle' && e.code !== 'articleexists') {
 			if (e.code) {
