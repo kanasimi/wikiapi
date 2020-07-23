@@ -29,7 +29,7 @@ npm install wikiapi
 Here lists some examples of this module.
 
 ### As node.js module
-``` JavaScript
+```javascript
 // load module
 const Wikiapi = require('wikiapi');
 
