@@ -21,7 +21,7 @@ This is basically a modern syntax version of [CeJS MediaWiki module](https://git
 ## Installation
 Install [node.js](https://nodejs.org/) first.
 
-``` sh
+```bash
 npm install wikiapi
 ```
 

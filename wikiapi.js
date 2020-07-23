@@ -507,7 +507,7 @@ function wikiapi_redirects_here(title, options) {
  * @param {Function}for_each_page
  *            processor for each page. for_each_page(page_data with contents)
  * @param {Object}[options]
- *            e.g., { no_edit: true, no_warning: true, page_options: {
+ *            e.g., { no_edit: true, no_warning: true, allow_empty: true, page_options: {
  *            redirects: 1, rvprop: 'ids|content|timestamp|user' } }
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
