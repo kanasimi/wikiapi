@@ -48,7 +48,12 @@ const KEY_wiki_session = Symbol('wiki');
  *            language code or API URL of MediaWiki project
  */
 function wikiapi(API_URL) {
-	this[KEY_wiki_session] = new wiki_API(null, null, API_URL);
+	const new_wiki_API = new wiki_API(null, null, API_URL);
+	//this[KEY_wiki_session] = new wiki_API(null, null, API_URL);
+	Object.defineProperty(this, KEY_wiki_session, {
+		value: new_wiki_API,
+		writable: true,
+	});
 }
 
 // --------------------------------------------------------
@@ -64,7 +69,7 @@ function wikiapi_login(user_name, password, API_URL) {
 	}
 
 	function wikiapi_login_executor(resolve, reject) {
-		this[KEY_wiki_session] = wiki_API.login({
+		const new_wiki_API = wiki_API.login({
 			preserve_password: true,
 			...options,
 
@@ -77,6 +82,10 @@ function wikiapi_login(user_name, password, API_URL) {
 				}
 			},
 			// task_configuration_page: 'page title',
+		});
+		Object.defineProperty(this, KEY_wiki_session, {
+			value: new_wiki_API,
+			writable: true,
 		});
 	}
 

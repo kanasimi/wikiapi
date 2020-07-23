@@ -248,7 +248,7 @@ add_test('featured content: en', async (assert, setup_test, finish_test) => {
 	});
 	assert(FC_data_hash['Sun'].type === 'FA', '[[w:en:Sun]] is featured article');
 
-	await enwiki.for_each_page(Object.keys(FC_data_hash).filter(title => FC_data_hash[title].type === 'FA').slice(0, 4), async page_data => {
+	await enwiki.for_each_page(Object.keys(FC_data_hash).filter((title) => 'FA' === FC_data_hash[title].type).slice(0, 4), async (page_data) => {
 		const talk_page_data = await enwiki.page(enwiki.to_talk_page(page_data));
 		let has_ArticleHistory;
 		talk_page_data.parse().each('template',
