@@ -47,6 +47,7 @@ const Wikiapi = require('wikiapi');
 	console.log(page_data.wikitext);
 })();
 
+// Get multi revisions
 (async () => {
 	const wiki = new Wikiapi;
 	let page_data = await wiki.page('Universe', {
@@ -114,9 +115,9 @@ More examples: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/mas
 ## OS support
 | Platform    | support |
 | ----------- | ------- |
-| Windows     | ✔️      |
-| macOS       | ✔️      |
-| UNIX, Linux | ✔️      |
+| Windows     | ✔️       |
+| macOS       | ✔️       |
+| UNIX, Linux | ✔️       |
 
 ## See also
 For old style JavaScript, or general environment usage, please see [wikibot](https://github.com/kanasimi/wikibot).
