@@ -23,6 +23,8 @@ let test_done = 0;
 /** {ℕ⁰:Natural}test start time value */
 const test_start_time = Date.now();
 
+// Just for test
+delete CeL.wiki.query.default_maxlag;
 
 function check_tests(recorder, error_count) {
 	all_error_count += error_count;

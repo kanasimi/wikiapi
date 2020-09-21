@@ -139,6 +139,26 @@ function wikiapi_page(title, options) {
 
 // --------------------------------------------------------
 
+function wikiapi_tracking_revisions(title, to_search, options) {
+	function wikiapi_tracking_revisions_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		wiki.tracking_revisions(title, to_search, (revision, page_data, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				if (!revision)
+					revision = Object.create(null);
+				revision.page = page_data;
+				resolve(revision);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_tracking_revisions_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
 function reject_edit_error(reject, error, result) {
 	// skip_edit is not error
 	if (error && error !== /* 'skip' */ wikiapi.skip_edit[1]
@@ -743,6 +763,7 @@ Object.assign(wikiapi.prototype, {
 	login: wikiapi_login,
 
 	page: wikiapi_page,
+	tracking_revisions: wikiapi_tracking_revisions,
 	edit_page: wikiapi_edit_page,
 	edit(content, options) {
 		return this.edit_page(null, content, options);
