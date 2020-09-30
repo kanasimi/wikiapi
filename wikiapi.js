@@ -528,6 +528,31 @@ function wikiapi_redirects_here(title, options) {
 
 // --------------------------------------------------------
 
+// Upload a local file directly:
+//await result = wiki_session.upload_file({ file_path: '/local/file/path', comment: '', });
+// Upload file from URL:
+//await result = wiki_session.upload_file({ media_url: 'https://media.url/name.jpg', comment: '', });
+// Other file_data options: @see https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js#L912 /options.text/
+// filename:'Will set via .file_path or .media_url if not settled.',
+// text: '', text: { description: '', source: '', author: '', permission: '',... },
+// bot: 1, tags:"tag1|tag2", ignorewarnings: 1, ...
+function wikiapi_upload_file(file_data) {
+	function wikiapi_upload_file_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		wiki.upload(file_data, (result, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(result);
+			}
+		});
+	}
+
+	return new Promise(wikiapi_upload_file_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
 /**
  * Edit / process pages listing in `page_list`.
  * 
@@ -779,6 +804,8 @@ Object.assign(wikiapi.prototype, {
 	// Warning: 採用 wiki_API.redirects_here(title) 才能追溯重新導向的標的。
 	// wiki.redirects() 無法追溯重新導向的標的！
 	redirects_here: wikiapi_redirects_here,
+
+	upload: wikiapi_upload_file,
 
 	get_featured_content: wikiapi_get_featured_content,
 

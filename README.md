@@ -104,6 +104,16 @@ const Wikiapi = require('wikiapi');
 	console.log(list);
 })();
 
+// upload media
+(async () => {
+	const wiki = new Wikiapi;
+	await wiki.login('user', 'password', 'test');
+	// Upload a local file directly:
+	await result = wiki.upload_file({ file_path: '/local/file/path', comment: '', text: '' });
+	// Upload file from URL:
+	await result = wiki.upload_file({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
+})();
+
 ```
 
 More examples: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/master/_test%20suite/test.js).
