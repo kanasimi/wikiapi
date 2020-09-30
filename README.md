@@ -35,15 +35,11 @@ const Wikiapi = require('wikiapi');
 
 // load page
 (async () => {
+	// on Wikipedia...
 	const wiki = new Wikiapi('en');
+	// ...or other MediaWiki websites
+	//const wiki = new Wikiapi('https://awoiaf.westeros.org/api.php');
 	let page_data = await wiki.page('Universe');
-	console.log(page_data.wikitext);
-})();
-
-// load page of other wiki
-(async () => {
-	const wiki = new Wikiapi('https://awoiaf.westeros.org/api.php');
-	let page_data = await wiki.page('Game of Thrones');
 	console.log(page_data.wikitext);
 })();
 
