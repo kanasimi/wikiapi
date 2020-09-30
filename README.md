@@ -109,9 +109,9 @@ const Wikiapi = require('wikiapi');
 	const wiki = new Wikiapi;
 	await wiki.login('user', 'password', 'test');
 	// Upload a local file directly:
-	await result = wiki.upload_file({ file_path: '/local/file/path', comment: '', text: '' });
+	let result = await wiki.upload_file({ file_path: '/local/file/path', comment: '', text: '' });
 	// Upload file from URL:
-	await result = wiki.upload_file({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
+	result = await wiki.upload_file({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
 })();
 
 ```

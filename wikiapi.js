@@ -529,9 +529,9 @@ function wikiapi_redirects_here(title, options) {
 // --------------------------------------------------------
 
 // Upload a local file directly:
-//await result = wiki_session.upload_file({ file_path: '/local/file/path', comment: '', });
+//let result = await wiki_session.upload_file({ file_path: '/local/file/path', comment: '', });
 // Upload file from URL:
-//await result = wiki_session.upload_file({ media_url: 'https://media.url/name.jpg', comment: '', });
+//let result = await wiki_session.upload_file({ media_url: 'https://media.url/name.jpg', comment: '', });
 // Other file_data options: @see https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js#L912 /options.text/
 // filename:'Will set via .file_path or .media_url if not settled.',
 // text: '', text: { description: '', source: '', author: '', permission: '',... },
