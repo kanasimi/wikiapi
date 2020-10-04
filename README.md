@@ -38,7 +38,7 @@ const Wikiapi = require('wikiapi');
 	const wiki = new Wikiapi(user, password, 'en');
 	//wiki = new Wikiapi(user_name, password, API_URL);
 	// Calling in another domain
-	//wiki = new Wikiapi({user_name:'', password:'', origin:'*');
+	//wiki = new Wikiapi({user_name:'', password:'', origin:'*'});
 })();
 
 // load page
@@ -79,6 +79,8 @@ const Wikiapi = require('wikiapi');
 	const zhwiki = new Wikiapi('zh');
 	await zhwiki.login('user', 'password');
 	let page_data = await zhwiki.page('Universe');
+	// Other types:
+	// @see wiki_toString @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/parser.js
 	page_data.parse().each('template',
 		token => console.log(token.name));
 })();
@@ -136,10 +138,10 @@ const Wikiapi = require('wikiapi');
 
 	// Update claim
 	await entity.modify({ claims: [{ P17: 'Q213280' }] });
-	// Update claim: set country (P17) to entity 'Test Country 1' (Q213280)
+	// Update claim: set country (P17) to 'Test Country 1' (Q213280) ([language, label] as entity)
 	await entity.modify({ claims: [ { language: 'en', country: [, 'Test Country 1'] } ] });
 	// Remove country (P17) : 'Test Country 1' (Q213280)
-	await entity.modify({ claims: [{ country: [, 'Test Country 1'], language: 'en', remove: true }] });
+	await entity.modify({ claims: [ { language: 'en', country: [, 'Test Country 1'], remove: true } ] });
 
 	// Update label
 	await entity.modify({ labels: [ { language: 'zh-tw', value: '地球' } ] });
