@@ -37,7 +37,7 @@ const KEY_SESSION = wiki_API.KEY_SESSION;
 wiki_API.set_language('en');
 
 /** @inner */
-const KEY_wiki_session = Symbol('wiki');
+const KEY_wiki_session = Symbol('wiki session');
 // for debug
 // wikiapi.KEY_wiki_session = KEY_wiki_session;
 
@@ -48,15 +48,22 @@ const KEY_wiki_session = Symbol('wiki');
  *            language code or API URL of MediaWiki project
  */
 function wikiapi(API_URL) {
-	const new_wiki_API = new wiki_API(null, null, API_URL);
+	const wiki_session = new wiki_API(null, null, API_URL);
 	//this[KEY_wiki_session] = new wiki_API(null, null, API_URL);
+	this.setup_wiki_session(wiki_session);
+}
+
+// --------------------------------------------------------
+
+function setup_wiki_session(wiki_session) {
+	Object.defineProperty(wiki_session, 'setup_data_entity', { value: setup_data_entity });
 	Object.defineProperty(this, KEY_wiki_session, {
-		value: new_wiki_API,
+		value: wiki_session,
 		writable: true,
 	});
 }
 
-// --------------------------------------------------------
+Object.defineProperty(wikiapi.prototype, 'setup_wiki_session', { value: setup_wiki_session });
 
 function wikiapi_login(user_name, password, API_URL) {
 	let options;
@@ -69,7 +76,7 @@ function wikiapi_login(user_name, password, API_URL) {
 	}
 
 	function wikiapi_login_executor(resolve, reject) {
-		const new_wiki_API = wiki_API.login({
+		const wiki_session = wiki_API.login({
 			preserve_password: true,
 			...options,
 
@@ -83,10 +90,7 @@ function wikiapi_login(user_name, password, API_URL) {
 			},
 			// task_configuration_page: 'page title',
 		});
-		Object.defineProperty(this, KEY_wiki_session, {
-			value: new_wiki_API,
-			writable: true,
-		});
+		this.setup_wiki_session(wiki_session);
 	}
 
 	return new Promise(wikiapi_login_executor.bind(this));
@@ -347,6 +351,37 @@ function wikiapi_purge(title, options) {
 
 // --------------------------------------------------------
 
+function modify_data_entity(data_to_modify, options) {
+	function modify_data_entity_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		//console.trace(wiki);
+
+		// using function wikidata_edit() @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/data.js
+		// wiki.edit_data(id, data, options, callback)
+		wiki.data(this).edit_data(data_to_modify || this, options, (data_entity, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				wiki.setup_data_entity(data_entity);
+				resolve(data_entity);
+			}
+		});
+	}
+
+	return new Promise(modify_data_entity_executor.bind(this));
+}
+
+function setup_data_entity(data_entity) {
+	//assert: data_entity.session.host === this
+	//console.trace(data_entity.session.host === this);
+	delete data_entity.session;
+
+	Object.defineProperties(data_entity, {
+		[KEY_wiki_session]: { value: this },
+		modify: { value: modify_data_entity },
+	});
+}
+
 function wikiapi_data(key, property, options) {
 	if (CeL.is_Object(property) && !options) {
 		// shift arguments.
@@ -356,11 +391,12 @@ function wikiapi_data(key, property, options) {
 	function wikiapi_data_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
 		// using wikidata_entity() → wikidata_datavalue()
-		wiki.data(key, property, (data, error) => {
+		wiki.data(key, property, (data_entity, error) => {
 			if (error) {
 				reject(error);
 			} else {
-				resolve(data);
+				wiki.setup_data_entity(data_entity);
+				resolve(data_entity);
 			}
 		}, options);
 	}
@@ -796,6 +832,11 @@ Object.assign(wikiapi.prototype, {
 	move_to: wikiapi_move_to,
 	move_page: wikiapi_move_page,
 	purge: wikiapi_purge,
+	// wrapper
+	listen(listener, options) {
+		const wiki = this[KEY_wiki_session];
+		return wiki.listen(listener, options);
+	},
 
 	category_tree: wikiapi_category_tree,
 	search: wikiapi_search,

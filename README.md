@@ -33,6 +33,14 @@ Here lists some examples of this module.
 // load module
 const Wikiapi = require('wikiapi');
 
+// login
+(async () => {
+	const wiki = new Wikiapi(user, password, 'en');
+	//wiki = new Wikiapi(user_name, password, API_URL);
+	// Calling in another domain
+	//wiki = new Wikiapi({user_name:'', password:'', origin:'*');
+})();
+
 // load page
 (async () => {
 	// on Wikipedia...
@@ -114,6 +122,28 @@ const Wikiapi = require('wikiapi');
 	result = await wiki.upload_file({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
 })();
 
+// update wikidata
+(async () => {
+	// Just for test
+	delete CeL.wiki.query.default_maxlag;
+	const wiki = new Wikiapi;
+	await wiki.login('user', 'password', 'test');
+
+	// Get https://test.wikidata.org/wiki/Q7
+	let entity = await wiki.data('Q7');
+	// search [ language, label ]
+	//entity = await wiki.data(['en', 'Earth']);
+
+	// Update claim
+	await entity.modify({ claims: [{ P17: 'Q213280' }] });
+	// Update claim: set country (P17) to entity 'Test Country 1' (Q213280)
+	await entity.modify({ claims: [ { language: 'en', country: [, 'Test Country 1'] } ] });
+	// Remove country (P17) : 'Test Country 1' (Q213280)
+	await entity.modify({ claims: [{ country: [, 'Test Country 1'], language: 'en', remove: true }] });
+
+	// Update label
+	await entity.modify({ labels: [ { language: 'zh-tw', value: '地球' } ] });
+})();
 ```
 
 More examples: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/master/_test%20suite/test.js).
