@@ -105,9 +105,13 @@ const Wikiapi = require('wikiapi');
 	const wiki = new Wikiapi;
 	let list = await wiki.categorymembers('Chemical elements');
 	console.log(list);
+	// Working on multiple pages
+	await wiki.for_each_page(
+		/* {Array} title liat / page data list */ list,
+		page_data => { /* ... */ });
 })();
 
-// get pages transclude {{w:en:Periodic table}}
+// get pages transcluding {{w:en:Periodic table}}
 (async () => {
 	const wiki = new Wikiapi;
 	let list = await wiki.embeddedin('Template:Periodic table');

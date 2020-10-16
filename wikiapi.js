@@ -372,9 +372,9 @@ function modify_data_entity(data_to_modify, options) {
 }
 
 function setup_data_entity(data_entity) {
-	//assert: data_entity.session.host === this
-	//console.trace(data_entity.session.host === this);
-	delete data_entity.session;
+	//assert: data_entity[KEY_SESSION].host === this
+	//console.trace(data_entity[KEY_SESSION].host === this);
+	delete data_entity[KEY_SESSION];
 
 	Object.defineProperties(data_entity, {
 		[KEY_wiki_session]: { value: this },
@@ -512,7 +512,6 @@ function wikiapi_search(key, options) {
 	return new Promise(wikiapi_search_executor.bind(this));
 }
 
-
 // --------------------------------------------------------
 
 function wikiapi_redirects_root(title, options) {
@@ -597,8 +596,10 @@ function wikiapi_upload_file(file_data) {
  * @param {Function}for_each_page
  *            processor for each page. for_each_page(page_data with contents)
  * @param {Object}[options]
+ *            e.g., { summary: '' }<br />
  *            e.g., { no_edit: true, no_warning: true, allow_empty: true, page_options: {
- *            redirects: 1, rvprop: 'ids|content|timestamp|user' } }
+ *            redirects: 1, rvprop: 'ids|content|timestamp|user' } }<br />
+ *            no_warning: hide "wiki_API_page: No contents: [[title]]" messages
  */
 function wikiapi_for_each_page(page_list, for_each_page, options) {
 	function wikiapi_for_each_page_executor(resolve, reject) {
@@ -717,6 +718,33 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 	return new Promise(wikiapi_for_each_page_executor.bind(this));
 }
 
+
+// --------------------------------------------------------
+
+function wikiapi_convert_Chinese(text, options) {
+	function wikiapi_convert_Chinese(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		if (typeof options === 'string') {
+			options = { uselang: options };
+		}
+		const site_name = wiki_API.site_name(null, { [KEY_SESSION]: wiki });
+		if (/^zh/.test(site_name)) {
+			options = Object.assign({ [KEY_SESSION]: wiki }, options);
+		}
+
+		// using wiki_API.search
+		CeL.wiki.convert_Chinese(text, (text, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(text);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_convert_Chinese.bind(this));
+}
+
 // --------------------------------------------------------
 
 // May only test in the [https://tools.wmflabs.org/ Wikimedia Toolforge]
@@ -812,8 +840,11 @@ wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
 // --------------------------------------------------------
 
 function wikiapi_site_name(language, options) {
-	const wiki = this[KEY_wiki_session];
-	return wiki_API.site_name(language, { [KEY_SESSION]: wiki, ...options });
+	if (language === undefined) {
+		const wiki = this[KEY_wiki_session];
+		options = { [KEY_SESSION]: wiki, ...options };
+	}
+	return wiki_API.site_name(language, options);
 }
 
 // --------------------------------------------------------
@@ -855,6 +886,8 @@ Object.assign(wikiapi.prototype, {
 	for_each: wikiapi_for_each,
 
 	data: wikiapi_data,
+
+	convert_Chinese: wikiapi_convert_Chinese,
 
 	run_SQL: wikiapi_run_SQL,
 
