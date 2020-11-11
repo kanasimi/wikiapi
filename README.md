@@ -47,7 +47,10 @@ const Wikiapi = require('wikiapi');
 	const wiki = new Wikiapi('en');
 	// ...or other MediaWiki websites
 	//const wiki = new Wikiapi('https://awoiaf.westeros.org/api.php');
-	let page_data = await wiki.page('Universe');
+	let page_data = await wiki.page('Universe', {
+		// You may also set rvprop.
+		//rvprop: 'ids|content|timestamp|user',
+	});
 	console.log(page_data.wikitext);
 })();
 
@@ -70,7 +73,29 @@ const Wikiapi = require('wikiapi');
 		return page_data.wikitext
 			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 	}, {bot: 1});
+
+	// alternative method
+	await enwiki.edit_page('Wikipedia:Sandbox', function(page_data) {
+		return page_data.wikitext
+			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
+	}, {bot: 1, nocreate: 1, minor: 1});
+
 	console.log('Done.');
+})();
+
+// read / edit pages
+(async () => {
+	const enwiki = new Wikiapi('en');
+	const link_from = await wiki.redirects_here('ABC');
+	await wiki.for_each_page(link_from, page_data => {
+		// Return undefined if you just want to get the page data.
+		return;
+		return 'You may also modify page contents for each page';
+	}, {
+		// Only needed if ypu want to modify page.
+		summary: 'summary',
+		bot: 1, nocreate: 1, minor: 1
+	});
 })();
 
 // parse wiki page (The parser is more powerful than the example. Try yourself!)
@@ -83,6 +108,19 @@ const Wikiapi = require('wikiapi');
 	// @see wiki_toString @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/parser.js
 	page_data.parse().each('template',
 		token => console.log(token.name));
+})();
+
+// listen to new edits
+(async () => {
+	const wiki = new Wikiapi;
+	wiki.listen(function for_each_row() { ... }, {
+		// 檢查的延遲時間。
+		delay: '2m',
+		filter: function filter_row() { ... },
+		// also get diff
+		with_diff: { LCS: true, line: true },
+		namespace: '0|talk',
+	});
 })();
 
 // read wikidata
@@ -118,7 +156,7 @@ const Wikiapi = require('wikiapi');
 	console.log(list);
 })();
 
-// upload media
+// upload file / media
 (async () => {
 	const wiki = new Wikiapi;
 	await wiki.login('user', 'password', 'test');
