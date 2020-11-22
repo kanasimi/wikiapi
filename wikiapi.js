@@ -29,6 +29,8 @@ CeL.run(['interact.DOM', 'application.debug',
 	// CeL.fs_mkdir(), CeL.wiki.read_dump()
 	'application.storage']);
 
+// --------------------------------------------------------
+
 // syntactic sugar
 const wiki_API = CeL.net.wiki;
 const KEY_SESSION = wiki_API.KEY_SESSION;

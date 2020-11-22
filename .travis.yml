@@ -4,8 +4,8 @@ env:
 
 language: node_js
 node_js:
-  - "12"
   - "14"
+  - "15"
 
 # https://github.com/codecov/example-node
 install:

@@ -23,9 +23,6 @@ let test_done = 0;
 /** {ℕ⁰:Natural}test start time value */
 const test_start_time = Date.now();
 
-// Just for test
-delete CeL.wiki.query.default_maxlag;
-
 function check_tests(recorder, error_count) {
 	all_error_count += error_count;
 	++test_done;
@@ -40,7 +37,7 @@ function check_tests(recorder, error_count) {
 		+ Math.round((Date.now() - test_start_time) / 1000) + ' s.';
 
 	if (all_error_count === 0) {
-		CeL.info(`check_tests: All ${all_tests} test groups done.${elapsed_message}`);
+		CeL.info(`check_tests: All ${all_tests} test group(s) done.${elapsed_message}`);
 		// normal done. No error.
 		return;
 	}
@@ -62,6 +59,9 @@ function add_test(test_name, conditions) {
 }
 
 // ============================================================================
+
+// Just for test
+delete CeL.wiki.query.default_maxlag;
 
 add_test('load page', async (assert, setup_test, finish_test) => {
 	const enwiki = new Wikiapi;
@@ -250,12 +250,18 @@ add_test('featured content: en', async (assert, setup_test, finish_test) => {
 	});
 	assert(FC_data_hash['Sun'].type === 'FA', '[[w:en:Sun]] is featured article');
 
+	// cache alias of {{Article history}}
+	const Article_history_alias = (await wiki.redirects_here('Template:Article history'))
+		.map(page_data => page_data.title
+			// remove "Template:" prefix
+			.replace(/^[^:]+:/, ''));
+
 	await enwiki.for_each_page(Object.keys(FC_data_hash).filter((title) => 'FA' === FC_data_hash[title].type).slice(0, 4), async (page_data) => {
 		const talk_page_data = await enwiki.page(enwiki.to_talk_page(page_data));
-		let has_ArticleHistory;
+		let has_Article_history;
 		talk_page_data.parse().each('template',
-			(token) => { if (token.name === 'ArticleHistory') has_ArticleHistory = true; });
-		assert(has_ArticleHistory, `${CeL.wiki.title_link_of(talk_page_data)} has {{ArticleHistory}}`);
+			(token) => { if (Article_history_alias.includes(token.name)) has_Article_history = true; });
+		assert(has_Article_history, `${CeL.wiki.title_link_of(talk_page_data)} has {{ArticleHistory}}`);
 	});
 	finish_test('featured content: en');
 });
