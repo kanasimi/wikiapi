@@ -117,8 +117,10 @@ const page_data_attributes = {
 	},
 	parse: {
 		value: function parse(options) {
+			// this === page_data
+			options = { ...options, [KEY_SESSION]: this[KEY_wiki_session] };
 			// function parse_page(options) @ CeL.wiki
-			return wiki_API.parser(this).parse(options);
+			return wiki_API.parser(this, options).parse(options);
 		}
 	},
 };
@@ -130,8 +132,10 @@ function wikiapi_page(title, options) {
 			if (error) {
 				reject(error);
 			} else {
-				if (page_data)
+				if (page_data) {
+					page_data[KEY_wiki_session] = wiki;
 					Object.defineProperties(page_data, page_data_attributes);
+				}
 				resolve(page_data);
 			}
 		}, {
@@ -213,6 +217,9 @@ function wikiapi_edit_page(title, content, options) {
 		// actions, ${wiki.running}/${wiki.thread_count}.`);
 		// console.trace(wiki);
 		// console.trace(wiki.last_page);
+
+		// TODO: for (typeof content === 'function'), 
+		// set page_data_attributes
 
 		// wiki.edit(page contents, options, callback)
 		wiki.edit(content, options, (title, error, result) => {
@@ -323,6 +330,27 @@ function wikiapi_move_to(move_to_title, options) {
 	}
 
 	return new Promise(wikiapi_move_to_executor.bind(this));
+}
+
+
+// --------------------------------------------------------
+
+function wikiapi_query(parameters, options) {
+	function wikiapi_query_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		wiki.query_API(parameters, (data, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(data);
+			}
+		}, {
+			post_data_only: true,
+			...options
+		});
+	}
+
+	return new Promise(wikiapi_query_executor.bind(this));
 }
 
 // --------------------------------------------------------
@@ -626,8 +654,10 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 			each(page_data/* , messages, config */) {
 				try {
 					// `page_data` maybe non-object when error occurres.
-					if (page_data)
+					if (page_data) {
+						page_data[KEY_wiki_session] = wiki;
 						Object.defineProperties(page_data, page_data_attributes);
+					}
 
 					if (work_options.will_call_methods) {
 						// ** 這邊的操作在 wiki.next() 中會因 .will_call_methods 先執行一次。
@@ -856,6 +886,7 @@ Object.assign(wikiapi.prototype, {
 	site_name: wikiapi_site_name,
 	login: wikiapi_login,
 
+	query: wikiapi_query,
 	page: wikiapi_page,
 	tracking_revisions: wikiapi_tracking_revisions,
 	edit_page: wikiapi_edit_page,
@@ -917,6 +948,7 @@ for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespa
 	};
 }
 
+//@see get_list.type @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/list.js
 for (const type of CeL.wiki.list.type_list) {
 	// Can not use `= (title, options) {}` !
 	// arrow function expression DO NOT has this, arguments, super, or
