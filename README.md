@@ -9,7 +9,7 @@
 [![DeepScan grade](https://deepscan.io/api/teams/4788/projects/6757/branches/58325/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=4788&pid=6757&bid=58325)
 
 # JavaScript MediaWiki API
-A simple way to access MediaWiki API via JavaScript with simple wikitext parser.
+A simple way to access MediaWiki API via JavaScript with [wikitext parser](https://kanasimi.github.io/CeJS/application/net/wiki/parser.html).
 This is basically a modern syntax version of [CeJS MediaWiki module](https://github.com/kanasimi/CeJS/blob/master/application/net/wiki). For example, using [async functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function).
 
 ## Features
@@ -98,7 +98,7 @@ const Wikiapi = require('wikiapi');
 	});
 })();
 
-// parse wiki page (The parser is more powerful than the example. Try yourself!)
+// parse wiki page (The parser is more powerful than the example. Please refer to [Wikitext parser examples](https://kanasimi.github.io/CeJS/application/net/wiki/parser.html))
 (async () => {
 	// Usage with other language
 	const zhwiki = new Wikiapi('zh');
