@@ -16,7 +16,7 @@ This is basically a modern syntax version of [CeJS MediaWiki module](https://git
 *   Read / edit pages.
 *   Get list of categorymembers, pages transclude specified template, and more...
 *   Auto-limited editing rate.
-*   Parse wikitext / pages. You may modify parts of the wikitext, then regenerate the page just using .toString().
+*   Parse wikitext / pages. You may modify parts of the wikitext, then regenerate the page just using .toString(). See [Wikitext parser examples](https://kanasimi.github.io/CeJS/application/net/wiki/parser.html).
 
 ## Installation
 Install [node.js](https://nodejs.org/) first.
@@ -98,7 +98,7 @@ const Wikiapi = require('wikiapi');
 	});
 })();
 
-// parse wiki page (The parser is more powerful than the example. Please refer to [Wikitext parser examples](https://kanasimi.github.io/CeJS/application/net/wiki/parser.html))
+// parse wiki page (The parser is more powerful than the example. Please refer to link of wikitext parser examples showing in "Features" section.)
 (async () => {
 	// Usage with other language
 	const zhwiki = new Wikiapi('zh');
