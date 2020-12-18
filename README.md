@@ -9,14 +9,14 @@
 [![DeepScan grade](https://deepscan.io/api/teams/4788/projects/6757/branches/58325/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=4788&pid=6757&bid=58325)
 
 # JavaScript MediaWiki API
-A simple way to access MediaWiki API via JavaScript with [wikitext parser](https://kanasimi.github.io/CeJS/application/net/wiki/parser.html).
+A simple way to access MediaWiki API via JavaScript with [wikitext parser](https://kanasimi.github.io/CeJS/_test%20suite/wikitext_parser.html).
 This is basically a modern syntax version of [CeJS MediaWiki module](https://github.com/kanasimi/CeJS/blob/master/application/net/wiki). For example, using [async functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function).
 
 ## Features
 *   Read / edit pages.
 *   Get list of categorymembers, pages transclude specified template, and more...
 *   Auto-limited editing rate.
-*   Parse wikitext / pages. You may modify parts of the wikitext, then regenerate the page just using .toString(). See [wikitext parser examples](https://kanasimi.github.io/CeJS/application/net/wiki/parser.html).
+*   Parse wikitext / pages. You may modify parts of the wikitext, then regenerate the page just using .toString(). See [wikitext parser examples](https://kanasimi.github.io/CeJS/_test%20suite/wikitext_parser.html).
 
 ## Installation
 Install [node.js](https://nodejs.org/) first.
