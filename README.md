@@ -1,6 +1,6 @@
 ﻿[![npm version](https://badge.fury.io/js/wikiapi.svg)](https://www.npmjs.com/package/wikiapi)
 [![npm downloads](https://img.shields.io/npm/dm/wikiapi.svg)](https://www.npmjs.com/package/wikiapi)
-[![Build Status](https://travis-ci.org/kanasimi/wikiapi.svg?branch=master)](https://travis-ci.org/kanasimi/wikiapi)
+[![Travis CI Build Status](https://travis-ci.com/kanasimi/wikiapi.svg?branch=master)](https://travis-ci.com/kanasimi/wikiapi)
 [![codecov](https://codecov.io/gh/kanasimi/wikiapi/branch/master/graph/badge.svg)](https://codecov.io/gh/kanasimi/wikiapi)
 
 [![Known Vulnerabilities](https://snyk.io/test/github/kanasimi/wikiapi/badge.svg?targetFile=package.json)](https://snyk.io/test/github/kanasimi/wikiapi?targetFile=package.json)
@@ -64,22 +64,32 @@ const Wikiapi = require('wikiapi');
 	console.log(page_data.wikitext);
 })();
 
-// edit page
+// edit page: method 1
 (async () => {
 	const enwiki = new Wikiapi;
 	await enwiki.login('bot name', 'password', 'en');
-	let page_data = await enwiki.page('Wikipedia:Sandbox');
+	let SB_page_data = await enwiki.page('Wikipedia:Sandbox');
+	// You may do some operations on SB_page_data
+	const parsed = SB_page_data.parse();
+	parsed.each('template', template_token => {/*...*/});
+	// and then edit it. ** You MUST call enwiki.page() before enwiki.edit()! **
 	await enwiki.edit(function(page_data) {
 		return page_data.wikitext
 			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 	}, {bot: 1});
+	await enwiki.edit('Just replace by this wikitext', {bot: 1, minor: 1, nocreate: 1});
 
-	// alternative method
+	console.log('Done.');
+})();
+
+// edit page: method 2
+(async () => {
+	const enwiki = new Wikiapi;
+	await enwiki.login('bot name', 'password', 'en');
 	await enwiki.edit_page('Wikipedia:Sandbox', function(page_data) {
 		return page_data.wikitext
 			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 	}, {bot: 1, nocreate: 1, minor: 1});
-
 	console.log('Done.');
 })();
 
