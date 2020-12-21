@@ -68,7 +68,7 @@ const Wikiapi = require('wikiapi');
 (async () => {
 	const enwiki = new Wikiapi;
 	await enwiki.login('bot name', 'password', 'en');
-	let SB_page_data = await enwiki.page('Wikipedia:Sandbox');
+	const SB_page_data = await enwiki.page('Wikipedia:Sandbox');
 	// You may do some operations on SB_page_data
 	const parsed = SB_page_data.parse();
 	parsed.each('template', template_token => {/*...*/});
@@ -98,8 +98,8 @@ const Wikiapi = require('wikiapi');
 	const enwiki = new Wikiapi('en');
 	const link_from = await wiki.redirects_here('ABC');
 	await wiki.for_each_page(link_from, page_data => {
-		// Return undefined if you just want to get the page data.
-		return;
+		// Return `Wikiapi.skip_edit` if you just want to get the page data.
+		return Wikiapi.skip_edit;
 		return 'You may also modify page contents for each page';
 	}, {
 		// Only needed if ypu want to modify page.
