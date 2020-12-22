@@ -137,7 +137,14 @@ add_test('edit page', async (assert, setup_test, finish_test) => {
 	const password = null;
 
 	const enwiki = new Wikiapi;
-	await enwiki.login(bot_name, password, 'en');
+	await enwiki.login({ user_name: bot_name, password, API_URL: 'en' });
+	const query_result = await enwiki.query({ action: 'query', meta: 'userinfo' });
+	if (password) {
+		assert([bot_name, query_result?.query?.userinfo?.name], 'test wiki.query()');
+	} else {
+		assert(['' in query_result?.query?.userinfo?.anon], 'test wiki.query()');
+	}
+
 	await enwiki.page(test_page_title);
 
 	// CeL.set_debug(6);
@@ -173,7 +180,7 @@ add_test('edit page #2', async (assert, setup_test, finish_test) => {
 	const password = null;
 
 	const zhwiki = new Wikiapi;
-	await zhwiki.login(bot_name, password, 'zh');
+	await zhwiki.login(bot_name, password, { API_URL: 'zh' });
 
 	// CeL.set_debug(6);
 	try {
@@ -208,7 +215,7 @@ add_test('parse page: en', async (assert, setup_test, finish_test) => {
 	const password = null;
 
 	const enwiki = new Wikiapi('en');
-	await enwiki.login(user_name, password);
+	await enwiki.login(user_name, password/*, 'en' */);
 	const page_data = await enwiki.page('Human');
 	const template_list = [];
 	page_data.parse().each('template',

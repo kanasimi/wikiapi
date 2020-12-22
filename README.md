@@ -71,12 +71,15 @@ const Wikiapi = require('wikiapi');
 	const SB_page_data = await enwiki.page('Wikipedia:Sandbox');
 	// You may do some operations on SB_page_data
 	const parsed = SB_page_data.parse();
-	parsed.each('template', template_token => {/*...*/});
+	parsed.each('template', template_token => {/* modify token */});
 	// and then edit it. ** You MUST call enwiki.page() before enwiki.edit()! **
+	await enwiki.edit(parsed.toString(), {bot: 1, minor: 1, nocreate: 1});
+	// exmaple 2
 	await enwiki.edit(function(page_data) {
 		return page_data.wikitext
 			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 	}, {bot: 1});
+	// exmaple 3
 	await enwiki.edit('Just replace by this wikitext', {bot: 1, minor: 1, nocreate: 1});
 
 	console.log('Done.');

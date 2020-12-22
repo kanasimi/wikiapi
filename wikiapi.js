@@ -87,7 +87,12 @@ function wikiapi_login(user_name, password, API_URL) {
 				if (error) {
 					reject(error);
 				} else {
-					resolve(data);
+					// 注意: wiki_session.login() 後之操作，應該採 wiki_session.run()
+					// 的方式，確保此時已經執行過 pre-loading functions @ function wiki_API():
+					// wiki_session.siteinfo(), wiki_session.adapt_task_configurations()
+
+					// 確保 resolve() 時已經執行過 pre-loading functions
+					wiki_session.run(resolve.bind(null, data));
 				}
 			},
 			// task_configuration_page: 'page title',
