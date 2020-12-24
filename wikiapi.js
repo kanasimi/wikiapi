@@ -593,6 +593,24 @@ function wikiapi_redirects_here(title, options) {
 
 // --------------------------------------------------------
 
+function wikiapi_register_template_alias(template_name, options) {
+	function wikiapi_register_template_alias_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		wiki.register_template_alias(template_name, (redirect_list, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				// console.trace( redirect_list);
+				resolve(redirect_list);
+			}
+		}, options);
+	}
+
+	return new Promise(wikiapi_register_template_alias_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
 // Upload a local file directly:
 //let result = await wiki_session.upload_file({ file_path: '/local/file/path', comment: '', });
 // Upload file from URL:
@@ -909,6 +927,7 @@ Object.assign(wikiapi.prototype, {
 	// Warning: 採用 wiki_API.redirects_here(title) 才能追溯重新導向的標的。
 	// wiki.redirects() 無法追溯重新導向的標的！
 	redirects_here: wikiapi_redirects_here,
+	register_template_alias: wikiapi_register_template_alias,
 
 	upload: wikiapi_upload_file,
 
@@ -938,7 +957,7 @@ for (const property_name of ('task_configuration|latest_task_configuration').spl
 }
 
 // wrapper for sync functions
-for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title'
+for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title|normalize_template_name|is_template'
 	// CeL.run('application.net.wiki.featured_content');
 	// [].map(wiki.to_talk_page.bind(wiki))
 	+ '|get_featured_content_configurations').split('|')) {
