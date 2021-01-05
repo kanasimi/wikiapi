@@ -123,6 +123,23 @@ const Wikiapi = require('wikiapi');
 		token => console.log(token.name));
 })();
 
+// Get information from Infobox template
+(async () => {
+	const wiki = new Wikiapi('en');
+	const page_data = await wiki.page('JavaScript');
+	const parsed = page_data.parse();
+	let infobox;
+	parsed.each('template', template_token => {
+		if (template_token.name.startsWith('Infobox')) {
+			infobox = template_token.parameters;
+			return parsed.each.exit;
+		}
+	});
+	for (const [key, value] of Object.entries(infobox))
+		infobox[key] = value.toString();
+	console.log(infobox);
+})();
+
 // listen to new edits
 (async () => {
 	const wiki = new Wikiapi;
