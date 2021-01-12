@@ -593,10 +593,43 @@ function wikiapi_redirects_here(title, options) {
 
 // --------------------------------------------------------
 
-function wikiapi_register_template_alias(template_name, options) {
-	function wikiapi_register_template_alias_executor(resolve, reject) {
+// @example
+async () => {
+	const wiki_session = new Wikiapi;
+	await wiki_session.register_redirects([template_name_1,
+		template_name_2, template_name_3], { namespace: 'Template' });
+
+	// ...
+
+	const page_data = await wiki_session.page(page_title);
+	/** {Array} parsed page content 頁面解析後的結構。 */
+	const parsed = page_data.parse();
+	parsed.each('template', function (token, index, parent) {
+		if (wiki_session.is_template(template_name_1, token)) {
+			// ...
+			return;
+		}
+		if (wiki_session.is_template(template_name_2, token)) {
+			// ...
+			return;
+		}
+
+		// or:
+		switch (wiki_session.redirect_target_of(token)) {
+			case wiki_session.redirect_target_of(template_name_1):
+				break;
+			case wiki_session.redirect_target_of(template_name_2):
+				break;
+			case wiki_session.redirect_target_of(template_name_3):
+				break;
+		}
+	});
+}
+
+function wikiapi_register_redirects(template_name, options) {
+	function wikiapi_register_redirects_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
-		wiki.register_template_alias(template_name, (redirect_list, error) => {
+		wiki.register_redirects(template_name, (redirect_list, error) => {
 			if (error) {
 				reject(error);
 			} else {
@@ -606,7 +639,7 @@ function wikiapi_register_template_alias(template_name, options) {
 		}, options);
 	}
 
-	return new Promise(wikiapi_register_template_alias_executor.bind(this));
+	return new Promise(wikiapi_register_redirects_executor.bind(this));
 }
 
 // --------------------------------------------------------
@@ -927,7 +960,7 @@ Object.assign(wikiapi.prototype, {
 	// Warning: 採用 wiki_API.redirects_here(title) 才能追溯重新導向的標的。
 	// wiki.redirects() 無法追溯重新導向的標的！
 	redirects_here: wikiapi_redirects_here,
-	register_template_alias: wikiapi_register_template_alias,
+	register_redirects: wikiapi_register_redirects,
 
 	upload: wikiapi_upload_file,
 
@@ -957,7 +990,7 @@ for (const property_name of ('task_configuration|latest_task_configuration').spl
 }
 
 // wrapper for sync functions
-for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title|normalize_template_name|is_template'
+for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title|redirect_target_of|is_template'
 	// CeL.run('application.net.wiki.featured_content');
 	// [].map(wiki.to_talk_page.bind(wiki))
 	+ '|get_featured_content_configurations').split('|')) {
