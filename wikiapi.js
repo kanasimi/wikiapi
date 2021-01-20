@@ -934,6 +934,10 @@ function wikiapi_site_name(language, options) {
 // exports
 
 Object.assign(wikiapi.prototype, {
+	get_wiki_session() {
+		return this[KEY_wiki_session];
+	},
+
 	site_name: wikiapi_site_name,
 	login: wikiapi_login,
 
