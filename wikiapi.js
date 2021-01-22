@@ -440,7 +440,7 @@ function wikiapi_data(key, property, options) {
 function wikiapi_list(list_type, title, options) {
 	function wikiapi_list_executor(resolve, reject) {
 		options = CeL.setup_options(options);
-		const wiki = this[KEY_wiki_session];
+		//const wiki = this[KEY_wiki_session];
 		CeL.wiki.list(title, (list/* , target, options */) => {
 			// console.trace(list);
 			if (list.error) {
@@ -448,12 +448,11 @@ function wikiapi_list(list_type, title, options) {
 			} else {
 				resolve(list);
 			}
-		}, {
-			[KEY_SESSION]: wiki,
+		}, this.append_session_to_options({
 			type: list_type,
 			// namespace: '0|1',
 			...options
-		});
+		}));
 
 		/**
 		 * <code>
@@ -546,7 +545,7 @@ function wikiapi_search(key, options) {
 
 function wikiapi_redirects_root(title, options) {
 	function wikiapi_redirects_root_executor(resolve, reject) {
-		const wiki = this[KEY_wiki_session];
+		//const wiki = this[KEY_wiki_session];
 		// using wiki_API.redirects_root
 		wiki_API.redirects_root(title, (_title, page_data, error) => {
 			if (error) {
@@ -557,10 +556,7 @@ function wikiapi_redirects_root(title, options) {
 			} else {
 				resolve(_title);
 			}
-		}, {
-			[KEY_SESSION]: wiki,
-			...options
-		});
+		}, this.append_session_to_options(options));
 	}
 
 	return new Promise(wikiapi_redirects_root_executor.bind(this));
@@ -570,22 +566,25 @@ function wikiapi_redirects_root(title, options) {
 
 function wikiapi_redirects_here(title, options) {
 	function wikiapi_redirects_here_executor(resolve, reject) {
-		const wiki = this[KEY_wiki_session];
+		//const wiki = this[KEY_wiki_session];
 		// using wiki_API.redirects_here
 		wiki_API.redirects_here(title, (root_page_data, redirect_list, error) => {
 			if (error) {
 				reject(error);
 			} else {
-				// assert: root_page_data.redirects === redirect_list
-				// console.log([root_page_data, redirect_list]);
+				if (false) {
+					console.trace(root_page_data);
+					console.trace(redirect_list);
+					console.assert(!redirect_list
+						|| redirect_list === root_page_data.redirect_list);
+				}
 				resolve(redirect_list);
 			}
-		}, {
-			[KEY_SESSION]: wiki,
-			// redirect_list[0] === root_page_data
+		}, this.append_session_to_options({
+			// Making .redirect_list[0] the redirect target.
 			include_root: true,
 			...options
-		});
+		}));
 	}
 
 	return new Promise(wikiapi_redirects_here_executor.bind(this));
@@ -810,9 +809,9 @@ function wikiapi_convert_Chinese(text, options) {
 		if (typeof options === 'string') {
 			options = { uselang: options };
 		}
-		const site_name = wiki_API.site_name(null, { [KEY_SESSION]: wiki });
+		const site_name = wiki_API.site_name(null, this.append_session_to_options());
 		if (/^zh/.test(site_name)) {
-			options = Object.assign({ [KEY_SESSION]: wiki }, options);
+			options = this.append_session_to_options(options);
 		}
 
 		// using wiki_API.search
@@ -864,11 +863,8 @@ function wikiapi_run_SQL(SQL, for_each_row/* , options */) {
 
 function wikiapi_setup_layout_elements(options) {
 	function wikiapi_setup_layout_elements_executor(resolve, reject) {
-		const wiki = this[KEY_wiki_session];
-		wiki_API.setup_layout_elements(resolve, {
-			[KEY_SESSION]: wiki,
-			...options
-		});
+		//const wiki = this[KEY_wiki_session];
+		wiki_API.setup_layout_elements(resolve, this.append_session_to_options(options));
 	}
 
 	return new Promise(wikiapi_setup_layout_elements_executor.bind(this));
@@ -924,8 +920,8 @@ wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
 
 function wikiapi_site_name(language, options) {
 	if (language === undefined) {
-		const wiki = this[KEY_wiki_session];
-		options = { [KEY_SESSION]: wiki, ...options };
+		//const wiki = this[KEY_wiki_session];
+		options = this.append_session_to_options(options);
 	}
 	return wiki_API.site_name(language, options);
 }
@@ -934,8 +930,9 @@ function wikiapi_site_name(language, options) {
 // exports
 
 Object.assign(wikiapi.prototype, {
-	get_wiki_session() {
-		return this[KEY_wiki_session];
+	append_session_to_options(options) {
+		//Object.assign({ [KEY_SESSION]: wiki }, options)
+		return { ...options, [KEY_SESSION]: this[KEY_wiki_session] };
 	},
 
 	site_name: wikiapi_site_name,
