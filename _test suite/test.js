@@ -258,7 +258,7 @@ add_test('featured content: en', async (assert, setup_test, finish_test) => {
 	assert(FC_data_hash['Sun'].type === 'FA', '[[w:en:Sun]] is featured article');
 
 	// cache alias of {{Article history}}
-	const Article_history_alias = (await wiki.redirects_here('Template:Article history'))
+	const Article_history_alias = (await enwiki.redirects_here('Template:Article history'))
 		.map(page_data => page_data.title
 			// remove "Template:" prefix
 			.replace(/^[^:]+:/, ''));
