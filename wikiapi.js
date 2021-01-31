@@ -118,9 +118,13 @@ const page_data_attributes = {
 	parse: {
 		value: function parse(options) {
 			// this === page_data
-			options = { ...options, [KEY_SESSION]: this[KEY_wiki_session] };
-			// function parse_page(options) @ CeL.wiki
-			return wiki_API.parser(this, options).parse(options);
+
+			//options = { ...options, [KEY_SESSION]: this[KEY_wiki_session] };
+			options = wikiapi.prototype.append_session_to_options.call(this, options);
+
+			// using function parse_page(options) @ CeL.wiki
+			return wiki_API.parser(this, options).parse();
+			// return {Array}parsed
 		}
 	},
 };
@@ -613,7 +617,7 @@ async () => {
 			return;
 		}
 
-		// or:
+		// alternative method:
 		switch (wiki_session.redirect_target_of(token)) {
 			case wiki_session.redirect_target_of(template_name_1):
 				break;
@@ -932,7 +936,8 @@ function wikiapi_site_name(language, options) {
 Object.assign(wikiapi.prototype, {
 	append_session_to_options(options) {
 		//Object.assign({ [KEY_SESSION]: wiki }, options)
-		return { ...options, [KEY_SESSION]: this[KEY_wiki_session] };
+		//return { ...options, [KEY_SESSION]: this[KEY_wiki_session] };
+		return wiki_API.add_session_to_options(this[KEY_wiki_session], options);
 	},
 
 	site_name: wikiapi_site_name,
