@@ -582,7 +582,7 @@ function wikiapi_redirects_here(title, options) {
 					console.assert(!redirect_list
 						|| redirect_list === root_page_data.redirect_list);
 				}
-				resolve(redirect_list);
+				resolve(redirect_list || root_page_data);
 			}
 		}, this.append_session_to_options({
 			// Making .redirect_list[0] the redirect target.
@@ -996,7 +996,7 @@ for (const property_name of ('task_configuration|latest_task_configuration').spl
 }
 
 // wrapper for sync functions
-for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title|redirect_target_of|is_template'
+for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title|redirect_target_of|aliases_of_page|is_template'
 	// CeL.run('application.net.wiki.featured_content');
 	// [].map(wiki.to_talk_page.bind(wiki))
 	+ '|get_featured_content_configurations').split('|')) {
