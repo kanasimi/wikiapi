@@ -80,7 +80,7 @@ const Wikiapi = require('wikiapi');
 			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 	}, {bot: 1});
 	// exmaple 3
-	await enwiki.edit('Just replace by this wikitext', {bot: 1, minor: 1, nocreate: 1});
+	await enwiki.edit('Just replace by this wikitext', {bot: 1, minor: 1, nocreate: 1, summary: 'test edit'});
 
 	console.log('Done.');
 })();
@@ -92,7 +92,7 @@ const Wikiapi = require('wikiapi');
 	await enwiki.edit_page('Wikipedia:Sandbox', function(page_data) {
 		return page_data.wikitext
 			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
-	}, {bot: 1, nocreate: 1, minor: 1});
+	}, {bot: 1, nocreate: 1, minor: 1, summary: 'test edit'});
 	console.log('Done.');
 })();
 
@@ -106,7 +106,7 @@ const Wikiapi = require('wikiapi');
 		return 'You may also modify page contents for each page';
 	}, {
 		// Only needed if ypu want to modify page.
-		summary: 'summary',
+		summary: 'test edit',
 		bot: 1, nocreate: 1, minor: 1
 	});
 })();

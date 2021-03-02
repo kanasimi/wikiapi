@@ -107,6 +107,8 @@ const page_data_attributes = {
 	 */
 	wikitext: {
 		get() {
+			//console.trace(this);
+			//console.log(wiki_API.content_of(this, 0));
 			return wiki_API.content_of(this, 0);
 		}
 	},
@@ -129,6 +131,15 @@ const page_data_attributes = {
 	},
 };
 
+function set_page_data_attributes(page_data, wiki) {
+	// `page_data` maybe non-object when error occurres.
+	if (page_data) {
+		page_data[KEY_wiki_session] = wiki;
+		Object.defineProperties(page_data, page_data_attributes);
+	}
+	return page_data;
+}
+
 function wikiapi_page(title, options) {
 	function wikiapi_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
@@ -136,11 +147,7 @@ function wikiapi_page(title, options) {
 			if (error) {
 				reject(error);
 			} else {
-				if (page_data) {
-					page_data[KEY_wiki_session] = wiki;
-					Object.defineProperties(page_data, page_data_attributes);
-				}
-				resolve(page_data);
+				resolve(set_page_data_attributes(page_data, wiki));
 			}
 		}, {
 			rvlimit: options && options.revisions,
@@ -222,11 +229,8 @@ function wikiapi_edit_page(title, content, options) {
 		// console.trace(wiki);
 		// console.trace(wiki.last_page);
 
-		// TODO: for (typeof content === 'function'), 
-		// set page_data_attributes
-
 		// wiki.edit(page contents, options, callback)
-		wiki.edit(content, options, (title, error, result) => {
+		wiki.edit(typeof content === 'function' ? page_data => content(set_page_data_attributes(page_data, wiki)) : content, options, (title, error, result) => {
 			// console.trace('wikiapi_edit_page: callbacked');
 			// console.log(title);
 			// console.log(wiki.running);
@@ -707,11 +711,7 @@ function wikiapi_for_each_page(page_list, for_each_page, options) {
 			},
 			each(page_data/* , messages, config */) {
 				try {
-					// `page_data` maybe non-object when error occurres.
-					if (page_data) {
-						page_data[KEY_wiki_session] = wiki;
-						Object.defineProperties(page_data, page_data_attributes);
-					}
+					set_page_data_attributes(page_data, wiki);
 
 					if (work_options.will_call_methods) {
 						// ** 這邊的操作在 wiki.next() 中會因 .will_call_methods 先執行一次。
