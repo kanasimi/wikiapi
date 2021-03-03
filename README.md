@@ -107,7 +107,9 @@ const Wikiapi = require('wikiapi');
 	}, {
 		// Only needed if ypu want to modify page.
 		summary: 'test edit',
-		bot: 1, nocreate: 1, minor: 1
+		// prevent creating new pages
+		nocreate: 1,
+		bot: 1, minor: 1
 	});
 })();
 
