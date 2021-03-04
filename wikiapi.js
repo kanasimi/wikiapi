@@ -230,7 +230,9 @@ function wikiapi_edit_page(title, content, options) {
 		// console.trace(wiki.last_page);
 
 		// wiki.edit(page contents, options, callback)
-		wiki.edit(typeof content === 'function' ? page_data => content(set_page_data_attributes(page_data, wiki)) : content, options, (title, error, result) => {
+		wiki.edit(typeof content === 'function' ? function (page_data) {
+			return content.call(this, set_page_data_attributes(page_data, wiki));
+		} : content, options, (title, error, result) => {
 			// console.trace('wikiapi_edit_page: callbacked');
 			// console.log(title);
 			// console.log(wiki.running);
