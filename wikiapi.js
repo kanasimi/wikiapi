@@ -687,7 +687,7 @@ function wikiapi_upload_file(file_data) {
  *            processor for each page. for_each_page(page_data with contents)
  * @param {Object}[options]
  *            e.g., { summary: '' }<br />
- *            e.g., { no_edit: true, no_warning: true, allow_empty: true, page_options: {
+ *            e.g., { no_edit: true, no_warning: true, no_message: true, allow_empty: true, page_options: {
  *            redirects: 1, rvprop: 'ids|content|timestamp|user' } }<br />
  *            no_warning: hide "wiki_API_page: No contents: [[title]]" messages
  */
