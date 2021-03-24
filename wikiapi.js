@@ -661,8 +661,9 @@ function wikiapi_register_redirects(template_name, options) {
 // filename:'Will set via .file_path or .media_url if not settled.',
 // text: '', text: { description: '', source: '', author: '', permission: '',... },
 // bot: 1, tags:"tag1|tag2", ignorewarnings: 1, ...
-function wikiapi_upload_file(file_data) {
-	function wikiapi_upload_file_executor(resolve, reject) {
+function wikiapi_upload(file_data) {
+	// 2021/3/25 renamed from old name: wikiapi_upload_file(), wikiapi_upload_file_executor()
+	function wikiapi_upload_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
 		wiki.upload(file_data, (result, error) => {
 			if (error) {
@@ -673,7 +674,7 @@ function wikiapi_upload_file(file_data) {
 		});
 	}
 
-	return new Promise(wikiapi_upload_file_executor.bind(this));
+	return new Promise(wikiapi_upload_executor.bind(this));
 }
 
 // --------------------------------------------------------
@@ -970,7 +971,7 @@ Object.assign(wikiapi.prototype, {
 	redirects_here: wikiapi_redirects_here,
 	register_redirects: wikiapi_register_redirects,
 
-	upload: wikiapi_upload_file,
+	upload: wikiapi_upload,
 
 	get_featured_content: wikiapi_get_featured_content,
 
