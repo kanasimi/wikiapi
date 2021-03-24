@@ -193,13 +193,13 @@ const Wikiapi = require('wikiapi');
 	const wiki = new Wikiapi;
 	await wiki.login('user', 'password', 'test');
 	// Upload a local file directly:
-	//let result = await wiki.upload_file({ file_path: '/local/file/path', comment: '', text: '' || {description: '', ...} });
-	let result = await wiki.upload_file({ file_path: '/local/file/path', comment: '',
+	//let result = await wiki.upload({ file_path: '/local/file/path', comment: '', text: '' || {description: '', ...} });
+	let result = await wiki.upload({ file_path: '/local/file/path', comment: '',
 		description: '', date: new Date() || '2021-01-01', source_url: 'https://github.com/kanasimi/wikiapi', author: '[[User:user]]', permission: '{{cc-by-sa-2.5}}', other_versions: '', other_fields: '',
 		license: ['{{cc-by-sa-2.5}}'], categories: ['[[Category:test images]]']
 	});
 	// Upload file from URL:
-	result = await wiki.upload_file({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
+	result = await wiki.upload({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
 })();
 
 // update wikidata
