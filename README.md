@@ -196,7 +196,9 @@ const Wikiapi = require('wikiapi');
 	//let result = await wiki.upload({ file_path: '/local/file/path', comment: '', text: '' || {description: '', ...} });
 	let result = await wiki.upload({ file_path: '/local/file/path', comment: '',
 		description: '', date: new Date() || '2021-01-01', source_url: 'https://github.com/kanasimi/wikiapi', author: '[[User:user]]', permission: '{{cc-by-sa-2.5}}', other_versions: '', other_fields: '',
-		license: ['{{cc-by-sa-2.5}}'], categories: ['[[Category:test images]]']
+		license: ['{{cc-by-sa-2.5}}'], categories: ['[[Category:test images]]'],
+		// To overwrite existing files
+		ignorewarnings: 1,
 	});
 	// Upload file from URL:
 	result = await wiki.upload({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
