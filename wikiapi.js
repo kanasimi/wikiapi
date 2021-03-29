@@ -1,4 +1,10 @@
-﻿// node_modules\.bin\jsdoc --package package.json --readme README.md --destination docs wikiapi.js
+﻿/**
+ * @name Main code of module wikiapi
+ */
+
+// To generate documents:
+// node_modules\.bin\jsdoc --readme README.md --destination docs wikiapi.js
+
 'use strict';
 
 let CeL;
@@ -47,7 +53,8 @@ const KEY_SESSION = wiki_API.KEY_SESSION;
 wiki_API.set_language('en');
 
 /**
- * key to get {wiki_API}operator of CeJS MediaWiki module inside Wikiapi. `this[KEY_wiki_session]` inside module code will get {wiki_API}operator.
+ * key to get {wiki_API}operator of CeJS MediaWiki module inside Wikiapi.
+ * `this[KEY_wiki_session]` inside module code will get {wiki_API}operator.
  * 
  * @type Symbol
  * 
@@ -61,14 +68,15 @@ const KEY_wiki_session = Symbol('wiki session');
  * main Wikiapi operator 操作子.
  * 
  * @param {String|Object}[API_URL]
- *            language code or API URL of MediaWiki project.<br /> Input {Object} will be treat as options.
+ *            language code or API URL of MediaWiki project.<br />
+ *            Input {Object} will be treat as options.
  * 
  * @class
  * @constructor Wikiapi
  */
 function Wikiapi(API_URL) {
 	const wiki_session = new wiki_API(null, null, API_URL);
-	//this[KEY_wiki_session] = new wiki_API(null, null, API_URL);
+	// this[KEY_wiki_session] = new wiki_API(null, null, API_URL);
 	this.setup_wiki_session(wiki_session);
 }
 
@@ -85,14 +93,18 @@ function setup_wiki_session(wiki_session) {
 Object.defineProperty(Wikiapi.prototype, 'setup_wiki_session', { value: setup_wiki_session });
 
 /**
- * login into the target API using the provided username and password. For bot, see [Special:BotPasswords] on your wiki.
+ * login into the target API using the provided username and password. For bot,
+ * see [Special:BotPasswords] on your wiki.
  * 
- * @param {String} user_name Account username.
- * @param {String} password Account's password.
- * @param {String} [API_URL] API URL of target wiki site.
+ * @param {String}user_name
+ *            Account username.
+ * @param {String}password
+ *            Account's password.
+ * @param {String}[API_URL]
+ *            API URL of target wiki site.
  * 
  * @example <caption>Login to wiki site.</caption>
- * // <code>
+// <code>
 const wiki = new Wikiapi;
 await wiki.login('user_name', 'password', 'en');
 // </code>
@@ -139,8 +151,8 @@ const page_data_attributes = {
 	 */
 	wikitext: {
 		get() {
-			//console.trace(this);
-			//console.log(wiki_API.content_of(this, 0));
+			// console.trace(this);
+			// console.log(wiki_API.content_of(this, 0));
 			return wiki_API.content_of(this, 0);
 		}
 	},
@@ -153,7 +165,7 @@ const page_data_attributes = {
 		value: function parse(options) {
 			// this === page_data
 
-			//options = { ...options, [KEY_SESSION]: this[KEY_wiki_session] };
+			// options = { ...options, [KEY_SESSION]: this[KEY_wiki_session] };
 			options = Wikiapi.prototype.append_session_to_options.call(this, options);
 
 			// using function parse_page(options) @ CeL.wiki
@@ -174,10 +186,15 @@ function set_page_data_attributes(page_data, wiki) {
 
 /**
  * given a title, returns the page's data.
- * @param {String} title page title
- * @param {Object} [options] options to run this function
+ * 
+ * @param {String}title
+ *            page title
+ * @param {Object}[options]
+ *            options to run this function
  * 
  * @returns {Object} page's data
+ *
+ * @memberof Wikiapi.prototype
  */
 function Wikiapi_page(title, options) {
 	function Wikiapi_page_executor(resolve, reject) {
@@ -202,11 +219,16 @@ function Wikiapi_page(title, options) {
 /**
  * tracking revisions to lookup what revision add/removed text `to_search`.
  * 
- * @param {String} title page title
- * @param {String} to_search filter / text to search
- * @param {Object} [options] options to run this function
+ * @param {String}title
+ *            page title
+ * @param {String}to_search
+ *            filter / text to search
+ * @param {Object}[options]
+ *            options to run this function
  * 
  * @returns {Array} [ newer_revision, page_data, error ]
+ *
+ * @memberof Wikiapi.prototype
  */
 function Wikiapi_tracking_revisions(title, to_search, options) {
 	function Wikiapi_tracking_revisions_executor(resolve, reject) {
@@ -305,7 +327,8 @@ function Wikiapi_edit_page(title, content, options) {
 // ((return [ CeL.wiki.edit.cancel, 'skip' ];)) 來跳過 (skip) 本次編輯動作，不特別顯示或處理。
 // 被 skip/pass 的話，連警告都不顯現，當作正常狀況。
 /**
- * Return `Wikiapi.skip_edit` when we running edit function, but do not want to edit current page.
+ * Return `Wikiapi.skip_edit` when we running edit function, but do not want to
+ * edit current page.
  * 
  * @memberof Wikiapi
  */
@@ -348,14 +371,17 @@ function Wikiapi_move_page(move_from_title, move_to_title, options) {
 /**
  * Move to `move_to_title`. Must call `wiki.page(move_from_title)` first!
  * 
+ * @param {Object|String}[move_to_title]
+ * @param {Object}[options]
+ *            options to run this function
+ * 
  * @example <caption>Move `move_from_title` to `move_to_title`.</caption>
- * // <code>
+// <code>
 page_data = await wiki.page(move_from_title);
 try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
 // </code>
- * 
- * @param {Object|String}[move_to_title]
- * @param {Object} [options]
+ *
+ * @memberof Wikiapi.prototype
  */
 function Wikiapi_move_to(move_to_title, options) {
 	function Wikiapi_move_to_executor(resolve, reject) {
@@ -446,9 +472,10 @@ function Wikiapi_purge(title, options) {
 function modify_data_entity(data_to_modify, options) {
 	function modify_data_entity_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
-		//console.trace(wiki);
+		// console.trace(wiki);
 
-		// using function wikidata_edit() @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/data.js
+		// using function wikidata_edit() @
+		// https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/data.js
 		// wiki.edit_data(id, data, options, callback)
 		wiki.data(this).edit_data(data_to_modify || this, options, (data_entity, error) => {
 			if (error) {
@@ -464,8 +491,8 @@ function modify_data_entity(data_to_modify, options) {
 }
 
 function setup_data_entity(data_entity) {
-	//assert: data_entity[KEY_SESSION].host === this
-	//console.trace(data_entity[KEY_SESSION].host === this);
+	// assert: data_entity[KEY_SESSION].host === this
+	// console.trace(data_entity[KEY_SESSION].host === this);
 	delete data_entity[KEY_SESSION];
 
 	Object.defineProperties(data_entity, {
@@ -502,7 +529,7 @@ function Wikiapi_data(key, property, options) {
 function Wikiapi_list(list_type, title, options) {
 	function Wikiapi_list_executor(resolve, reject) {
 		options = CeL.setup_options(options);
-		//const wiki = this[KEY_wiki_session];
+		// const wiki = this[KEY_wiki_session];
 		CeL.wiki.list(title, (list/* , target, options */) => {
 			// console.trace(list);
 			if (list.error) {
@@ -607,7 +634,7 @@ function Wikiapi_search(key, options) {
 
 function Wikiapi_redirects_root(title, options) {
 	function Wikiapi_redirects_root_executor(resolve, reject) {
-		//const wiki = this[KEY_wiki_session];
+		// const wiki = this[KEY_wiki_session];
 		// using wiki_API.redirects_root
 		wiki_API.redirects_root(title, (_title, page_data, error) => {
 			if (error) {
@@ -628,7 +655,7 @@ function Wikiapi_redirects_root(title, options) {
 
 function Wikiapi_redirects_here(title, options) {
 	function Wikiapi_redirects_here_executor(resolve, reject) {
-		//const wiki = this[KEY_wiki_session];
+		// const wiki = this[KEY_wiki_session];
 		// using wiki_API.redirects_here
 		wiki_API.redirects_here(title, (root_page_data, redirect_list, error) => {
 			if (error) {
@@ -706,15 +733,21 @@ function Wikiapi_register_redirects(template_name, options) {
 // --------------------------------------------------------
 
 // Upload a local file directly:
-//let result = await wiki_session.upload({ file_path: '/local/file/path', comment: '', });
+// let result = await wiki_session.upload({ file_path: '/local/file/path',
+// comment: '', });
 // Upload file from URL:
-//let result = await wiki_session.upload({ media_url: 'https://media.url/name.jpg', comment: '', });
-// Other file_data options: @see https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js#L912 /options.text/
+// let result = await wiki_session.upload({ media_url:
+// 'https://media.url/name.jpg', comment: '', });
+// Other file_data options: @see
+// https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js#L912
+// /options.text/
 // filename:'Will set via .file_path or .media_url if not settled.',
-// text: '', text: { description: '', source: '', author: '', permission: '',... },
+// text: '', text: { description: '', source: '', author: '', permission: '',...
+// },
 // bot: 1, tags:"tag1|tag2", ignorewarnings: 1, ...
 function Wikiapi_upload(file_data) {
-	// 2021/3/25 renamed from old name: Wikiapi_upload_file(), Wikiapi_upload_file_executor()
+	// 2021/3/25 renamed from old name: Wikiapi_upload_file(),
+	// Wikiapi_upload_file_executor()
 	function Wikiapi_upload_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
 		wiki.upload(file_data, (result, error) => {
@@ -738,11 +771,14 @@ function Wikiapi_upload(file_data) {
  *            title list or page_data list
  * @param {Function}for_each_page
  *            processor for each page. for_each_page(page_data with contents)
- * @param {Object} [options]
+ * @param {Object}[options]
  *            e.g., { summary: '' }<br />
- *            e.g., { no_edit: true, no_warning: true, no_message: true, allow_empty: true, page_options: {
- *            redirects: 1, rvprop: 'ids|content|timestamp|user' } }<br />
+ *            e.g., { no_edit: true, no_warning: true, no_message: true,
+ *            allow_empty: true, page_options: { redirects: 1, rvprop:
+ *            'ids|content|timestamp|user' } }<br />
  *            no_warning: hide "wiki_API_page: No contents: [[title]]" messages
+ *
+ * @memberof Wikiapi.prototype
  */
 function Wikiapi_for_each_page(page_list, for_each_page, options) {
 	function Wikiapi_for_each_page_executor(resolve, reject) {
@@ -922,7 +958,7 @@ function Wikiapi_run_SQL(SQL, for_each_row/* , options */) {
 
 function Wikiapi_setup_layout_elements(options) {
 	function Wikiapi_setup_layout_elements_executor(resolve, reject) {
-		//const wiki = this[KEY_wiki_session];
+		// const wiki = this[KEY_wiki_session];
 		wiki_API.setup_layout_elements(resolve, this.append_session_to_options(options));
 	}
 
@@ -934,8 +970,12 @@ function Wikiapi_setup_layout_elements(options) {
 /**
  * Get featured content.
  * 
+ * @param {String|Object}[options]
+ *            {String}type (FFA|GA|FA|FL) or options:
+ *            {type,on_conflict(FC_title, {from,to})}
+ * 
  * @example <caption>Get featured content of current wiki site.</caption>
- * // <code>
+// <code>
 // MUST including wiki.featured_content first to get featured content!
 CeL.run('application.net.wiki.featured_content');
 
@@ -944,10 +984,6 @@ CeL.run('application.net.wiki.featured_content');
 const FC_data_hash = await wiki.get_featured_content();
 FC_data_hash === wiki.FC_data_hash;
 // </code>
- * 
- * @param {String|Object}[options]
- *            {String}type (FFA|GA|FA|FL) or options:
- *            {type,on_conflict(FC_title, {from,to})}
  * 
  * @memberof Wikiapi.prototype
  */
@@ -983,13 +1019,15 @@ Wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
 /**
  * Get site name / project name of this {Wikiapi}.
  * 
- * @param {String}[language] language code of wiki session
- * @param {Object} [options] options to run this function
+ * @param {String}[language]
+ *            language code of wiki session
+ * @param {Object}[options]
+ *            options to run this function
  * 
  * @returns {String}site name
  * 
  * @example <caption>Get site name of {Wikiapi}.</caption>
- * // <code>
+// <code>
 const wiki = new Wikiapi('en');
 console.assert(wiki.site_name() === 'enwiki');
 // </code>
@@ -998,7 +1036,7 @@ console.assert(wiki.site_name() === 'enwiki');
  */
 function Wikiapi_site_name(language, options) {
 	if (language === undefined) {
-		//const wiki = this[KEY_wiki_session];
+		// const wiki = this[KEY_wiki_session];
 		options = this.append_session_to_options(options);
 	}
 	return wiki_API.site_name(language, options);
@@ -1009,8 +1047,8 @@ function Wikiapi_site_name(language, options) {
 
 Object.assign(Wikiapi.prototype, {
 	append_session_to_options(options) {
-		//Object.assign({ [KEY_SESSION]: wiki }, options)
-		//return { ...options, [KEY_SESSION]: this[KEY_wiki_session] };
+		// Object.assign({ [KEY_SESSION]: wiki }, options)
+		// return { ...options, [KEY_SESSION]: this[KEY_wiki_session] };
 		return wiki_API.add_session_to_options(this[KEY_wiki_session], options);
 	},
 
@@ -1080,7 +1118,8 @@ for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespa
 	};
 }
 
-//@see get_list.type @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/list.js
+// @see get_list.type @
+// https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/list.js
 for (const type of CeL.wiki.list.type_list) {
 	// Can not use `= (title, options) {}` !
 	// arrow function expression DO NOT has this, arguments, super, or
@@ -1106,6 +1145,7 @@ for (const type of CeL.wiki.list.type_list) {
 
 /**
  * Module wikiapi
+ * 
  * @module wikiapi
  * @type {Function}
  */
