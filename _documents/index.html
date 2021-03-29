@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3>wikiapi 1.14.1</h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><p><a href="https://www.npmjs.com/package/wikiapi"><img src="https://badge.fury.io/js/wikiapi.svg" alt="npm version"></a>
+<a href="https://www.npmjs.com/package/wikiapi"><img src="https://img.shields.io/npm/dm/wikiapi.svg" alt="npm downloads"></a>
+<a href="https://travis-ci.com/kanasimi/wikiapi"><img src="https://travis-ci.com/kanasimi/wikiapi.svg?branch=master" alt="Travis CI Build Status"></a>
+<a href="https://codecov.io/gh/kanasimi/wikiapi"><img src="https://codecov.io/gh/kanasimi/wikiapi/branch/master/graph/badge.svg" alt="codecov"></a></p>
+<p><a href="https://snyk.io/test/github/kanasimi/wikiapi?targetFile=package.json"><img src="https://snyk.io/test/github/kanasimi/wikiapi/badge.svg?targetFile=package.json" alt="Known Vulnerabilities"></a>
+<a href="https://codebeat.co/projects/github-com-kanasimi-wikiapi-master"><img src="https://codebeat.co/badges/47d3b442-fd49-4142-a69b-05171bf8fe36" alt="codebeat badge"></a>
+<a href="https://app.codacy.com/app/kanasimi/wikiapi?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=kanasimi/wikiapi&amp;utm_campaign=Badge_Grade_Dashboard"><img src="https://api.codacy.com/project/badge/Grade/02aa4b9cc9df4fa9b10389abbb139ebf" alt="Codacy Badge"></a>
+<a href="https://deepscan.io/dashboard#view=project&amp;tid=4788&amp;pid=6757&amp;bid=58325"><img src="https://deepscan.io/api/teams/4788/projects/6757/branches/58325/badge/grade.svg" alt="DeepScan grade"></a></p>
+<h1>JavaScript MediaWiki API</h1>
+<p>A simple way to access MediaWiki API via JavaScript with <a href="https://kanasimi.github.io/CeJS/_test%20suite/wikitext_parser.html">wikitext parser</a>.
+This is basically a modern syntax version of <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki">CeJS MediaWiki module</a>. For example, using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function">async functions</a>.</p>
+<h2>Features</h2>
+<ul>
+<li>Read / edit pages.</li>
+<li>Get list of categorymembers, pages transclude specified template, and more...</li>
+<li>Auto-limited editing rate.</li>
+<li>Parse wikitext / pages. You may modify parts of the wikitext, then regenerate the page just using .toString(). See <a href="https://kanasimi.github.io/CeJS/_test%20suite/wikitext_parser.html">wikitext parser examples</a>.</li>
+</ul>
+<h2>Installation</h2>
+<p>Install <a href="https://nodejs.org/">node.js</a> first.</p>
+<pre class="prettyprint source lang-bash"><code>npm install wikiapi
+</code></pre>
+<h2>Usage</h2>
+<p>Here lists some examples of this module.</p>
+<h3>As node.js module</h3>
+<pre class="prettyprint source lang-javascript"><code>// load module
+const Wikiapi = require('wikiapi');
+
+// login
+(async () => {
+	const wiki = new Wikiapi(user, password, 'en');
+	//wiki = new Wikiapi(user_name, password, API_URL);
+	// Calling in another domain
+	//wiki = new Wikiapi({user_name:'', password:'', origin:'*'});
+})();
+
+// load page
+(async () => {
+	// on Wikipedia...
+	const wiki = new Wikiapi('en');
+	// ...or other MediaWiki websites
+	//const wiki = new Wikiapi('https://awoiaf.westeros.org/api.php');
+	let page_data = await wiki.page('Universe', {
+		// You may also set rvprop.
+		//rvprop: 'ids|content|timestamp|user',
+	});
+	console.log(page_data.wikitext);
+})();
+
+// Get multi revisions
+(async () => {
+	const wiki = new Wikiapi;
+	let page_data = await wiki.page('Universe', {
+		// Get multi revisions
+		revisions: 2
+	});
+	console.log(page_data.wikitext);
+})();
+
+// edit page: method 1
+(async () => {
+	const enwiki = new Wikiapi;
+	await enwiki.login('bot name', 'password', 'en');
+	const SB_page_data = await enwiki.page('Wikipedia:Sandbox');
+	// You may do some operations on SB_page_data
+	const parsed = SB_page_data.parse();
+	parsed.each('template', template_token => {/* modify token */});
+	// and then edit it. ** You MUST call enwiki.page() before enwiki.edit()! **
+	await enwiki.edit(parsed.toString(), {bot: 1, minor: 1, nocreate: 1});
+	// exmaple 2
+	await enwiki.edit(function(page_data) {
+		return page_data.wikitext
+			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
+	}, {bot: 1});
+	// exmaple 3
+	await enwiki.edit('Just replace by this wikitext', {bot: 1, minor: 1, nocreate: 1, summary: 'test edit'});
+
+	console.log('Done.');
+})();
+
+// edit page: method 2
+(async () => {
+	const enwiki = new Wikiapi;
+	await enwiki.login('bot name', 'password', 'en');
+	await enwiki.edit_page('Wikipedia:Sandbox', function(page_data) {
+		return page_data.wikitext
+			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
+	}, {bot: 1, nocreate: 1, minor: 1, summary: 'test edit'});
+	console.log('Done.');
+})();
+
+// read / edit pages
+(async () => {
+	const enwiki = new Wikiapi('en');
+	const link_from = await wiki.redirects_here('ABC');
+	await wiki.for_each_page(link_from, page_data => {
+		// Return `Wikiapi.skip_edit` if you just want to get the page data.
+		return Wikiapi.skip_edit;
+		return 'You may also modify page contents for each page';
+	}, {
+		// Only needed if ypu want to modify page.
+		summary: 'test edit',
+		// prevent creating new pages
+		nocreate: 1,
+		bot: 1, minor: 1
+	});
+})();
+
+// parse wiki page (The parser is more powerful than the example. Please refer to link of wikitext parser examples showing in &quot;Features&quot; section.)
+(async () => {
+	// Usage with other language
+	const zhwiki = new Wikiapi('zh');
+	await zhwiki.login('user', 'password');
+	let page_data = await zhwiki.page('Universe');
+	// Other types:
+	// @see wiki_toString @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/parser.js
+	page_data.parse().each('template',
+		token => console.log(token.name));
+})();
+
+// Get information from Infobox template
+(async () => {
+	const wiki = new Wikiapi('en');
+	const page_data = await wiki.page('JavaScript');
+	const parsed = page_data.parse();
+	let infobox;
+	parsed.each('template', template_token => {
+		if (template_token.name.startsWith('Infobox')) {
+			infobox = template_token.parameters;
+			return parsed.each.exit;
+		}
+	});
+	for (const [key, value] of Object.entries(infobox))
+		infobox[key] = value.toString();
+	console.log(infobox);
+})();
+
+// listen to new edits
+(async () => {
+	const wiki = new Wikiapi;
+	wiki.listen(function for_each_row() { ... }, {
+		// 檢查的延遲時間。
+		delay: '2m',
+		filter: function filter_row() { ... },
+		// also get diff
+		with_diff: { LCS: true, line: true },
+		namespace: '0|talk',
+	});
+})();
+
+// read wikidata
+(async () => {
+	const wiki = new Wikiapi;
+	let page_data = await wiki.data('Q1');
+	// Work with other language
+	console.assert(CeL.wiki.data.value_of(page_data.labels.zh) === '宇宙');
+})();
+
+// read wikidata
+(async () => {
+	const wiki = new Wikiapi;
+	let data = await wiki.data('Universe', 'P1419');
+	console.assert(data.includes('shape of the universe'));
+})();
+
+// get list of [[w:en:Category:Chemical_elements]]
+(async () => {
+	const wiki = new Wikiapi;
+	let list = await wiki.categorymembers('Chemical elements');
+	console.log(list);
+	// Working on multiple pages
+	await wiki.for_each_page(
+		/* {Array} title liat / page data list */ list,
+		page_data => { /* ... */ });
+})();
+
+// get pages transcluding {{w:en:Periodic table}}
+(async () => {
+	const wiki = new Wikiapi;
+	let list = await wiki.embeddedin('Template:Periodic table');
+	console.log(list);
+})();
+
+// upload file / media
+(async () => {
+	const wiki = new Wikiapi;
+	await wiki.login('user', 'password', 'test');
+	// Upload a local file directly:
+	//let result = await wiki.upload({ file_path: '/local/file/path', comment: '', text: '' || {description: '', ...} });
+	let result = await wiki.upload({ file_path: '/local/file/path', comment: '',
+		description: '', date: new Date() || '2021-01-01', source_url: 'https://github.com/kanasimi/wikiapi', author: '[[User:user]]', permission: '{{cc-by-sa-2.5}}', other_versions: '', other_fields: '',
+		license: ['{{cc-by-sa-2.5}}'], categories: ['[[Category:test images]]'],
+		// To overwrite existing files
+		ignorewarnings: 1,
+	});
+	// Upload file from URL:
+	result = await wiki.upload({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
+})();
+
+// update wikidata
+(async () => {
+	// Just for test
+	delete CeL.wiki.query.default_maxlag;
+	const wiki = new Wikiapi;
+	await wiki.login('user', 'password', 'test');
+
+	// Get https://test.wikidata.org/wiki/Q7
+	let entity = await wiki.data('Q7');
+	// search [ language, label ]
+	//entity = await wiki.data(['en', 'Earth']);
+
+	// Update claim
+	await entity.modify({ claims: [{ P17: 'Q213280' }] });
+	// Update claim: set country (P17) to 'Test Country 1' (Q213280) ([language, label] as entity)
+	await entity.modify({ claims: [ { language: 'en', country: [, 'Test Country 1'] } ] });
+	// Remove country (P17) : 'Test Country 1' (Q213280)
+	await entity.modify({ claims: [ { language: 'en', country: [, 'Test Country 1'], remove: true } ] });
+
+	// Update label
+	await entity.modify({ labels: [ { language: 'zh-tw', value: '地球' } ] });
+})();
+</code></pre>
+<p>More examples: Please see <a href="https://github.com/kanasimi/wikiapi/blob/master/_test%20suite/test.js">test.js</a>.</p>
+<h2>OS support</h2>
+<table>
+<thead>
+<tr>
+<th>Platform</th>
+<th>support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows</td>
+<td>✔️</td>
+</tr>
+<tr>
+<td>macOS</td>
+<td>✔️</td>
+</tr>
+<tr>
+<td>UNIX, Linux</td>
+<td>✔️</td>
+</tr>
+</tbody>
+</table>
+<h2>See also</h2>
+<p>For old style JavaScript, or general environment usage, please see <a href="https://github.com/kanasimi/wikibot">wikibot</a>.</p>
+<h2>Contact</h2>
+<p>Contact us at <a href="https://github.com/kanasimi/wikiapi/issues">GitHub</a>.</p>
+<p><a href="http://lyrics.meicho.com.tw/"><img src="https://raw.githubusercontent.com/kanasimi/CeJS/master/_test%20suite/misc/logo.jpg" alt="logo"></a></p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-wikiapi.html">wikiapi</a></li></ul><h3>Classes</h3><ul><li><a href="Wikiapi.html">Wikiapi</a></li></ul><h3>Global</h3><ul><li><a href="global.html#KEY_SESSION">KEY_SESSION</a></li><li><a href="global.html#KEY_wiki_session">KEY_wiki_session</a></li><li><a href="global.html#Wikiapi_for_each_page">Wikiapi_for_each_page</a></li><li><a href="global.html#Wikiapi_move_to">Wikiapi_move_to</a></li><li><a href="global.html#Wikiapi_page">Wikiapi_page</a></li><li><a href="global.html#Wikiapi_tracking_revisions">Wikiapi_tracking_revisions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Mar 29 2021 19:09:55 GMT+0800 (台北標準時間)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

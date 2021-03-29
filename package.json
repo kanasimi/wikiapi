@@ -3,13 +3,23 @@
 	"title": "JavaScript MediaWiki API for node.js",
 	"version": "1.14.1",
 	"description": "A simple way to access MediaWiki API via JavaScript with simple wikitext parser.",
-	"keywords": [ "MediaWiki", "MediaWiki API", "wikitext", "ECMAScript 2017", "wikidata", "wdq", "sparql" ],
+	"keywords": [
+		"MediaWiki",
+		"MediaWiki API",
+		"wikitext",
+		"ECMAScript 2017",
+		"wikidata",
+		"wdq",
+		"sparql"
+	],
 	"author": {
 		"name": "vimunci",
 		"email": "vimunci@gmail.com",
 		"url": "https://github.com/kanasimi/CeJS"
 	},
-	"contributors": [ "vimunci" ],
+	"contributors": [
+		"vimunci"
+	],
 	"license": "BSD-3-Clause",
 	"bugs": {
 		"url": "https://github.com/kanasimi/wikiapi/issues"
@@ -19,25 +29,24 @@
 		"type": "git",
 		"url": "git+https://github.com/kanasimi/wikiapi.git"
 	},
-
 	"main": "wikiapi.js",
 	"scripts": {
 		"test": "nyc node \"_test suite/test.js\"",
-		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
+		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+		"doc": "jsdoc --package package.json --readme README.md --destination _documents --recurse ."
 	},
 	"nyc": {
 		"exclude": [
 			"_test suite/*"
 		]
 	},
-
 	"engines": {
 		"node": ">=10.0"
 	},
-
 	"devDependencies": {
-		"nyc": "latest",
-		"codecov": "latest"
+		"codecov": "latest",
+		"jsdoc": "^3.6.6",
+		"nyc": "latest"
 	},
 	"dependencies": {
 		"cejs": "latest"

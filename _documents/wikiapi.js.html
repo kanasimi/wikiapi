@@ -1,4 +1,32 @@
-﻿'use strict';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: wikiapi.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: wikiapi.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>﻿'use strict';
 
 let CeL;
 
@@ -60,7 +88,7 @@ const KEY_wiki_session = Symbol('wiki session');
  * main Wikiapi operator 操作子.
  * 
  * @param {String|Object}[API_URL]
- *            language code or API URL of MediaWiki project.<br /> Input {Object} will be treat as options.
+ *            language code or API URL of MediaWiki project.&lt;br /> Input {Object} will be treat as options.
  * 
  * @class
  * @constructor Wikiapi
@@ -90,17 +118,17 @@ Object.defineProperty(Wikiapi.prototype, 'setup_wiki_session', { value: setup_wi
  * @param {String} password Account's password.
  * @param {String} [API_URL] API URL of target wiki site.
  * 
- * @example <caption>Login to wiki site.</caption>
- * // <code>
+ * @example &lt;caption>Login to wiki site.&lt;/caption>
+ * // &lt;code>
 const wiki = new Wikiapi;
 await wiki.login('user_name', 'password', 'en');
-// </code>
+// &lt;/code>
  * 
  * @memberof Wikiapi.prototype
  */
 function Wikiapi_login(user_name, password, API_URL) {
 	let options;
-	if (!password && !API_URL && CeL.is_Object(user_name)) {
+	if (!password &amp;&amp; !API_URL &amp;&amp; CeL.is_Object(user_name)) {
 		options = user_name;
 	} else if (CeL.is_Object(API_URL)) {
 		options = { ...API_URL, user_name, password };
@@ -188,7 +216,7 @@ function Wikiapi_page(title, options) {
 				resolve(set_page_data_attributes(page_data, wiki));
 			}
 		}, {
-			rvlimit: options && options.revisions,
+			rvlimit: options &amp;&amp; options.revisions,
 			...options
 		});
 	}
@@ -228,9 +256,9 @@ function Wikiapi_tracking_revisions(title, to_search, options) {
 
 function reject_edit_error(reject, error, result) {
 	// skip_edit is not error
-	if (error && error !== /* 'skip' */ Wikiapi.skip_edit[1]
+	if (error &amp;&amp; error !== /* 'skip' */ Wikiapi.skip_edit[1]
 		// @see wiki_API_edit.check_data
-		&& error !== 'empty' && error !== 'cancel') {
+		&amp;&amp; error !== 'empty' &amp;&amp; error !== 'cancel') {
 		if (typeof error === 'string') {
 			// console.log('' + reject);
 			// console.trace(error);
@@ -239,7 +267,7 @@ function reject_edit_error(reject, error, result) {
 			error = error_object
 			// console.log(error);
 		}
-		if (result && typeof error === 'object')
+		if (result &amp;&amp; typeof error === 'object')
 			error.result = result;
 		reject(error);
 		return true;
@@ -318,21 +346,21 @@ function Wikiapi_move_page(move_from_title, move_to_title, options) {
 		wiki.move_page(move_from_title, move_to_title, options, (data, error) => {
 			if (error) {
 				/**
-				 * <code>
+				 * &lt;code>
 
 				e.g., { code: 'articleexists', info: 'A page of that name already exists, or the name you have chosen is not valid. Please choose another name.', '*': '...' }
 				e.g., { code: 'missingtitle', info: "The page you specified doesn't exist.", '*': '...' }
 
-				</code>
+				&lt;/code>
 				 */
 				reject(error);
 			} else {
 				/**
-				 * <code>
+				 * &lt;code>
 
 				e.g., { from: 'from', to: 'to', reason: 'move', redirectcreated: '', moveoverredirect: '' }
 
-				</code>
+				&lt;/code>
 				 */
 				resolve(data);
 			}
@@ -346,12 +374,12 @@ function Wikiapi_move_page(move_from_title, move_to_title, options) {
 /**
  * Move to `move_to_title`. Must call `wiki.page(move_from_title)` first!
  * 
- * @example <code>
+ * @example &lt;code>
 
 	page_data = await wiki.page(move_from_title);
 	try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
 
- * </code>
+ * &lt;/code>
  * 
  * @param {Object|String}[move_to_title]
  * @param {Object}[options]
@@ -369,21 +397,21 @@ function Wikiapi_move_to(move_to_title, options) {
 		wiki.move_to(move_to_title, options, (data, error) => {
 			if (error) {
 				/**
-				 * <code>
+				 * &lt;code>
 
 				e.g., { code: 'articleexists', info: 'A page of that name already exists, or the name you have chosen is not valid. Please choose another name.', '*': '...' }
 				e.g., { code: 'missingtitle', info: "The page you specified doesn't exist.", '*': '...' }
 
-				</code>
+				&lt;/code>
 				 */
 				reject(error);
 			} else {
 				/**
-				 * <code>
+				 * &lt;code>
 
 				e.g., { from: 'from', to: 'to', reason: 'move', redirectcreated: '', moveoverredirect: '' }
 
-				</code>
+				&lt;/code>
 				 */
 				resolve(data);
 			}
@@ -417,7 +445,7 @@ function Wikiapi_query(parameters, options) {
 // --------------------------------------------------------
 
 function Wikiapi_purge(title, options) {
-	if (CeL.is_Object(title) && !options) {
+	if (CeL.is_Object(title) &amp;&amp; !options) {
 		// shift arguments.
 		[title, options] = [null, title];
 	}
@@ -474,7 +502,7 @@ function setup_data_entity(data_entity) {
 }
 
 function Wikiapi_data(key, property, options) {
-	if (CeL.is_Object(property) && !options) {
+	if (CeL.is_Object(property) &amp;&amp; !options) {
 		// shift arguments.
 		[property, options] = [null, property];
 	}
@@ -516,7 +544,7 @@ function Wikiapi_list(list_type, title, options) {
 		}));
 
 		/**
-		 * <code>
+		 * &lt;code>
 
 		// method 2: 使用循環取得資料版:
 		wiki.cache({
@@ -546,7 +574,7 @@ function Wikiapi_list(list_type, title, options) {
 				limit: 'max', ...options
 			});
 
-		</code>
+		&lt;/code>
 		 */
 	}
 
@@ -611,7 +639,7 @@ function Wikiapi_redirects_root(title, options) {
 		wiki_API.redirects_root(title, (_title, page_data, error) => {
 			if (error) {
 				reject(error);
-			} else if (options && options.get_page) {
+			} else if (options &amp;&amp; options.get_page) {
 				page_data.query_title = title;
 				resolve(page_data);
 			} else {
@@ -738,9 +766,9 @@ function Wikiapi_upload(file_data) {
  * @param {Function}for_each_page
  *            processor for each page. for_each_page(page_data with contents)
  * @param {Object}[options]
- *            e.g., { summary: '' }<br />
+ *            e.g., { summary: '' }&lt;br />
  *            e.g., { no_edit: true, no_warning: true, no_message: true, allow_empty: true, page_options: {
- *            redirects: 1, rvprop: 'ids|content|timestamp|user' } }<br />
+ *            redirects: 1, rvprop: 'ids|content|timestamp|user' } }&lt;br />
  *            no_warning: hide "wiki_API_page: No contents: [[title]]" messages
  */
 function Wikiapi_for_each_page(page_list, for_each_page, options) {
@@ -752,14 +780,14 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 			// log_to: log_to,
 			// no_edit: true,
 			// tags: 'bot trial',
-			no_message: options && options.no_edit,
+			no_message: options &amp;&amp; options.no_edit,
 
 			...options,
 
 			onerror(_error) {
 				// console.trace('Get error (onerror): ' + _error);
 				if (reject_edit_error(_error => { if (!error) error = _error; }, _error)
-					&& options && options.onerror) {
+					&amp;&amp; options &amp;&amp; options.onerror) {
 					options.onerror(_error);
 				}
 			},
@@ -833,7 +861,7 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 					// 提早執行 resolve(), reject() 的話，可能導致後續的程式碼 `options.last`
 					// 延後執行，程式碼順序錯亂。
 					.catch(_error => { if (!error) error = _error; })
-					.then(options && typeof options.last === 'function' && options.last.bind(this))
+					.then(options &amp;&amp; typeof options.last === 'function' &amp;&amp; options.last.bind(this))
 					// .then(() => { console.trace(
 					// 'Wikiapi_for_each_page_executor Promise finished.'); })
 					.then(() => {
@@ -933,7 +961,7 @@ function Wikiapi_setup_layout_elements(options) {
 /**
  * Get featured content.
  * 
- * @example<code>
+ * @example&lt;code>
 
 // MUST including wiki.featured_content first to get featured content!
 CeL.run('application.net.wiki.featured_content');
@@ -941,7 +969,7 @@ CeL.run('application.net.wiki.featured_content');
 const FC_data_hash = await wiki.get_featured_content();
 FC_data_hash === wiki.FC_data_hash;
 
- </code>
+ &lt;/code>
  * 
  * @param {String|Object}[options]
  *            {String}type (FFA|GA|FA|FL) or options:
@@ -986,11 +1014,11 @@ Wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
  * 
  * @returns {String}site name
  * 
- * @example <caption>Get site name of {Wikiapi}.</caption>
- * // <code>
+ * @example &lt;caption>Get site name of {Wikiapi}.&lt;/caption>
+ * // &lt;code>
 const wiki = new Wikiapi('en');
 console.assert(wiki.site_name() === 'enwiki');
-// </code>
+// &lt;/code>
  * 
  * @memberof Wikiapi.prototype
  */
@@ -1086,12 +1114,12 @@ for (const type of CeL.wiki.list.type_list) {
 	Wikiapi.prototype[type] = function (title, options) {
 		const _this = this;
 		/**
-		 * @example <code>
+		 * @example &lt;code>
 		
 		const page_list = await wiki.embeddedin(template_name, options);
 		await page_list.each((page_data) => { }, options);
 
-		 * </code>
+		 * &lt;/code>
 		 */
 		return Wikiapi_list.call(this, type, title, options)
 			.then((page_list) => {
@@ -1110,3 +1138,26 @@ for (const type of CeL.wiki.list.type_list) {
 module.exports = Wikiapi;
 
 // export default Wikiapi;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-wikiapi.html">wikiapi</a></li></ul><h3>Classes</h3><ul><li><a href="Wikiapi.html">Wikiapi</a></li></ul><h3>Global</h3><ul><li><a href="global.html#KEY_SESSION">KEY_SESSION</a></li><li><a href="global.html#KEY_wiki_session">KEY_wiki_session</a></li><li><a href="global.html#Wikiapi_for_each_page">Wikiapi_for_each_page</a></li><li><a href="global.html#Wikiapi_move_to">Wikiapi_move_to</a></li><li><a href="global.html#Wikiapi_page">Wikiapi_page</a></li><li><a href="global.html#Wikiapi_tracking_revisions">Wikiapi_tracking_revisions</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Mar 29 2021 19:09:55 GMT+0800 (台北標準時間)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
