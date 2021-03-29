@@ -1,4 +1,5 @@
-﻿'use strict';
+﻿// node_modules\.bin\jsdoc --package package.json --readme README.md --destination docs wikiapi.js
+'use strict';
 
 let CeL;
 
@@ -46,7 +47,7 @@ const KEY_SESSION = wiki_API.KEY_SESSION;
 wiki_API.set_language('en');
 
 /**
- * key to get {wiki_API}operator of CeJS MediaWiki module inside Wikiapi. this[KEY_wiki_session] will get {wiki_API}operator.
+ * key to get {wiki_API}operator of CeJS MediaWiki module inside Wikiapi. `this[KEY_wiki_session]` inside module code will get {wiki_API}operator.
  * 
  * @type Symbol
  * 
@@ -174,9 +175,9 @@ function set_page_data_attributes(page_data, wiki) {
 /**
  * given a title, returns the page's data.
  * @param {String} title page title
- * @param {Object}[options] options to run this function
+ * @param {Object} [options] options to run this function
  * 
- * @returns {Object}page's data
+ * @returns {Object} page's data
  */
 function Wikiapi_page(title, options) {
 	function Wikiapi_page_executor(resolve, reject) {
@@ -199,12 +200,13 @@ function Wikiapi_page(title, options) {
 // --------------------------------------------------------
 
 /**
- * tracking revisions to lookup what revision add/removed text `to_search`。
+ * tracking revisions to lookup what revision add/removed text `to_search`.
+ * 
  * @param {String} title page title
  * @param {String} to_search filter / text to search
- * @param {Object}[options] options to run this function
+ * @param {Object} [options] options to run this function
  * 
- * @returns [newer_revision, page_data, error]
+ * @returns {Array} [ newer_revision, page_data, error ]
  */
 function Wikiapi_tracking_revisions(title, to_search, options) {
 	function Wikiapi_tracking_revisions_executor(resolve, reject) {
@@ -354,7 +356,7 @@ function Wikiapi_move_page(move_from_title, move_to_title, options) {
  * </code>
  * 
  * @param {Object|String}[move_to_title]
- * @param {Object}[options]
+ * @param {Object} [options]
  */
 function Wikiapi_move_to(move_to_title, options) {
 	function Wikiapi_move_to_executor(resolve, reject) {
@@ -737,7 +739,7 @@ function Wikiapi_upload(file_data) {
  *            title list or page_data list
  * @param {Function}for_each_page
  *            processor for each page. for_each_page(page_data with contents)
- * @param {Object}[options]
+ * @param {Object} [options]
  *            e.g., { summary: '' }<br />
  *            e.g., { no_edit: true, no_warning: true, no_message: true, allow_empty: true, page_options: {
  *            redirects: 1, rvprop: 'ids|content|timestamp|user' } }<br />
@@ -982,7 +984,7 @@ Wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
  * Get site name / project name of this {Wikiapi}.
  * 
  * @param {String}[language] language code of wiki session
- * @param {Object}[options] options to run this function
+ * @param {Object} [options] options to run this function
  * 
  * @returns {String}site name
  * 

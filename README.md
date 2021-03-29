@@ -19,7 +19,7 @@ This is basically a modern syntax version of [CeJS MediaWiki module](https://git
 *   Parse wikitext / pages. You may modify parts of the wikitext, then regenerate the page just using .toString(). See [wikitext parser examples](https://kanasimi.github.io/CeJS/_test%20suite/wikitext_parser.html).
 
 ## Installation
-Install [node.js](https://nodejs.org/) first.
+This is a nodejs module. Please install [node.js](https://nodejs.org/) first.
 
 ```bash
 npm install wikiapi

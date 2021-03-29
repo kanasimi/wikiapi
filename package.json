@@ -33,7 +33,7 @@
 	"scripts": {
 		"test": "nyc node \"_test suite/test.js\"",
 		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-		"doc": "jsdoc --package package.json --readme README.md --destination _documents --recurse ."
+		"doc": "jsdoc --package package.json --readme README.md --destination docs --recurse ."
 	},
 	"nyc": {
 		"exclude": [
