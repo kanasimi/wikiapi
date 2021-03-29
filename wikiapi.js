@@ -348,12 +348,11 @@ function Wikiapi_move_page(move_from_title, move_to_title, options) {
 /**
  * Move to `move_to_title`. Must call `wiki.page(move_from_title)` first!
  * 
- * @example <code>
-
-	page_data = await wiki.page(move_from_title);
-	try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
-
- * </code>
+ * @example <caption>Move `move_from_title` to `move_to_title`.</caption>
+ * // <code>
+page_data = await wiki.page(move_from_title);
+try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
+// </code>
  * 
  * @param {Object|String}[move_to_title]
  * @param {Object} [options]
@@ -499,7 +498,7 @@ function Wikiapi_data(key, property, options) {
 
 // --------------------------------------------------------
 
-// Warning: Won't throw if title isn't existed!
+// Warning: Won't throw if title is not existed!
 function Wikiapi_list(list_type, title, options) {
 	function Wikiapi_list_executor(resolve, reject) {
 		options = CeL.setup_options(options);
@@ -935,15 +934,16 @@ function Wikiapi_setup_layout_elements(options) {
 /**
  * Get featured content.
  * 
- * @example<code>
-
+ * @example <caption>Get featured content of current wiki site.</caption>
+ * // <code>
 // MUST including wiki.featured_content first to get featured content!
 CeL.run('application.net.wiki.featured_content');
-...
+
+//...
+
 const FC_data_hash = await wiki.get_featured_content();
 FC_data_hash === wiki.FC_data_hash;
-
- </code>
+// </code>
  * 
  * @param {String|Object}[options]
  *            {String}type (FFA|GA|FA|FL) or options:
