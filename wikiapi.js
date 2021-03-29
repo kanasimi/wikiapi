@@ -1,5 +1,7 @@
 ﻿/**
- * @name Main code of module wikiapi
+ * @name wikiapi
+ * 
+ * @fileoverview Main code of module wikiapi
  */
 
 // To generate documents:
@@ -1143,12 +1145,6 @@ for (const type of CeL.wiki.list.type_list) {
 	};
 }
 
-/**
- * Module wikiapi
- * 
- * @module wikiapi
- * @type {Function}
- */
 module.exports = Wikiapi;
 
 // export default Wikiapi;
