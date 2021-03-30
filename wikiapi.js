@@ -5,7 +5,7 @@
  */
 
 // To generate documents:
-// node_modules\.bin\jsdoc --readme README.md --destination docs wikiapi.js
+// jsdoc --readme README.md --destination docs wikiapi.js
 
 'use strict';
 
@@ -74,25 +74,22 @@ const KEY_wiki_session = Symbol('wiki session');
  *            Input {Object} will be treat as options.
  * 
  * @class
- * @constructor Wikiapi
  */
 function Wikiapi(API_URL) {
 	const wiki_session = new wiki_API(null, null, API_URL);
 	// this[KEY_wiki_session] = new wiki_API(null, null, API_URL);
-	this.setup_wiki_session(wiki_session);
+	setup_wiki_session.call(this, wiki_session);
 }
 
 // --------------------------------------------------------
 
+// @inner
 function setup_wiki_session(wiki_session) {
-	Object.defineProperty(wiki_session, 'setup_data_entity', { value: setup_data_entity });
 	Object.defineProperty(this, KEY_wiki_session, {
 		value: wiki_session,
 		writable: true,
 	});
 }
-
-Object.defineProperty(Wikiapi.prototype, 'setup_wiki_session', { value: setup_wiki_session });
 
 /**
  * login into the target API using the provided username and password. For bot,
@@ -138,7 +135,7 @@ function Wikiapi_login(user_name, password, API_URL) {
 			},
 			// task_configuration_page: 'page title',
 		});
-		this.setup_wiki_session(wiki_session);
+		setup_wiki_session.call(this, wiki_session);
 	}
 
 	return new Promise(Wikiapi_login_executor.bind(this));
@@ -228,7 +225,7 @@ function Wikiapi_page(title, options) {
  * @param {Object}[options]
  *            options to run this function
  * 
- * @returns {Array} [ newer_revision, page_data, error ]
+ * @returns {Object} newer_revision.page = page_data
  *
  * @memberof Wikiapi.prototype
  */
@@ -471,6 +468,20 @@ function Wikiapi_purge(title, options) {
 
 // --------------------------------------------------------
 
+// 設定 wikidata entity object，讓我們能直接操作 entity.modify()，並且避免洩露 wiki_API session。
+// @inner
+function setup_data_entity(data_entity) {
+	// assert: data_entity[KEY_SESSION].host === this
+	// console.trace(data_entity[KEY_SESSION].host === this);
+	delete data_entity[KEY_SESSION];
+
+	Object.defineProperties(data_entity, {
+		[KEY_wiki_session]: { value: this },
+		modify: { value: modify_data_entity },
+	});
+}
+
+// @inner
 function modify_data_entity(data_to_modify, options) {
 	function modify_data_entity_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
@@ -483,24 +494,13 @@ function modify_data_entity(data_to_modify, options) {
 			if (error) {
 				reject(error);
 			} else {
-				wiki.setup_data_entity(data_entity);
+				setup_data_entity.call(wiki, data_entity);
 				resolve(data_entity);
 			}
 		});
 	}
 
 	return new Promise(modify_data_entity_executor.bind(this));
-}
-
-function setup_data_entity(data_entity) {
-	// assert: data_entity[KEY_SESSION].host === this
-	// console.trace(data_entity[KEY_SESSION].host === this);
-	delete data_entity[KEY_SESSION];
-
-	Object.defineProperties(data_entity, {
-		[KEY_wiki_session]: { value: this },
-		modify: { value: modify_data_entity },
-	});
 }
 
 function Wikiapi_data(key, property, options) {
@@ -516,7 +516,7 @@ function Wikiapi_data(key, property, options) {
 			if (error) {
 				reject(error);
 			} else {
-				wiki.setup_data_entity(data_entity);
+				setup_data_entity.call(wiki, data_entity);
 				resolve(data_entity);
 			}
 		}, options);
