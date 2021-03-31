@@ -33,6 +33,6 @@ jobs:
 
     # https://github.community/t/how-to-implement-an-after-success-action/16919/5
     - name: report
-    - if: ${{ success() }}
-    - run: npm run report-coverage
+      if: ${{ success() }}
+      run: npm run report-coverage
 
