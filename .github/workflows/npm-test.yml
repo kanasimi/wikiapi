@@ -31,9 +31,8 @@ jobs:
     #- run: npm run build --if-present
     - run: npm run test
 
-  report:
     # https://github.community/t/how-to-implement-an-after-success-action/16919/5
-    if: ${{ success() }}
-    needs: test
-
+    - name: report
+    - if: ${{ success() }}
     - run: npm run report-coverage
+
