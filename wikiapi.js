@@ -4,13 +4,10 @@
  * @fileoverview Main code of module wikiapi
  */
 
-// To generate documents:
-// jsdoc --template %USERPROFILE%\node_modules\docdash --readme README.md --destination docs wikiapi.js
-
 'use strict';
 
 /**
- * CeJS controller
+ * @description CeJS controller
  * 
  * @type Function
  * @inner
@@ -49,7 +46,7 @@ CeL.run(['interact.DOM', 'application.debug',
 // --------------------------------------------------------
 
 /**
- * syntactic sugar for CeJS MediaWiki module. CeL.net.wiki === CeL.wiki
+ * @description syntactic sugar for CeJS MediaWiki module. CeL.net.wiki === CeL.wiki
  * 
  * @inner
  */
@@ -67,9 +64,8 @@ const KEY_SESSION = wiki_API.KEY_SESSION;
 wiki_API.set_language('en');
 
 /**
- * key to get {@link wiki_API} operator inside {@link Wikiapi}.
- * `this[KEY_wiki_session]` inside module code will get {@link wiki_API}
- * operator.
+ * @description key to get {@link wiki_API} operator inside {@link Wikiapi}.
+ * <code>this[KEY_wiki_session]</code> inside module code will get {@link wiki_API} operator.
  * 
  * @type Symbol
  * 
@@ -80,10 +76,9 @@ const KEY_wiki_session = Symbol('wiki_API session');
 // Wikiapi.KEY_wiki_session = KEY_wiki_session;
 
 /**
- * main Wikiapi operator 操作子.
+ * @description main Wikiapi operator 操作子.
  * 
- * @param {String|Object}[API_URL]
- *            language code or API URL of MediaWiki project.<br />
+ * @param {String|Object}[API_URL]	- language code or API URL of MediaWiki project.<br />
  *            Input {Object} will be treat as options.
  * 
  * @class
@@ -97,10 +92,9 @@ function Wikiapi(API_URL) {
 // --------------------------------------------------------
 
 /**
- * Bind {@link wiki_API} instance to {@link Wikiapi} instance
+ * @description Bind {@link wiki_API} instance to {@link Wikiapi} instance
  * 
- * @param {wiki_API}wiki_session
- *            wiki_API session
+ * @param {wiki_API}wiki_session	- wiki_API session
  * 
  * @inner
  */
@@ -112,16 +106,13 @@ function setup_wiki_session(wiki_session) {
 }
 
 /**
- * login into the target MediaWiki API using the provided username and password.
+ * @alias login
+ * @description login into the target MediaWiki API using the provided username and password.
  * For bots, see [[Special:BotPasswords]] on your wiki.
  * 
- * @alias login
- * @param {String}user_name
- *            Account username.
- * @param {String}password
- *            Account's password.
- * @param {String}[API_URL]
- *            API URL of target wiki site.
+ * @param {String}user_name	- Account username.
+ * @param {String}password	- Account's password.
+ * @param {String}[API_URL]	- API URL of target wiki site.
  * 
  * @example <caption>Login to wiki site #1.</caption>
 // <code>
@@ -172,15 +163,18 @@ function Wikiapi_login(user_name, password, API_URL) {
 // --------------------------------------------------------
 
 /**
- * attributes of {Object} page_data, will setup by
- * {@link set_page_data_attributes}
+ * @description attributes of {Object} page_data, will setup by {@link set_page_data_attributes}.
+ * 
+ * @type Object
  * 
  * @inner
  */
 const page_data_attributes = {
 	/**
-	 * get {String}page content, maybe undefined. 條目/頁面內容 =
-	 * wiki_API.revision_content(revision)
+	 * @description get {String}page content, maybe undefined.
+	 * 條目/頁面內容 = wiki_API.revision_content(revision)
+	 *
+	 * @type String
 	 */
 	wikitext: {
 		get() {
@@ -190,7 +184,9 @@ const page_data_attributes = {
 		}
 	},
 	/**
-	 * get {Object}revisions
+	 * @description get {Object}revisions
+	 *
+	 * @type Object
 	 */
 	revision: {
 		value: function revision(revision_NO) {
@@ -198,7 +194,9 @@ const page_data_attributes = {
 		}
 	},
 	/**
-	 * get {Attay} parsed data of page_data
+	 * @description get {Attay} parsed data of page_data
+	 *
+	 * @type Array
 	 */
 	parse: {
 		value: function parse(options) {
@@ -215,13 +213,13 @@ const page_data_attributes = {
 };
 
 /**
- * Bind {@link page_data_attributes} to page_data
+ * @description Bind {@link page_data_attributes} to <code>page_data</code>
  * 
- * @param {Object}page_data
- *            page data
- * @param {wiki_API}wiki
- *            wiki_API session
+ * @param {Object}page_data	- page data
+ * @param {wiki_API}wiki	- wiki_API session
+ * 
  * @returns {Promise} Promise object represents {Object} page's data
+ * 
  * @inner
  */
 function set_page_data_attributes(page_data, wiki) {
@@ -234,14 +232,12 @@ function set_page_data_attributes(page_data, wiki) {
 }
 
 /**
- * given a title, returns the page's data.
- * 
  * @alias page
- * @param {String}title
- *            page title
- * @param {Object}[options]
- *            options to run this function
+ * @description given a title, returns the page's data.
  * 
+ * @param {String}title		- page title
+ * @param {Object}[options]	- options to run this function
+ *
  * @returns {Promise} Promise object represents {Object} page's data
  * 
  * @memberof Wikiapi.prototype
@@ -306,7 +302,7 @@ function Wikiapi_tracking_revisions(title, to_search, options) {
  * @param {any} error		- error object / message
  * @param {any} [result]	- result of MediaWiki API
  *
- * @returns {Boolean} `true`: The edit operation failed.
+ * @returns {Boolean} Return <code>true</code> if the edit operation failed.
  * 
  * @inner
  */
@@ -331,17 +327,12 @@ function reject_edit_error(reject, error, result) {
 }
 
 /**
- * edits content of target page. Note: for multiple pages, you should use
- * {@link Wikiapi#for_each_page}.
- * 
  * @alias edit_page
- * @param {String}title
- *            page title
- * @param {String|Function}content
- *            'wikitext page content' || page_data => 'wikitext'
- * @param {Object}[options]
- *            options to run this function. e.g., { summary: '', bot: 1,
- *            nocreate: 1, minor: 1 }
+ * @description edits content of target page. Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.
+ * 
+ * @param {String}title				- page title
+ * @param {String|Function}content	- 'wikitext page content' || page_data => 'wikitext'
+ * @param {Object}[options]			- options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }
  * 
  * @returns {Promise} Promise object represents {Object} result of MediaWiki API
  * 
@@ -397,14 +388,13 @@ function Wikiapi_edit_page(title, content, options) {
 	return new Promise(Wikiapi_edit_page_executor.bind(this));
 }
 
-// `return Wikiapi.skip_edit;` as a symbol to skip this edit, do not generate
+// <code>return Wikiapi.skip_edit;</code> as a symbol to skip this edit, do not generate
 // warning message.
 // 可以利用 ((return [ wiki_API.edit.cancel, 'reason' ];)) 來回傳 reason。
 // ((return [ wiki_API.edit.cancel, 'skip' ];)) 來跳過 (skip) 本次編輯動作，不特別顯示或處理。
 // 被 skip/pass 的話，連警告都不顯現，當作正常狀況。
 /**
- * Return `Wikiapi.skip_edit` when we running edit function, but do not want to
- * edit current page.
+ * @description Return <code>Wikiapi.skip_edit</code> when we running edit function, but do not want to edit current page.
  * 
  * @memberof Wikiapi
  */
@@ -445,15 +435,13 @@ function Wikiapi_move_page(move_from_title, move_to_title, options) {
 }
 
 /**
- * Move to `move_to_title`. Must call `wiki.page(move_from_title)` first!
- * 
  * @alias move_to
- * @param {Object|String}[move_to_title]
- *            target title
- * @param {Object}[options]
- *            options to run this function
+ * @description Move to <code>move_to_title</code>. <em>Must call {@link Wikiapi#page} first!</em>
  * 
- * @example <caption>Move `move_from_title` to `move_to_title`.</caption>
+ * @param {Object|String}[move_to_title]	- target title
+ * @param {Object}[options]					- options to run this function
+ *
+ * @example <caption>Move <code>move_from_title</code> to <code>move_to_title</code>.</caption>
 // <code>
 page_data = await wiki.page(move_from_title);
 try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
@@ -548,11 +536,10 @@ function Wikiapi_purge(title, options) {
 // --------------------------------------------------------
 
 /**
- * Bind properties to {@link wiki_API} data entity 設定 wikidata entity
- * object，讓我們能直接操作 entity.modify()，並且避免洩露 wiki_API session。
+ * @description Bind properties to {@link wiki_API} data entity.
+ * 設定 wikidata entity object，讓我們能直接操作 entity.modify()，並且避免洩露 wiki_API session。
  * 
- * @param {Object}data_entity
- *            wiki_API data entity
+ * @param {Object}data_entity	- wiki_API data entity
  * 
  * @inner
  */
@@ -568,12 +555,11 @@ function setup_data_entity(data_entity) {
 }
 
 /**
- * Modify data entity
+ * @description Modify data entity
  * 
- * @param {Object}data_entity
- *            wiki_API data entity
- * @param {Object}[options]
- *            options to run this function
+ * @param {Object}data_entity	- wiki_API data entity
+ * @param {Object}[options]		- options to run this function
+ * 
  * @returns {Promise} Promise object represents {Object} result data entity
  * 
  * @inner
@@ -863,14 +849,12 @@ function Wikiapi_upload(file_data) {
 // --------------------------------------------------------
 
 /**
- * Edit / process pages listing in `page_list`.
- * 
  * @alias for_each_page
- * @param {Array}page_list
- *            title list or page_data list
- * @param {Function}for_each_page
- *            processor for each page. for_each_page(page_data with contents)
- * @param {Object}[options]
+ * @description Edit / process pages listing in <code>page_list</code>.
+ * 
+ * @param {Array}page_list			- title list or page_data list
+ * @param {Function}for_each_page	- processor for each page. for_each_page(page_data with contents)
+ * @param {Object}[options]			- options to run this function.
  *            e.g., { summary: '' }<br />
  *            e.g., { no_edit: true, no_warning: true, no_message: true,
  *            allow_empty: true, page_options: { redirects: 1, rvprop:
@@ -1067,12 +1051,12 @@ function Wikiapi_setup_layout_elements(options) {
 // --------------------------------------------------------
 
 /**
- * Get featured content.
- * 
  * @alias get_featured_content
- * @param {String|Object}[options]
- *            {String}type (FFA|GA|FA|FL) or options:
- *            {type,on_conflict(FC_title, {from,to})}
+ * @description Get featured content.
+ * 
+ * @param {String|Object}[options]	- options to run this function.
+ *            {String}type (FFA|GA|FA|FL)
+ *            || {type,on_conflict(FC_title, {from,to})}
  * 
  * @example <caption>Get featured content of current wiki site.</caption>
 // <code>
@@ -1082,7 +1066,7 @@ CeL.run('application.net.wiki.featured_content');
 // ...
 
 const FC_data_hash = await wiki.get_featured_content();
-FC_data_hash === wiki.FC_data_hash;
+console.assert(FC_data_hash === wiki.FC_data_hash);
 // </code>
  * 
  * @memberof Wikiapi.prototype
@@ -1117,14 +1101,12 @@ Wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
 // --------------------------------------------------------
 
 /**
- * Get site name / project name of this {Wikiapi}.
- * 
  * @alias site_name
- * @param {String}[language]
- *            language code of wiki session
- * @param {Object}[options]
- *            options to run this function
+ * @description Get site name / project name of this {Wikiapi}.
  * 
+ * @param {String}[language]- language code of wiki session
+ * @param {Object}[options]	- options to run this function
+ *
  * @returns {String}site name
  * 
  * @example <caption>Get site name of {Wikiapi}.</caption>
@@ -1162,13 +1144,11 @@ Object.assign(Wikiapi.prototype, {
 	edit_page: Wikiapi_edit_page,
 	/**
 	 * edits content of target page.
-	 * <em>MUST using after wiki.page()!</em>
-	 * Note: for multiple pages, you should use {@link Wikiapi_for_each_page}.
+	 * <em>MUST using after {@link Wikiapi#page}!</em>
+	 * Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.
 	 * 
-	 * @param {String|Function}content
-	 *           'wikitext page content' || page_data => 'wikitext'
-	 * @param {Object}[options]
-	 *            options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }
+	 * @param {String|Function}content	- 'wikitext page content' || page_data => 'wikitext'
+	 * @param {Object}[options]			- options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }
 	 * 
 	 * @returns {Promise} Promise object represents {Object} result of MediaWiki API
 	 *

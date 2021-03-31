@@ -71,7 +71,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line91">line 91</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line86">line 86</a>
     </li></ul></dd>
     
 
@@ -237,7 +237,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line411">line 411</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line401">line 401</a>
     </li></ul></dd>
     
 
@@ -277,7 +277,7 @@
 
 
 <div class="description usertext">
-    Return `Wikiapi.skip_edit` when we running edit function, but do not want toedit current page.
+    Return <code>Wikiapi.skip_edit</code> when we running edit function, but do not want to edit current page.
 </div>
 
 
@@ -310,7 +310,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1177">line 1177</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1157">line 1157</a>
     </li></ul></dd>
     
 
@@ -350,7 +350,7 @@
 
 
 <div class="description usertext">
-    edits content of target page.<em>MUST using after wiki.page()!</em>Note: for multiple pages, you should use Wikiapi_for_each_page.
+    edits content of target page.<em>MUST using after <a href="Wikiapi.html#page">Wikiapi#page</a>!</em>Note: for multiple pages, you should use <a href="Wikiapi.html#for_each_page">Wikiapi#for_each_page</a>.
 </div>
 
 
@@ -514,7 +514,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line350">line 350</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line341">line 341</a>
     </li></ul></dd>
     
 
@@ -554,7 +554,7 @@
 
 
 <div class="description usertext">
-    edits content of target page. Note: for multiple pages, you should use<a href="Wikiapi.html#for_each_page">Wikiapi#for_each_page</a>.
+    edits content of target page. Note: for multiple pages, you should use <a href="Wikiapi.html#for_each_page">Wikiapi#for_each_page</a>.
 </div>
 
 
@@ -685,7 +685,7 @@
 
             
 
-            <td class="description last">options to run this function. e.g., { summary: '', bot: 1,           nocreate: 1, minor: 1 }</td>
+            <td class="description last">options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }</td>
         </tr>
 
     
@@ -749,7 +749,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line882">line 882</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line866">line 866</a>
     </li></ul></dd>
     
 
@@ -789,7 +789,7 @@
 
 
 <div class="description usertext">
-    Edit / process pages listing in `page_list`.
+    Edit / process pages listing in <code>page_list</code>.
 </div>
 
 
@@ -917,7 +917,7 @@
 
             
 
-            <td class="description last">e.g., { summary: '' }<br />           e.g., { no_edit: true, no_warning: true, no_message: true,           allow_empty: true, page_options: { redirects: 1, rvprop:           'ids|content|timestamp|user' } }<br />           no_warning: hide "wiki_API_page: No contents: [[title]]" messages</td>
+            <td class="description last">options to run this function.           e.g., { summary: '' }<br />           e.g., { no_edit: true, no_warning: true, no_message: true,           allow_empty: true, page_options: { redirects: 1, rvprop:           'ids|content|timestamp|user' } }<br />           no_warning: hide "wiki_API_page: No contents: [[title]]" messages</td>
         </tr>
 
     
@@ -959,7 +959,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1090">line 1090</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1074">line 1074</a>
     </li></ul></dd>
     
 
@@ -1021,7 +1021,7 @@ CeL.run('application.net.wiki.featured_content');
 // ...
 
 const FC_data_hash = await wiki.get_featured_content();
-FC_data_hash === wiki.FC_data_hash;
+console.assert(FC_data_hash === wiki.FC_data_hash);
 // &lt;/code></code></pre>
 
 
@@ -1083,7 +1083,7 @@ FC_data_hash === wiki.FC_data_hash;
 
             
 
-            <td class="description last">{String}type (FFA|GA|FA|FL) or options:           {type,on_conflict(FC_title, {from,to})}</td>
+            <td class="description last">options to run this function.           {String}type (FFA|GA|FA|FL)           || {type,on_conflict(FC_title, {from,to})}</td>
         </tr>
 
     
@@ -1125,7 +1125,7 @@ FC_data_hash === wiki.FC_data_hash;
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line141">line 141</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line132">line 132</a>
     </li></ul></dd>
     
 
@@ -1353,7 +1353,7 @@ await wiki.login('user_name', 'password', 'en');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line464">line 464</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line452">line 452</a>
     </li></ul></dd>
     
 
@@ -1393,7 +1393,7 @@ await wiki.login('user_name', 'password', 'en');
 
 
 <div class="description usertext">
-    Move to `move_to_title`. Must call `wiki.page(move_from_title)` first!
+    Move to <code>move_to_title</code>. <em>Must call <a href="Wikiapi.html#page">Wikiapi#page</a> first!</em>
 </div>
 
 
@@ -1406,7 +1406,7 @@ await wiki.login('user_name', 'password', 'en');
 
     <h5>Example</h5>
     
-        <p class="code-caption">Move `move_from_title` to `move_to_title`.</p>
+        <p class="code-caption">Move <code>move_from_title</code> to <code>move_to_title</code>.</p>
     
     <pre class="prettyprint"><code>// &lt;code>
 page_data = await wiki.page(move_from_title);
@@ -1547,7 +1547,7 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line249">line 249</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line245">line 245</a>
     </li></ul></dd>
     
 
@@ -1748,7 +1748,7 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1138">line 1138</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1120">line 1120</a>
     </li></ul></dd>
     
 
@@ -1961,7 +1961,7 @@ console.assert(wiki.site_name() === 'enwiki');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line282">line 282</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line278">line 278</a>
     </li></ul></dd>
     
 
@@ -2196,7 +2196,7 @@ console.assert(wiki.site_name() === 'enwiki');
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Mar 31 2021 16:53:59 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Mar 31 2021 17:39:33 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
