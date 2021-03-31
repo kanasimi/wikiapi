@@ -302,6 +302,17 @@ function Wikiapi_tracking_revisions(title, to_search, options) {
 
 // --------------------------------------------------------
 
+/**
+ * @description Handle the result of MediaWiki API when executing edit operation.
+ * 
+ * @param {Function} reject	- reject function
+ * @param {any} error		- error object / message
+ * @param {any} [result]	- result of MediaWiki API
+ *
+ * @returns {Boolean} `true`: The edit operation failed.
+ * 
+ * @inner
+ */
 function reject_edit_error(reject, error, result) {
 	// skip_edit is not error
 	if (error && error !== /* 'skip' */ Wikiapi.skip_edit[1]
@@ -324,7 +335,7 @@ function reject_edit_error(reject, error, result) {
 
 /**
  * edits content of target page. Note: for multiple pages, you should use
- * `wiki.for_each_page(page_list)`.
+ * {@link Wikiapi#for_each_page}.
  * 
  * @alias edit_page
  * @param {String}title
@@ -1155,7 +1166,7 @@ Object.assign(Wikiapi.prototype, {
 	/**
 	 * edits content of target page.
 	 * <em>MUST using after wiki.page()!</em>
-	 * Note: for multiple pages, you should use `wiki.for_each_page(page_list)`.
+	 * Note: for multiple pages, you should use {@link Wikiapi_for_each_page}.
 	 * 
 	 * @param {String|Function}content
 	 *           'wikitext page content' || page_data => 'wikitext'
