@@ -27,14 +27,13 @@ npm install wikiapi
 
 ## Usage
 Here lists some examples of this module.
-
-### As node.js module
 *   [Login to wiki site](https://kanasimi.github.io/wikiapi/Wikiapi.html#login)
 	* [Login to wiki site #1](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__Login%20to%20wiki%20site%201)
 	* [Login to wiki site #2](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__Login%20to%20wiki%20site%202)
 * [upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#upload)
 	* [upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__upload%20file%20/%20media)
 
+### As node.js module
 ```javascript
 // Load Wikiapi module 
 const Wikiapi = require('wikiapi');
