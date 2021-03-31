@@ -402,6 +402,21 @@ Wikiapi.skip_edit = [wiki_API.edit.cancel, 'skip'];
 
 // --------------------------------------------------------
 
+/**
+ * @alias move_page
+ * @description Move page <code>move_from_title</code> to <code>move_to_title</code>.
+ *
+ * @param {Object|String}[move_from_title]	- move from title
+ * @param {Object|String}[move_to_title]	- move to title
+ * @param {Object}[options]					- options to run this function
+ *
+ * @example <caption>Move <code>move_from_title</code> to <code>move_to_title</code>.</caption>
+// <code>
+await wiki.move_page(move_from_title, move_to_title, { reason: reason, noredirect: true, movetalk: true });
+// </code>
+ *
+ * @memberof Wikiapi.prototype
+ */
 function Wikiapi_move_page(move_from_title, move_to_title, options) {
 	function Wikiapi_move_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
@@ -438,13 +453,13 @@ function Wikiapi_move_page(move_from_title, move_to_title, options) {
  * @alias move_to
  * @description Move to <code>move_to_title</code>. <em>Must call {@link Wikiapi#page} first!</em>
  * 
- * @param {Object|String}[move_to_title]	- target title
+ * @param {Object|String}[move_to_title]	- move to title
  * @param {Object}[options]					- options to run this function
  *
  * @example <caption>Move <code>move_from_title</code> to <code>move_to_title</code>.</caption>
 // <code>
 page_data = await wiki.page(move_from_title);
-try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
+await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true });
 // </code>
  * 
  * @memberof Wikiapi.prototype
@@ -675,6 +690,15 @@ function Wikiapi_for_each(type, title, for_each, options) {
 
 // --------------------------------------------------------
 
+/**
+ * @alias category_tree
+ * @description Get structural category tree with sub-categories of <code>root_category</code>. This is powerful than categorymembers.
+ *
+ * @param {String} root_category	- category name
+ * @param {Object}[options]			- options to run this function.
+ *
+ * @memberof Wikiapi.prototype
+ */
 function Wikiapi_category_tree(root_category, options) {
 	function Wikiapi_category_tree_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
@@ -816,19 +840,43 @@ function Wikiapi_register_redirects(template_name, options) {
 
 // --------------------------------------------------------
 
-// Upload a local file directly:
-// let result = await wiki_session.upload({ file_path: '/local/file/path',
-// comment: '', });
-// Upload file from URL:
-// let result = await wiki_session.upload({ media_url:
-// 'https://media.url/name.jpg', comment: '', });
-// Other file_data options: @see
-// https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js#L912
-// /options.text/
-// filename:'Will set via .file_path or .media_url if not settled.',
-// text: '', text: { description: '', source: '', author: '', permission: '',...
-// },
-// bot: 1, tags:"tag1|tag2", ignorewarnings: 1, ...
+/**
+ * @alias upload
+ * @description Upload specified local file to the target wiki.
+ *
+ * @param {Object} file_data	- Upload configurations.<br />
+{<br />
+<ul>
+<li><code>file_path</code>: string - Local path.</li>
+<li><code>media_url</code>: string - URL path. Alternative to <code>file_path</code>.</li>
+<li><code>comment</code>: string - Upload comment.</li>
+<li><code>ignorewarnings</code>: boolean - Set to 1 will overwrite existing files.</li>
+
+<li><code>text</code>: string - Wikicode which to fill the file's page. <em>Set <code>text</code> will replace ALL fields below.</em></li>
+
+<li>
+Parameter of [{{Information}}]{@link https://commons.wikimedia.org/wiki/Template:Information}:
+<ul>
+<li><code>description</code>: string - File description.</li>
+<li><code>date</code>: date string - YYYY-MM-DD, e.g., <code>new Date()</code> || <code>'2021-01-01'</code>.</li>
+<li><code>source_url</code>: string - Source where the file comes from, typically an URL.</li>
+<li><code>author</code>: string - Author's name or username in wikicode, e.g., URL or <code>'[[User:Yoda|Yoda]]'</code>.</li>
+<li><code>permission</code>: string - License and other usage limitations and warnings, e.g., <code>'{{cc-by-sa-2.5}}'</code>.</li>
+<li><code>other_versions</code>: string - Wikicode links to files with very similar content or derived files.</li>
+<li><code>other_fields</code>: string - Additional table fields added on the bottom of the template.</li>
+</ul>
+</li>
+
+<li><code>license</code>: array of strings - License under which the file is uploaded, e.g., <code>['{{cc-by-sa-2.5}}']</code>.</li>
+<li><code>additional_text</code>: string - Additional wikitext to place before <code>categories</code>.</li>
+<li><code>categories</code>: array of strings - Categories for this file, e.g., <code>['[[Category:test images]]']</code>.</li>
+</ul>
+}<br />
+<br />
+See <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js">edit.js</a> and search for <q>file_data</q> for other <code>file_data</code> options.
+ *
+ * @memberof Wikiapi.prototype
+ */
 function Wikiapi_upload(file_data) {
 	// 2021/3/25 renamed from old name: Wikiapi_upload_file(),
 	// Wikiapi_upload_file_executor()
@@ -1143,8 +1191,8 @@ Object.assign(Wikiapi.prototype, {
 	tracking_revisions: Wikiapi_tracking_revisions,
 	edit_page: Wikiapi_edit_page,
 	/**
-	 * edits content of target page.
-	 * <em>MUST using after {@link Wikiapi#page}!</em>
+	 * @description edits content of target page.<br />
+	 * <em>MUST using after {@link Wikiapi#page}!</em><br />
 	 * Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.
 	 * 
 	 * @param {String|Function}content	- 'wikitext page content' || page_data => 'wikitext'
@@ -1160,10 +1208,18 @@ Object.assign(Wikiapi.prototype, {
 	move_to: Wikiapi_move_to,
 	move_page: Wikiapi_move_page,
 	purge: Wikiapi_purge,
-	// wrapper
+	/**
+	 * @description Listen to page modification. 監視最近更改的頁面。<br />
+	 * wrapper for {@link wiki_API}#listen
+	 *
+	 * @param {Function}listener	- function(page_data) { return quit_listening; }
+	 * @param {Object}[options]		- options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }
+	 *
+	 * @memberof Wikiapi.prototype
+	 */
 	listen(listener, options) {
 		const wiki = this[KEY_wiki_session];
-		return wiki.listen(listener, options);
+		wiki.listen(listener, options);
 	},
 
 	category_tree: Wikiapi_category_tree,

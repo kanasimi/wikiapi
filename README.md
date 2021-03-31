@@ -195,8 +195,10 @@ const Wikiapi = require('wikiapi');
 	// Upload a local file directly:
 	//let result = await wiki.upload({ file_path: '/local/file/path', comment: '', text: '' || {description: '', ...} });
 	let result = await wiki.upload({ file_path: '/local/file/path', comment: '',
+		filename:'Will set via .file_path or .media_url if not settled.',
 		description: '', date: new Date() || '2021-01-01', source_url: 'https://github.com/kanasimi/wikiapi', author: '[[User:user]]', permission: '{{cc-by-sa-2.5}}', other_versions: '', other_fields: '',
 		license: ['{{cc-by-sa-2.5}}'], categories: ['[[Category:test images]]'],
+		bot: 1, tags:"tag1|tag2",
 		// To overwrite existing files
 		ignorewarnings: 1,
 	});

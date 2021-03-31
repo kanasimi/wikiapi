@@ -27,7 +27,7 @@
 
 <nav >
     
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Wikiapi.html">Wikiapi</a><ul class='methods'><li data-type='method'><a href="Wikiapi.html#edit">edit</a></li><li data-type='method'><a href="Wikiapi.html#edit_page">edit_page</a></li><li data-type='method'><a href="Wikiapi.html#for_each_page">for_each_page</a></li><li data-type='method'><a href="Wikiapi.html#get_featured_content">get_featured_content</a></li><li data-type='method'><a href="Wikiapi.html#login">login</a></li><li data-type='method'><a href="Wikiapi.html#move_to">move_to</a></li><li data-type='method'><a href="Wikiapi.html#page">page</a></li><li data-type='method'><a href="Wikiapi.html#site_name">site_name</a></li><li data-type='method'><a href="Wikiapi.html#tracking_revisions">tracking_revisions</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#CeL">CeL</a></li><li><a href="global.html#KEY_SESSION">KEY_SESSION</a></li><li><a href="global.html#KEY_wiki_session">KEY_wiki_session</a></li><li><a href="global.html#modify_data_entity">modify_data_entity</a></li><li><a href="global.html#page_data_attributes">page_data_attributes</a></li><li><a href="global.html#reject_edit_error">reject_edit_error</a></li><li><a href="global.html#set_page_data_attributes">set_page_data_attributes</a></li><li><a href="global.html#setup_data_entity">setup_data_entity</a></li><li><a href="global.html#setup_wiki_session">setup_wiki_session</a></li><li><a href="global.html#wiki_API">wiki_API</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Wikiapi.html">Wikiapi</a><ul class='methods'><li data-type='method'><a href="Wikiapi.html#category_tree">category_tree</a></li><li data-type='method'><a href="Wikiapi.html#edit">edit</a></li><li data-type='method'><a href="Wikiapi.html#edit_page">edit_page</a></li><li data-type='method'><a href="Wikiapi.html#for_each_page">for_each_page</a></li><li data-type='method'><a href="Wikiapi.html#get_featured_content">get_featured_content</a></li><li data-type='method'><a href="Wikiapi.html#listen">listen</a></li><li data-type='method'><a href="Wikiapi.html#login">login</a></li><li data-type='method'><a href="Wikiapi.html#move_page">move_page</a></li><li data-type='method'><a href="Wikiapi.html#move_to">move_to</a></li><li data-type='method'><a href="Wikiapi.html#page">page</a></li><li data-type='method'><a href="Wikiapi.html#site_name">site_name</a></li><li data-type='method'><a href="Wikiapi.html#tracking_revisions">tracking_revisions</a></li><li data-type='method'><a href="Wikiapi.html#upload">upload</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#CeL">CeL</a></li><li><a href="global.html#KEY_SESSION">KEY_SESSION</a></li><li><a href="global.html#KEY_wiki_session">KEY_wiki_session</a></li><li><a href="global.html#modify_data_entity">modify_data_entity</a></li><li><a href="global.html#page_data_attributes">page_data_attributes</a></li><li><a href="global.html#reject_edit_error">reject_edit_error</a></li><li><a href="global.html#set_page_data_attributes">set_page_data_attributes</a></li><li><a href="global.html#setup_data_entity">setup_data_entity</a></li><li><a href="global.html#setup_wiki_session">setup_wiki_session</a></li><li><a href="global.html#wiki_API">wiki_API</a></li></ul>
 </nav>
 
 <div id="main">
@@ -346,7 +346,7 @@ function Wikiapi_tracking_revisions(title, to_search, options) {
  * @param {any} error		- error object / message
  * @param {any} [result]	- result of MediaWiki API
  *
- * @returns {Boolean} Return true if the edit operation failed.
+ * @returns {Boolean} Return &lt;code>true&lt;/code> if the edit operation failed.
  * 
  * @inner
  */
@@ -446,6 +446,21 @@ Wikiapi.skip_edit = [wiki_API.edit.cancel, 'skip'];
 
 // --------------------------------------------------------
 
+/**
+ * @alias move_page
+ * @description Move page &lt;code>move_from_title&lt;/code> to &lt;code>move_to_title&lt;/code>.
+ *
+ * @param {Object|String}[move_from_title]	- move from title
+ * @param {Object|String}[move_to_title]	- move to title
+ * @param {Object}[options]					- options to run this function
+ *
+ * @example &lt;caption>Move &lt;code>move_from_title&lt;/code> to &lt;code>move_to_title&lt;/code>.&lt;/caption>
+// &lt;code>
+await wiki.move_page(move_from_title, move_to_title, { reason: reason, noredirect: true, movetalk: true });
+// &lt;/code>
+ *
+ * @memberof Wikiapi.prototype
+ */
 function Wikiapi_move_page(move_from_title, move_to_title, options) {
 	function Wikiapi_move_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
@@ -482,13 +497,13 @@ function Wikiapi_move_page(move_from_title, move_to_title, options) {
  * @alias move_to
  * @description Move to &lt;code>move_to_title&lt;/code>. &lt;em>Must call {@link Wikiapi#page} first!&lt;/em>
  * 
- * @param {Object|String}[move_to_title]	- target title
+ * @param {Object|String}[move_to_title]	- move to title
  * @param {Object}[options]					- options to run this function
  *
  * @example &lt;caption>Move &lt;code>move_from_title&lt;/code> to &lt;code>move_to_title&lt;/code>.&lt;/caption>
 // &lt;code>
 page_data = await wiki.page(move_from_title);
-try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
+await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true });
 // &lt;/code>
  * 
  * @memberof Wikiapi.prototype
@@ -719,6 +734,15 @@ function Wikiapi_for_each(type, title, for_each, options) {
 
 // --------------------------------------------------------
 
+/**
+ * @alias category_tree
+ * @description Get structural category tree with sub-categories of &lt;code>root_category&lt;/code>. This is powerful than categorymembers.
+ *
+ * @param {String} root_category	- category name
+ * @param {Object}[options]			- options to run this function.
+ *
+ * @memberof Wikiapi.prototype
+ */
 function Wikiapi_category_tree(root_category, options) {
 	function Wikiapi_category_tree_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
@@ -860,19 +884,43 @@ function Wikiapi_register_redirects(template_name, options) {
 
 // --------------------------------------------------------
 
-// Upload a local file directly:
-// let result = await wiki_session.upload({ file_path: '/local/file/path',
-// comment: '', });
-// Upload file from URL:
-// let result = await wiki_session.upload({ media_url:
-// 'https://media.url/name.jpg', comment: '', });
-// Other file_data options: @see
-// https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js#L912
-// /options.text/
-// filename:'Will set via .file_path or .media_url if not settled.',
-// text: '', text: { description: '', source: '', author: '', permission: '',...
-// },
-// bot: 1, tags:"tag1|tag2", ignorewarnings: 1, ...
+/**
+ * @alias upload
+ * @description Upload specified local file to the target wiki.
+ *
+ * @param {Object} file_data	- Upload configurations.&lt;br />
+{&lt;br />
+&lt;ul>
+&lt;li>&lt;code>file_path&lt;/code>: string - Local path.&lt;/li>
+&lt;li>&lt;code>media_url&lt;/code>: string - URL path. Alternative to &lt;code>file_path&lt;/code>.&lt;/li>
+&lt;li>&lt;code>comment&lt;/code>: string - Upload comment.&lt;/li>
+&lt;li>&lt;code>ignorewarnings&lt;/code>: boolean - Set to 1 will overwrite existing files.&lt;/li>
+
+&lt;li>&lt;code>text&lt;/code>: string - Wikicode which to fill the file's page. &lt;em>Set &lt;code>text&lt;/code> will replace ALL fields below.&lt;/em>&lt;/li>
+
+&lt;li>
+Parameter of [{{Information}}]{@link https://commons.wikimedia.org/wiki/Template:Information}:
+&lt;ul>
+&lt;li>&lt;code>description&lt;/code>: string - File description.&lt;/li>
+&lt;li>&lt;code>date&lt;/code>: date string - YYYY-MM-DD, e.g., &lt;code>new Date()&lt;/code> || &lt;code>'2021-01-01'&lt;/code>.&lt;/li>
+&lt;li>&lt;code>source_url&lt;/code>: string - Source where the file comes from, typically an URL.&lt;/li>
+&lt;li>&lt;code>author&lt;/code>: string - Author's name or username in wikicode, e.g., URL or &lt;code>'[[User:Yoda|Yoda]]'&lt;/code>.&lt;/li>
+&lt;li>&lt;code>permission&lt;/code>: string - License and other usage limitations and warnings, e.g., &lt;code>'{{cc-by-sa-2.5}}'&lt;/code>.&lt;/li>
+&lt;li>&lt;code>other_versions&lt;/code>: string - Wikicode links to files with very similar content or derived files.&lt;/li>
+&lt;li>&lt;code>other_fields&lt;/code>: string - Additional table fields added on the bottom of the template.&lt;/li>
+&lt;/ul>
+&lt;/li>
+
+&lt;li>&lt;code>license&lt;/code>: array of strings - License under which the file is uploaded, e.g., &lt;code>['{{cc-by-sa-2.5}}']&lt;/code>.&lt;/li>
+&lt;li>&lt;code>additional_text&lt;/code>: string - Additional wikitext to place before &lt;code>categories&lt;/code>.&lt;/li>
+&lt;li>&lt;code>categories&lt;/code>: array of strings - Categories for this file, e.g., &lt;code>['[[Category:test images]]']&lt;/code>.&lt;/li>
+&lt;/ul>
+}&lt;br />
+&lt;br />
+See &lt;a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js">edit.js&lt;/a> and search for &lt;q>file_data&lt;/q> for other &lt;code>file_data&lt;/code> options.
+ *
+ * @memberof Wikiapi.prototype
+ */
 function Wikiapi_upload(file_data) {
 	// 2021/3/25 renamed from old name: Wikiapi_upload_file(),
 	// Wikiapi_upload_file_executor()
@@ -1187,8 +1235,8 @@ Object.assign(Wikiapi.prototype, {
 	tracking_revisions: Wikiapi_tracking_revisions,
 	edit_page: Wikiapi_edit_page,
 	/**
-	 * edits content of target page.
-	 * &lt;em>MUST using after {@link Wikiapi#page}!&lt;/em>
+	 * @description edits content of target page.&lt;br />
+	 * &lt;em>MUST using after {@link Wikiapi#page}!&lt;/em>&lt;br />
 	 * Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.
 	 * 
 	 * @param {String|Function}content	- 'wikitext page content' || page_data => 'wikitext'
@@ -1204,10 +1252,18 @@ Object.assign(Wikiapi.prototype, {
 	move_to: Wikiapi_move_to,
 	move_page: Wikiapi_move_page,
 	purge: Wikiapi_purge,
-	// wrapper
+	/**
+	 * @description Listen to page modification. 監視最近更改的頁面。&lt;br />
+	 * wrapper for {@link wiki_API}#listen
+	 *
+	 * @param {Function}listener	- function(page_data) { return quit_listening; }
+	 * @param {Object}[options]		- options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }
+	 *
+	 * @memberof Wikiapi.prototype
+	 */
 	listen(listener, options) {
 		const wiki = this[KEY_wiki_session];
-		return wiki.listen(listener, options);
+		wiki.listen(listener, options);
 	},
 
 	category_tree: Wikiapi_category_tree,
@@ -1299,7 +1355,7 @@ module.exports = Wikiapi;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Mar 31 2021 17:39:33 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Mar 31 2021 19:02:50 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

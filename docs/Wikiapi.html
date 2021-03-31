@@ -27,7 +27,7 @@
 
 <nav >
     
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Wikiapi.html">Wikiapi</a><ul class='methods'><li data-type='method'><a href="Wikiapi.html#edit">edit</a></li><li data-type='method'><a href="Wikiapi.html#edit_page">edit_page</a></li><li data-type='method'><a href="Wikiapi.html#for_each_page">for_each_page</a></li><li data-type='method'><a href="Wikiapi.html#get_featured_content">get_featured_content</a></li><li data-type='method'><a href="Wikiapi.html#login">login</a></li><li data-type='method'><a href="Wikiapi.html#move_to">move_to</a></li><li data-type='method'><a href="Wikiapi.html#page">page</a></li><li data-type='method'><a href="Wikiapi.html#site_name">site_name</a></li><li data-type='method'><a href="Wikiapi.html#tracking_revisions">tracking_revisions</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#CeL">CeL</a></li><li><a href="global.html#KEY_SESSION">KEY_SESSION</a></li><li><a href="global.html#KEY_wiki_session">KEY_wiki_session</a></li><li><a href="global.html#modify_data_entity">modify_data_entity</a></li><li><a href="global.html#page_data_attributes">page_data_attributes</a></li><li><a href="global.html#reject_edit_error">reject_edit_error</a></li><li><a href="global.html#set_page_data_attributes">set_page_data_attributes</a></li><li><a href="global.html#setup_data_entity">setup_data_entity</a></li><li><a href="global.html#setup_wiki_session">setup_wiki_session</a></li><li><a href="global.html#wiki_API">wiki_API</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Wikiapi.html">Wikiapi</a><ul class='methods'><li data-type='method'><a href="Wikiapi.html#category_tree">category_tree</a></li><li data-type='method'><a href="Wikiapi.html#edit">edit</a></li><li data-type='method'><a href="Wikiapi.html#edit_page">edit_page</a></li><li data-type='method'><a href="Wikiapi.html#for_each_page">for_each_page</a></li><li data-type='method'><a href="Wikiapi.html#get_featured_content">get_featured_content</a></li><li data-type='method'><a href="Wikiapi.html#listen">listen</a></li><li data-type='method'><a href="Wikiapi.html#login">login</a></li><li data-type='method'><a href="Wikiapi.html#move_page">move_page</a></li><li data-type='method'><a href="Wikiapi.html#move_to">move_to</a></li><li data-type='method'><a href="Wikiapi.html#page">page</a></li><li data-type='method'><a href="Wikiapi.html#site_name">site_name</a></li><li data-type='method'><a href="Wikiapi.html#tracking_revisions">tracking_revisions</a></li><li data-type='method'><a href="Wikiapi.html#upload">upload</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#CeL">CeL</a></li><li><a href="global.html#KEY_SESSION">KEY_SESSION</a></li><li><a href="global.html#KEY_wiki_session">KEY_wiki_session</a></li><li><a href="global.html#modify_data_entity">modify_data_entity</a></li><li><a href="global.html#page_data_attributes">page_data_attributes</a></li><li><a href="global.html#reject_edit_error">reject_edit_error</a></li><li><a href="global.html#set_page_data_attributes">set_page_data_attributes</a></li><li><a href="global.html#setup_data_entity">setup_data_entity</a></li><li><a href="global.html#setup_wiki_session">setup_wiki_session</a></li><li><a href="global.html#wiki_API">wiki_API</a></li></ul>
 </nav>
 
 <div id="main">
@@ -298,7 +298,7 @@
 
     
 
-    <h4 class="name" id="edit"><span class="type-signature"></span>edit<span class="signature">(content, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="category_tree"><span class="type-signature"></span>category_tree<span class="signature">(root_category, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -310,7 +310,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1157">line 1157</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line702">line 702</a>
     </li></ul></dd>
     
 
@@ -350,7 +350,186 @@
 
 
 <div class="description usertext">
-    edits content of target page.<em>MUST using after <a href="Wikiapi.html#page">Wikiapi#page</a>!</em>Note: for multiple pages, you should use <a href="Wikiapi.html#for_each_page">Wikiapi#for_each_page</a>.
+    Get structural category tree with sub-categories of <code>root_category</code>. This is powerful than categorymembers.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>root_category</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">category name</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">options to run this function.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="edit"><span class="type-signature"></span>edit<span class="signature">(content, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1205">line 1205</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    edits content of target page.<br /><em>MUST using after <a href="Wikiapi.html#page">Wikiapi#page</a>!</em><br />Note: for multiple pages, you should use <a href="Wikiapi.html#for_each_page">Wikiapi#for_each_page</a>.
 </div>
 
 
@@ -749,7 +928,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line866">line 866</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line914">line 914</a>
     </li></ul></dd>
     
 
@@ -959,7 +1138,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1074">line 1074</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1122">line 1122</a>
     </li></ul></dd>
     
 
@@ -1084,6 +1263,185 @@ console.assert(FC_data_hash === wiki.FC_data_hash);
             
 
             <td class="description last">options to run this function.           {String}type (FFA|GA|FA|FL)           || {type,on_conflict(FC_title, {from,to})}</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="listen"><span class="type-signature"></span>listen<span class="signature">(listener, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1220">line 1220</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Listen to page modification. 監視最近更改的頁面。<br />wrapper for <a href="global.html#wiki_API">wiki_API</a>#listen
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>listener</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">function(page_data) { return quit_listening; }</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }</td>
         </tr>
 
     
@@ -1341,6 +1699,235 @@ await wiki.login('user_name', 'password', 'en');
 
     
 
+    <h4 class="name" id="move_page"><span class="type-signature"></span>move_page<span class="signature">(move_from_title<span class="signature-attributes">opt</span>, move_to_title<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line420">line 420</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Move page <code>move_from_title</code> to <code>move_to_title</code>.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Move <code>move_from_title</code> to <code>move_to_title</code>.</p>
+    
+    <pre class="prettyprint"><code>// &lt;code>
+await wiki.move_page(move_from_title, move_to_title, { reason: reason, noredirect: true, movetalk: true });
+// &lt;/code></code></pre>
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>move_from_title</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">move from title</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>move_to_title</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">move to title</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">options to run this function</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
     <h4 class="name" id="move_to"><span class="type-signature"></span>move_to<span class="signature">(move_to_title<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
@@ -1353,7 +1940,7 @@ await wiki.login('user_name', 'password', 'en');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line452">line 452</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line467">line 467</a>
     </li></ul></dd>
     
 
@@ -1410,7 +1997,7 @@ await wiki.login('user_name', 'password', 'en');
     
     <pre class="prettyprint"><code>// &lt;code>
 page_data = await wiki.page(move_from_title);
-try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
+await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true });
 // &lt;/code></code></pre>
 
 
@@ -1472,7 +2059,7 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
 
             
 
-            <td class="description last">target title</td>
+            <td class="description last">move to title</td>
         </tr>
 
     
@@ -1748,7 +2335,7 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1120">line 1120</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1168">line 1168</a>
     </li></ul></dd>
     
 
@@ -2177,6 +2764,171 @@ console.assert(wiki.site_name() === 'enwiki');
 
 
         
+            
+
+    
+
+    <h4 class="name" id="upload"><span class="type-signature"></span>upload<span class="signature">(file_data)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line880">line 880</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Upload specified local file to the target wiki.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>file_data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Upload configurations.<br />
+{<br />
+<ul>
+<li><code>file_path</code>: string - Local path.</li>
+<li><code>media_url</code>: string - URL path. Alternative to <code>file_path</code>.</li>
+<li><code>comment</code>: string - Upload comment.</li>
+<li><code>ignorewarnings</code>: boolean - Set to 1 will overwrite existing files.</li>
+
+<li><code>text</code>: string - Wikicode which to fill the file's page. <em>Set <code>text</code> will replace ALL fields below.</em></li>
+
+<li>
+Parameter of <a href="https://commons.wikimedia.org/wiki/Template:Information">{{Information}}</a>:
+<ul>
+<li><code>description</code>: string - File description.</li>
+<li><code>date</code>: date string - YYYY-MM-DD, e.g., <code>new Date()</code> || <code>'2021-01-01'</code>.</li>
+<li><code>source_url</code>: string - Source where the file comes from, typically an URL.</li>
+<li><code>author</code>: string - Author's name or username in wikicode, e.g., URL or <code>'[[User:Yoda|Yoda]]'</code>.</li>
+<li><code>permission</code>: string - License and other usage limitations and warnings, e.g., <code>'{{cc-by-sa-2.5}}'</code>.</li>
+<li><code>other_versions</code>: string - Wikicode links to files with very similar content or derived files.</li>
+<li><code>other_fields</code>: string - Additional table fields added on the bottom of the template.</li>
+</ul>
+</li>
+
+<li><code>license</code>: array of strings - License under which the file is uploaded, e.g., <code>['{{cc-by-sa-2.5}}']</code>.</li>
+<li><code>additional_text</code>: string - Additional wikitext to place before <code>categories</code>.</li>
+<li><code>categories</code>: array of strings - Categories for this file, e.g., <code>['[[Category:test images]]']</code>.</li>
+</ul>
+}<br />
+<br />
+See <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js">edit.js</a> and search for <q>file_data</q> for other <code>file_data</code> options.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     
 
     
@@ -2196,7 +2948,7 @@ console.assert(wiki.site_name() === 'enwiki');
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Mar 31 2021 17:39:33 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Mar 31 2021 19:02:50 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
