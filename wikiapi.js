@@ -267,15 +267,12 @@ function Wikiapi_page(title, options) {
 // --------------------------------------------------------
 
 /**
- * tracking revisions to lookup what revision add/removed text `to_search`.
- * 
  * @alias tracking_revisions
- * @param {String}title
- *            page title
- * @param {String}to_search
- *            filter / text to search
- * @param {Object}[options]
- *            options to run this function
+ * @description tracking revisions to lookup what revision add/removed text `to_search`.
+ * 
+ * @param {String}title		- page title
+ * @param {String}to_search	- filter / text to search
+ * @param {Object}[options]	- options to run this function
  * 
  * @returns {Promise} Promise object represents {Object} newer_revision,
  *          newer_revision.page = page_data

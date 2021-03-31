@@ -1,23 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="utf-8">
-    <title>JSDoc: Class: Wikiapi</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
+    <title>Wikiapi - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div id="main">
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-    <h1 class="page-title">Class: Wikiapi</h1>
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Wikiapi.html">Wikiapi</a><ul class='methods'><li data-type='method'><a href="Wikiapi.html#edit">edit</a></li><li data-type='method'><a href="Wikiapi.html#edit_page">edit_page</a></li><li data-type='method'><a href="Wikiapi.html#for_each_page">for_each_page</a></li><li data-type='method'><a href="Wikiapi.html#get_featured_content">get_featured_content</a></li><li data-type='method'><a href="Wikiapi.html#login">login</a></li><li data-type='method'><a href="Wikiapi.html#move_to">move_to</a></li><li data-type='method'><a href="Wikiapi.html#page">page</a></li><li data-type='method'><a href="Wikiapi.html#site_name">site_name</a></li><li data-type='method'><a href="Wikiapi.html#tracking_revisions">tracking_revisions</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#CeL">CeL</a></li><li><a href="global.html#KEY_SESSION">KEY_SESSION</a></li><li><a href="global.html#KEY_wiki_session">KEY_wiki_session</a></li><li><a href="global.html#modify_data_entity">modify_data_entity</a></li><li><a href="global.html#page_data_attributes">page_data_attributes</a></li><li><a href="global.html#reject_edit_error">reject_edit_error</a></li><li><a href="global.html#set_page_data_attributes">set_page_data_attributes</a></li><li><a href="global.html#setup_data_entity">setup_data_entity</a></li><li><a href="global.html#setup_wiki_session">setup_wiki_session</a></li><li><a href="global.html#wiki_API">wiki_API</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Wikiapi</h1>
+    
 
     
 
@@ -28,29 +44,77 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>Wikiapi<span class="signature">(API_URL<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h2>
+        <h2>
+        Wikiapi
+        </h2>
         
     
 </header>
 
 <article>
-    <div class="container-overview">
     
+        <div class="container-overview">
         
+            
 
     
 
-    
     <h4 class="name" id="Wikiapi"><span class="type-signature"></span>new Wikiapi<span class="signature">(API_URL<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-    
 
     
 
 
 
-<div class="description">
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line91">line 91</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
     main Wikiapi operator 操作子.
 </div>
+
+
 
 
 
@@ -128,8 +192,21 @@
 
 
 
-<dl class="details">
 
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
     
 
     
@@ -137,68 +214,10 @@
     
 
     
-
+    
     
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line91">line 91</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
+     
 
     
 
@@ -212,46 +231,13 @@
 
 
 
-<div class="description">
-    Return `Wikiapi.skip_edit` when we running edit function, but do not want toedit current page.
-</div>
-
-
-
-
-
-
 
 <dl class="details">
 
     
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line414">line 414</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line411">line 411</a>
     </li></ul></dd>
     
 
@@ -260,7 +246,41 @@
     
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 </dl>
+
+
+
+
+
+<div class="description usertext">
+    Return `Wikiapi.skip_edit` when we running edit function, but do not want toedit current page.
+</div>
+
+
 
 
 
@@ -278,17 +298,62 @@
 
     
 
-    
     <h4 class="name" id="edit"><span class="type-signature"></span>edit<span class="signature">(content, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-    
 
     
 
 
 
-<div class="description">
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1177">line 1177</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
     edits content of target page.<em>MUST using after wiki.page()!</em>Note: for multiple pages, you should use Wikiapi_for_each_page.
 </div>
+
+
 
 
 
@@ -397,50 +462,6 @@
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1180">line 1180</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
 
 
 
@@ -460,7 +481,7 @@
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
@@ -476,24 +497,67 @@
 
 
 
-
-
         
             
 
     
 
-    
     <h4 class="name" id="edit_page"><span class="type-signature"></span>edit_page<span class="signature">(title, content, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-    
 
     
 
 
 
-<div class="description">
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line350">line 350</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
     edits content of target page. Note: for multiple pages, you should use<a href="Wikiapi.html#for_each_page">Wikiapi#for_each_page</a>.
 </div>
+
+
 
 
 
@@ -633,50 +697,6 @@
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line353">line 353</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
 
 
 
@@ -696,7 +716,7 @@
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
@@ -712,24 +732,67 @@
 
 
 
-
-
         
             
 
     
 
-    
     <h4 class="name" id="for_each_page"><span class="type-signature"></span>for_each_page<span class="signature">(page_list, for_each_page, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-    
 
     
 
 
 
-<div class="description">
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line882">line 882</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
     Edit / process pages listing in `page_list`.
 </div>
+
+
 
 
 
@@ -866,52 +929,6 @@
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line885">line 885</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
 
 
 
@@ -930,15 +947,58 @@
 
     
 
-    
     <h4 class="name" id="get_featured_content"><span class="type-signature"></span>get_featured_content<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-    
 
     
 
 
 
-<div class="description">
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1090">line 1090</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
     Get featured content.
 </div>
 
@@ -946,6 +1006,23 @@
 
 
 
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Get featured content of current wiki site.</p>
+    
+    <pre class="prettyprint"><code>// &lt;code>
+// MUST including wiki.featured_content first to get featured content!
+CeL.run('application.net.wiki.featured_content');
+
+// ...
+
+const FC_data_hash = await wiki.get_featured_content();
+FC_data_hash === wiki.FC_data_hash;
+// &lt;/code></code></pre>
 
 
 
@@ -1018,37 +1095,62 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="login"><span class="type-signature"></span>login<span class="signature">(user_name, password, API_URL<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1093">line 1093</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line141">line 141</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1062,50 +1164,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-        <p class="code-caption">Get featured content of current wiki site.</p>
-    
-    <pre class="prettyprint"><code>// &lt;code>
-// MUST including wiki.featured_content first to get featured content!
-CeL.run('application.net.wiki.featured_content');
-
-// ...
-
-const FC_data_hash = await wiki.get_featured_content();
-FC_data_hash === wiki.FC_data_hash;
-// &lt;/code></code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="login"><span class="type-signature"></span>login<span class="signature">(user_name, password, API_URL<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
+<div class="description usertext">
     login into the target MediaWiki API using the provided username and password.For bots, see [[Special:BotPasswords]] on your wiki.
 </div>
 
@@ -1113,6 +1172,26 @@ FC_data_hash === wiki.FC_data_hash;
 
 
 
+
+
+
+
+    <h5>Examples</h5>
+    
+        <p class="code-caption">Login to wiki site #1.</p>
+    
+    <pre class="prettyprint"><code>// &lt;code>
+const wiki = new Wikiapi;
+const login_options = { user_name: '', password: '', API_URL: 'en' };
+await wiki.login(login_options);
+// &lt;/code></code></pre>
+
+        <p class="code-caption">Login to wiki site #2.</p>
+    
+    <pre class="prettyprint"><code>// &lt;code>
+const wiki = new Wikiapi;
+await wiki.login('user_name', 'password', 'en');
+// &lt;/code></code></pre>
 
 
 
@@ -1244,37 +1323,62 @@ FC_data_hash === wiki.FC_data_hash;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="move_to"><span class="type-signature"></span>move_to<span class="signature">(move_to_title<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line141">line 141</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line464">line 464</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1288,53 +1392,7 @@ FC_data_hash === wiki.FC_data_hash;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Examples</h5>
-    
-        <p class="code-caption">Login to wiki site #1.</p>
-    
-    <pre class="prettyprint"><code>// &lt;code>
-const wiki = new Wikiapi;
-const login_options = { user_name: '', password: '', API_URL: 'en' };
-await wiki.login(login_options);
-// &lt;/code></code></pre>
-
-        <p class="code-caption">Login to wiki site #2.</p>
-    
-    <pre class="prettyprint"><code>// &lt;code>
-const wiki = new Wikiapi;
-await wiki.login('user_name', 'password', 'en');
-// &lt;/code></code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="move_to"><span class="type-signature"></span>move_to<span class="signature">(move_to_title<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
+<div class="description usertext">
     Move to `move_to_title`. Must call `wiki.page(move_from_title)` first!
 </div>
 
@@ -1342,6 +1400,18 @@ await wiki.login('user_name', 'password', 'en');
 
 
 
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Move `move_from_title` to `move_to_title`.</p>
+    
+    <pre class="prettyprint"><code>// &lt;code>
+page_data = await wiki.page(move_from_title);
+try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
+// &lt;/code></code></pre>
 
 
 
@@ -1447,37 +1517,62 @@ await wiki.login('user_name', 'password', 'en');
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="page"><span class="type-signature"></span>page<span class="signature">(title, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
 <dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line467">line 467</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line249">line 249</a>
     </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
     
 
     
@@ -1491,47 +1586,11 @@ await wiki.login('user_name', 'password', 'en');
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-        <p class="code-caption">Move `move_from_title` to `move_to_title`.</p>
-    
-    <pre class="prettyprint"><code>// &lt;code>
-page_data = await wiki.page(move_from_title);
-try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: true }); } catch (e) {}
-// &lt;/code></code></pre>
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="page"><span class="type-signature"></span>page<span class="signature">(title, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
+<div class="description usertext">
     given a title, returns the page's data.
 </div>
+
+
 
 
 
@@ -1637,50 +1696,6 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line249">line 249</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
 
 
 
@@ -1700,7 +1715,7 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
@@ -1716,22 +1731,63 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
 
 
 
-
-
         
             
 
     
 
-    
     <h4 class="name" id="site_name"><span class="type-signature"></span>site_name<span class="signature">(language<span class="signature-attributes">opt</span>, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
-    
 
     
 
 
 
-<div class="description">
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1138">line 1138</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
     Get site name / project name of this {Wikiapi}.
 </div>
 
@@ -1739,6 +1795,18 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
 
 
 
+
+
+
+
+    <h5>Example</h5>
+    
+        <p class="code-caption">Get site name of {Wikiapi}.</p>
+    
+    <pre class="prettyprint"><code>// &lt;code>
+const wiki = new Wikiapi('en');
+console.assert(wiki.site_name() === 'enwiki');
+// &lt;/code></code></pre>
 
 
 
@@ -1841,50 +1909,6 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1141">line 1141</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
 
 
 
@@ -1904,7 +1928,7 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
@@ -1920,34 +1944,67 @@ try { await wiki.move_to(move_to_title, { reason: reason, noredirect: true, move
 
 
 
-
-    <h5>Example</h5>
-    
-        <p class="code-caption">Get site name of {Wikiapi}.</p>
-    
-    <pre class="prettyprint"><code>// &lt;code>
-const wiki = new Wikiapi('en');
-console.assert(wiki.site_name() === 'enwiki');
-// &lt;/code></code></pre>
-
-
-
         
             
 
     
 
-    
     <h4 class="name" id="tracking_revisions"><span class="type-signature"></span>tracking_revisions<span class="signature">(title, to_search, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-    
 
     
 
 
 
-<div class="description">
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line282">line 282</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
     tracking revisions to lookup what revision add/removed text `to_search`.
 </div>
+
+
 
 
 
@@ -2084,50 +2141,6 @@ console.assert(wiki.site_name() === 'enwiki');
 
 
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line285">line 285</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
 
 
 
@@ -2147,7 +2160,7 @@ console.assert(wiki.site_name() === 'enwiki');
 
 
 
-<dl>
+<dl class="param-type">
     <dt>
         Type
     </dt>
@@ -2160,8 +2173,6 @@ console.assert(wiki.site_name() === 'enwiki');
 </dl>
 
     
-
-
 
 
 
@@ -2178,19 +2189,21 @@ console.assert(wiki.site_name() === 'enwiki');
 
 
 
+    
+    
 </div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Wikiapi.html">Wikiapi</a></li></ul><h3>Global</h3><ul><li><a href="global.html#CeL">CeL</a></li><li><a href="global.html#KEY_SESSION">KEY_SESSION</a></li><li><a href="global.html#KEY_wiki_session">KEY_wiki_session</a></li><li><a href="global.html#modify_data_entity">modify_data_entity</a></li><li><a href="global.html#page_data_attributes">page_data_attributes</a></li><li><a href="global.html#reject_edit_error">reject_edit_error</a></li><li><a href="global.html#set_page_data_attributes">set_page_data_attributes</a></li><li><a href="global.html#setup_data_entity">setup_data_entity</a></li><li><a href="global.html#setup_wiki_session">setup_wiki_session</a></li><li><a href="global.html#wiki_API">wiki_API</a></li></ul>
-</nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Mar 31 2021 16:49:57 GMT+0800 (台北標準時間)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Mar 31 2021 16:53:59 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
 </body>
 </html>
