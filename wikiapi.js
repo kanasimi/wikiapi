@@ -113,20 +113,26 @@ function setup_wiki_session(wiki_session) {
  * @param {String}user_name	- Account username.
  * @param {String}password	- Account's password.
  * @param {String}[API_URL]	- API URL of target wiki site.
- * 
- * @example <caption>Login to wiki site #1.</caption>
+ *
+ * @returns {Promise} Promise object represents {String} login_name
+ *
+ * @example <caption><span id="example__Login to wiki site 1">Login to wiki site #1.</span></caption>
 // <code>
 const wiki = new Wikiapi;
-const login_options = { user_name: '', password: '', API_URL: 'en' };
+const login_options = {
+	user_name: '', password: '', API_URL: 'en',
+	// Calling in another domain
+	origin: '*'
+};
 await wiki.login(login_options);
 // </code>
- * 
- * @example <caption>Login to wiki site #2.</caption>
+ *
+ * @example <caption><span id="example__Login to wiki site 2">Login to wiki site #2.</span></caption>
 // <code>
 const wiki = new Wikiapi;
 await wiki.login('user_name', 'password', 'en');
 // </code>
- * 
+ *
  * @memberof Wikiapi.prototype
  */
 function Wikiapi_login(user_name, password, API_URL) {
@@ -145,11 +151,11 @@ function Wikiapi_login(user_name, password, API_URL) {
 			...options,
 
 			API_URL: options.API_URL || this[KEY_wiki_session].API_URL,
-			callback(data, error) {
+			callback(login_name, error) {
 				if (error) {
 					reject(error);
 				} else {
-					resolve(data);
+					resolve(login_name);
 				}
 			},
 			// task_configuration_page: 'page title',
@@ -239,7 +245,67 @@ function set_page_data_attributes(page_data, wiki) {
  * @param {Object}[options]	- options to run this function
  *
  * @returns {Promise} Promise object represents {Object} page's data
- * 
+ *
+ * @example <caption>load page</caption>
+// <code>
+(async () => {
+	// on Wikipedia...
+	const wiki = new Wikiapi('en');
+	// ...or other MediaWiki websites
+	//const wiki = new Wikiapi('https://awoiaf.westeros.org/api.php');
+	let page_data = await wiki.page('Universe', {
+		// You may also set rvprop.
+		//rvprop: 'ids|content|timestamp|user',
+	});
+	console.log(page_data.wikitext);
+})();
+// </code>
+ *
+ * @example <caption>Get multi revisions</caption>
+// <code>
+(async () => {
+	const wiki = new Wikiapi;
+	let page_data = await wiki.page('Universe', {
+		// Get multi revisions
+		revisions: 2
+	});
+	console.log(page_data.wikitext);
+})();
+// </code>
+ *
+ * @example <caption>parse wiki page (The parser is more powerful than the example. Please refer to link of wikitext parser examples showing in "Features" section of README.md.)</caption>
+// <code>
+(async () => {
+	// Usage with other language
+	const zhwiki = new Wikiapi('zh');
+	await zhwiki.login('user', 'password');
+	let page_data = await zhwiki.page('Universe');
+	// Other types:
+	// @see wiki_toString @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/parser.js
+	page_data.parse().each('template',
+		token => console.log(token.name));
+})();
+// </code>
+ *
+ * @example <caption>Get information from Infobox template</caption>
+// <code>
+(async () => {
+	const wiki = new Wikiapi('en');
+	const page_data = await wiki.page('JavaScript');
+	const parsed = page_data.parse();
+	let infobox;
+	parsed.each('template', template_token => {
+		if (template_token.name.startsWith('Infobox')) {
+			infobox = template_token.parameters;
+			return parsed.each.exit;
+		}
+	});
+	for (const [key, value] of Object.entries(infobox))
+		infobox[key] = value.toString();
+	console.log(infobox);
+})();
+// </code>
+ *
  * @memberof Wikiapi.prototype
  */
 function Wikiapi_page(title, options) {
@@ -264,14 +330,14 @@ function Wikiapi_page(title, options) {
 
 /**
  * @alias tracking_revisions
- * @description tracking revisions to lookup what revision add/removed text `to_search`.
+ * @description tracking revisions to lookup what revision had added / removed <code>to_search</code>.
  * 
  * @param {String}title		- page title
  * @param {String}to_search	- filter / text to search
  * @param {Object}[options]	- options to run this function
  * 
  * @returns {Promise} Promise object represents {Object} newer_revision,
- *          newer_revision.page = page_data
+ *          newer_revision.page: page_data
  * 
  * @memberof Wikiapi.prototype
  */
@@ -335,7 +401,45 @@ function reject_edit_error(reject, error, result) {
  * @param {Object}[options]			- options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }
  * 
  * @returns {Promise} Promise object represents {Object} result of MediaWiki API
- * 
+ *
+ * @example <caption>edit page: method 1</caption>
+// <code>
+(async () => {
+	const enwiki = new Wikiapi;
+	await enwiki.login('bot name', 'password', 'en');
+	const SB_page_data = await enwiki.page('Wikipedia:Sandbox');
+	// You may do some operations on SB_page_data
+	const parsed = SB_page_data.parse();
+	parsed.each('template', template_token => {
+		// modify template token
+	});
+	// and then edit it. ** You MUST call enwiki.page() before enwiki.edit()! **
+	await enwiki.edit(parsed.toString(), { bot: 1, minor: 1, nocreate: 1 });
+	// exmaple 2
+	await enwiki.edit(function (page_data) {
+		return page_data.wikitext
+			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
+	}, { bot: 1 });
+	// exmaple 3
+	await enwiki.edit('Just replace by this wikitext', { bot: 1, minor: 1, nocreate: 1, summary: 'test edit' });
+
+	console.log('Done.');
+})();
+// </code>
+ *
+ * @example <caption>edit page: method 2</caption>
+// <code>
+(async () => {
+	const enwiki = new Wikiapi;
+	await enwiki.login('bot name', 'password', 'en');
+	await enwiki.edit_page('Wikipedia:Sandbox', function (page_data) {
+		return page_data.wikitext
+			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
+	}, { bot: 1, nocreate: 1, minor: 1, summary: 'test edit' });
+	console.log('Done.');
+})();
+// </code>
+ *
  * @memberof Wikiapi.prototype
  */
 function Wikiapi_edit_page(title, content, options) {
@@ -410,6 +514,8 @@ Wikiapi.skip_edit = [wiki_API.edit.cancel, 'skip'];
  * @param {Object|String}[move_to_title]	- move to title
  * @param {Object}[options]					- options to run this function
  *
+ * @returns {Promise} Promise object represents {String} result of MediaWiki API
+ *
  * @example <caption>Move <code>move_from_title</code> to <code>move_to_title</code>.</caption>
 // <code>
 await wiki.move_page(move_from_title, move_to_title, { reason: reason, noredirect: true, movetalk: true });
@@ -455,6 +561,8 @@ function Wikiapi_move_page(move_from_title, move_to_title, options) {
  * 
  * @param {Object|String}[move_to_title]	- move to title
  * @param {Object}[options]					- options to run this function
+ *
+ * @returns {Promise} Promise object represents {String} result of MediaWiki API
  *
  * @example <caption>Move <code>move_from_title</code> to <code>move_to_title</code>.</caption>
 // <code>
@@ -600,6 +708,60 @@ function modify_data_entity(data_to_modify, options) {
 	return new Promise(modify_data_entity_executor.bind(this));
 }
 
+/**
+ * @description Get wikidata entity / property
+ *
+ * @param {Object}data_entity	- wiki_API data entity
+ * @param {Object}[options]		- options to run this function
+ *
+ * @returns {Promise} Promise object represents {Object} wikidata entity / property
+ *
+ * @example <caption>Get wikidata entity #1</caption>
+// <code>
+(async () => {
+	const wiki = new Wikiapi;
+	let page_data = await wiki.data('Q1');
+	// Work with other language
+	console.assert(CeL.wiki.data.value_of(page_data.labels.zh) === '宇宙');
+})();
+// </code>
+ *
+ * @example <caption>Get wikidata entity #2</caption>
+// <code>
+(async () => {
+	const wiki = new Wikiapi;
+	let data = await wiki.data('Universe', 'P1419');
+	console.assert(data.includes('shape of the universe'));
+})();
+// </code>
+ *
+ * @example <caption>update wikidata</caption>
+// <code>
+(async () => {
+	// Just for test
+	delete CeL.wiki.query.default_maxlag;
+	const wiki = new Wikiapi;
+	await wiki.login('user', 'password', 'test');
+
+	// Get https://test.wikidata.org/wiki/Q7
+	let entity = await wiki.data('Q7');
+	// search [ language, label ]
+	//entity = await wiki.data(['en', 'Earth']);
+
+	// Update claim
+	await entity.modify({ claims: [{ P17: 'Q213280' }] });
+	// Update claim: set country (P17) to 'Test Country 1' (Q213280) ([language, label] as entity)
+	await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'] }] });
+	// Remove country (P17) : 'Test Country 1' (Q213280)
+	await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'], remove: true }] });
+
+	// Update label
+	await entity.modify({ labels: [{ language: 'zh-tw', value: '地球' }] });
+})();
+// </code>
+ *
+ * @inner
+ */
 function Wikiapi_data(key, property, options) {
 	if (CeL.is_Object(property) && !options) {
 		// shift arguments.
@@ -623,6 +785,34 @@ function Wikiapi_data(key, property, options) {
 }
 
 // --------------------------------------------------------
+
+/**
+ *
+ * @example <caption>get list of [[w:en:Category:Chemical_elements]]</caption>
+// <code>
+(async () => {
+	const wiki = new Wikiapi;
+	let list = await wiki.categorymembers('Chemical elements');
+	console.log(list);
+	// Working on multiple pages
+	await wiki.for_each_page(
+		// {Array} title liat / page data list
+		list,
+		page_data => {
+			// ...
+		});
+})();
+// </code>
+ *
+ * @example <caption>get pages transcluding {{w:en:Periodic table}}</caption>
+// <code>
+(async () => {
+	const wiki = new Wikiapi;
+	let list = await wiki.embeddedin('Template:Periodic table');
+	console.log(list);
+})();
+// </code>
+ */
 
 // Warning: Won't throw if title is not existed!
 function Wikiapi_list(list_type, title, options) {
@@ -696,6 +886,8 @@ function Wikiapi_for_each(type, title, for_each, options) {
  *
  * @param {String} root_category	- category name
  * @param {Object}[options]			- options to run this function.
+ *
+ * @returns {Promise} Promise object represents {Array} category_tree.
  *
  * @memberof Wikiapi.prototype
  */
@@ -850,12 +1042,10 @@ function Wikiapi_register_redirects(template_name, options) {
 <li><code>file_path</code>: string - Local path.</li>
 <li><code>media_url</code>: string - URL path. Alternative to <code>file_path</code>.</li>
 <li><code>comment</code>: string - Upload comment.</li>
-<li><code>ignorewarnings</code>: boolean - Set to 1 will overwrite existing files.</li>
 
-<li><code>text</code>: string or {Object} - Either {String}wikitext to fill the file's page, or {Object}parameters of {{Information}}.<br />
-<em>Set <code>text</code> as {String}wikitext will replace ALL fields below.</em><br />
-Parameters of <a href="https://commons.wikimedia.org/wiki/Template:Information" target="_blank">{{Information}}</a>:<br />
-text : {<br />
+<li><code>text</code>: string or {Object} - Either {String}wikitext to fill the file's page,<br />
+ or {Object}parameters of <a href="https://commons.wikimedia.org/wiki/Template:Information" target="_blank">{{Information}}</a>:<br />
+{<br />
 <ul>
 <li><code>description</code>: string - File description.</li>
 <li><code>date</code>: date string - YYYY-MM-DD, e.g., <code>new Date()</code> || <code>'2021-01-01'</code>.</li>
@@ -871,10 +1061,35 @@ text : {<br />
 <li><code>license</code>: array of strings - License under which the file is uploaded, e.g., <code>['{{cc-by-sa-2.5}}']</code>.</li>
 <li><code>additional_text</code>: string - Additional wikitext to place before <code>categories</code>.</li>
 <li><code>categories</code>: array of strings - Categories for this file, e.g., <code>['[[Category:test images]]']</code>.</li>
+
+<li><code>ignorewarnings</code>: boolean - Set to 1 will overwrite existing files.</li>
 </ul>
 }<br />
 <br />
 See <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js" target="_blank">edit.js</a> and search for <q>file_data</q> for other <code>file_data</code> options.
+ *
+ * @returns {Promise} Promise object represents {String} result of MediaWiki API
+ *
+ * @example <caption><span id="example__upload file / media">upload file / media</span></caption>
+// <code>
+(async () => {
+	const wiki = new Wikiapi;
+	await wiki.login('user', 'password', 'test');
+	// Upload a local file directly:
+	//let result = await wiki.upload({ file_path: '/local/file/path', comment: '', text: '' || {description: '', ...} });
+	let result = await wiki.upload({
+		file_path: '/local/file/path', comment: '',
+		filename: 'Will set via .file_path or .media_url if not settled.',
+		description: '', date: new Date() || '2021-01-01', source_url: 'https://github.com/kanasimi/wikiapi', author: '[[User:user]]', permission: '{{cc-by-sa-2.5}}', other_versions: '', other_fields: '',
+		license: ['{{cc-by-sa-2.5}}'], categories: ['[[Category:test images]]'],
+		bot: 1, tags: "tag1|tag2",
+		// To overwrite existing files
+		ignorewarnings: 1,
+	});
+	// Upload file from URL:
+	result = await wiki.upload({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
+})();
+// </code>
  *
  * @memberof Wikiapi.prototype
  */
@@ -909,7 +1124,28 @@ function Wikiapi_upload(file_data) {
  *            allow_empty: true, page_options: { redirects: 1, rvprop:
  *            'ids|content|timestamp|user' } }<br />
  *            no_warning: hide "wiki_API_page: No contents: [[title]]" messages
- * 
+ *
+ * @returns {Promise} Promise object represents the operations are done.
+ *
+ * @example <caption>read / edit multiple pages</caption>
+// <code>
+(async () => {
+	const enwiki = new Wikiapi('en');
+	const link_from = await wiki.redirects_here('ABC');
+	await wiki.for_each_page(link_from, page_data => {
+		// Return `Wikiapi.skip_edit` if you just want to get the page data.
+		return Wikiapi.skip_edit;
+		return 'You may also modify page contents for each page';
+	}, {
+		// Only needed if ypu want to modify page.
+		summary: 'test edit',
+		// prevent creating new pages
+		nocreate: 1,
+		bot: 1, minor: 1
+	});
+})();
+// </code>
+ *
  * @memberof Wikiapi.prototype
  */
 function Wikiapi_for_each_page(page_list, for_each_page, options) {
@@ -1106,7 +1342,9 @@ function Wikiapi_setup_layout_elements(options) {
  * @param {String|Object}[options]	- options to run this function.
  *            {String}type (FFA|GA|FA|FL)
  *            || {type,on_conflict(FC_title, {from,to})}
- * 
+ *
+ * @returns {Promise} Promise object represents {Object} featured content data hash
+ *
  * @example <caption>Get featured content of current wiki site.</caption>
 // <code>
 // MUST including wiki.featured_content first to get featured content!
@@ -1215,6 +1453,21 @@ Object.assign(Wikiapi.prototype, {
 	 *
 	 * @param {Function}listener	- function(page_data) { return quit_listening; }
 	 * @param {Object}[options]		- options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }
+	 *
+	 * @example <caption>listen to new edits</caption>
+// <code>
+(async () => {
+	const wiki = new Wikiapi;
+	wiki.listen(function for_each_row() { ... }, {
+	// 檢查的延遲時間。
+	delay: '2m',
+	filter: function filter_row() { ... },
+	// also get diff
+	with_diff: { LCS: true, line: true },
+	namespace: '0|talk',
+	});
+}) ();
+// </code>
 	 *
 	 * @memberof Wikiapi.prototype
 	 */
