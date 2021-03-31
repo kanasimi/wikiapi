@@ -44,8 +44,10 @@
 		"node": ">=10.0"
 	},
 	"devDependencies": {
+		"jsdoc": "latest",
+		"docdash": "latest",
+
 		"codecov": "latest",
-		"jsdoc": "^3.6.6",
 		"nyc": "latest"
 	},
 	"dependencies": {
