@@ -852,10 +852,10 @@ function Wikiapi_register_redirects(template_name, options) {
 <li><code>comment</code>: string - Upload comment.</li>
 <li><code>ignorewarnings</code>: boolean - Set to 1 will overwrite existing files.</li>
 
-<li><code>text</code>: string - Wikicode which to fill the file's page. <em>Set <code>text</code> will replace ALL fields below.</em></li>
-
-<li>
-Parameter of [{{Information}}]{@link https://commons.wikimedia.org/wiki/Template:Information}:
+<li><code>text</code>: string or {Object} - Either {String}wikitext to fill the file's page, or {Object}parameters of {{Information}}.<br />
+<em>Set <code>text</code> as {String}wikitext will replace ALL fields below.</em><br />
+Parameters of <a href="https://commons.wikimedia.org/wiki/Template:Information" target="_blank">{{Information}}</a>:<br />
+text : {<br />
 <ul>
 <li><code>description</code>: string - File description.</li>
 <li><code>date</code>: date string - YYYY-MM-DD, e.g., <code>new Date()</code> || <code>'2021-01-01'</code>.</li>
@@ -865,6 +865,7 @@ Parameter of [{{Information}}]{@link https://commons.wikimedia.org/wiki/Template
 <li><code>other_versions</code>: string - Wikicode links to files with very similar content or derived files.</li>
 <li><code>other_fields</code>: string - Additional table fields added on the bottom of the template.</li>
 </ul>
+}
 </li>
 
 <li><code>license</code>: array of strings - License under which the file is uploaded, e.g., <code>['{{cc-by-sa-2.5}}']</code>.</li>
@@ -873,7 +874,7 @@ Parameter of [{{Information}}]{@link https://commons.wikimedia.org/wiki/Template
 </ul>
 }<br />
 <br />
-See <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js">edit.js</a> and search for <q>file_data</q> for other <code>file_data</code> options.
+See <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js" target="_blank">edit.js</a> and search for <q>file_data</q> for other <code>file_data</code> options.
  *
  * @memberof Wikiapi.prototype
  */
