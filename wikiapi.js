@@ -1268,7 +1268,6 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 
 function Wikiapi_convert_Chinese(text, options) {
 	function Wikiapi_convert_Chinese(resolve, reject) {
-		const wiki = this[KEY_wiki_session];
 		if (typeof options === 'string') {
 			options = { uselang: options };
 		}
