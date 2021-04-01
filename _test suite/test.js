@@ -362,7 +362,7 @@ add_test('read wikidata', async (assert, setup_test, finish_test) => {
 
 add_test('read wikidata #2', async (assert, setup_test, finish_test) => {
 	setup_test('read wikidata #2');
-	const wiki = new Wikiapi;
+	const wiki = new Wikiapi('en');
 	// P1419: shape
 	const data = await wiki.data('Universe', 'P1419');
 	// console.log('`shape` of the `Universe`:');

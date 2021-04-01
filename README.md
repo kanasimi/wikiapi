@@ -31,6 +31,7 @@ Here lists some examples of this module.
 	* [Login to wiki site #1](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__Login%20to%20wiki%20site%201)
 	* [Login to wiki site #2](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__Login%20to%20wiki%20site%202)
 * [Get page data](https://kanasimi.github.io/wikiapi/Wikiapi.html#page)
+* [Listen to page modification](https://kanasimi.github.io/wikiapi/Wikiapi.html#listen)
 * [Edit page](https://kanasimi.github.io/wikiapi/Wikiapi.html#edit)
 * [Edit multiple pages](https://kanasimi.github.io/wikiapi/Wikiapi.html#for_each_page)
 * [Get category tree](https://kanasimi.github.io/wikiapi/Wikiapi.html#category_tree)

@@ -1041,12 +1041,9 @@ function Wikiapi_redirects_here(title, options) {
 			if (error) {
 				reject(error);
 			} else {
-				if (false) {
-					console.trace(root_page_data);
-					console.trace(redirect_list);
-					console.assert(!redirect_list
-						|| redirect_list === root_page_data.redirect_list);
-				}
+				//console.trace(root_page_data);
+				//console.trace(redirect_list);
+				//console.assert(!redirect_list || redirect_list === root_page_data.redirect_list);
 				resolve(redirect_list || root_page_data);
 			}
 		}, this.append_session_to_options({
@@ -1232,7 +1229,7 @@ await wiki.for_each_page(link_from, page_data => {
 	return Wikiapi.skip_edit;
 	return 'You may also modify page contents for each page';
 }, {
-	// Only needed if ypu want to modify page.
+	// Only needed if you want to modify page.
 	summary: 'test edit',
 	// prevent creating new pages
 	nocreate: 1,
