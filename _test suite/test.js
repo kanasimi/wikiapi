@@ -389,7 +389,7 @@ add_test('tracking revisions to lookup what revision had added "an international
 	const wiki = new Wikiapi('en.wikinews');
 	// trace https://en.wikinews.org/w/index.php?title=Study_suggests_Mars_hosted_life-sustaining_habitat_for_millions_of_years&diff=4434584&oldid=4434582
 	const newer_revision = await wiki.tracking_revisions('Study suggests Mars hosted life-sustaining habitat for millions of years', 'an international team led by scientists');
-	assert([4434584, p.revid], 'tracking revisions: Get the revid added the text');
+	assert([4434584, newer_revision.revid], 'tracking revisions: Get the revid added the text');
 	assert(newer_revision.diff_list[0][0].includes('a team led by scientists'), 'tracking revisions: Get the text removed');
 	assert(newer_revision.diff_list[0][1].includes('an international team led by scientists'), 'tracking revisions: Get the text added');
 	finish_test('tracking revisions to lookup what revision had added "an international team led by scientists"');
@@ -400,7 +400,7 @@ add_test('tracking revisions to lookup what revision had added "金星快车效�
 	const wiki = new Wikiapi('zh.wikinews');
 	// trace https://zh.wikinews.org/w/index.php?title=%E9%87%91%E6%98%9F%E5%BF%AB%E8%BD%A6%E5%8F%91%E5%9B%9E%E4%BA%91%E5%B1%82%E7%85%A7%E7%89%87&diff=12260&oldid=12259
 	const newer_revision = await wiki.tracking_revisions('金星快车发回云层照片', '金星快车效果图');
-	assert([12260, p.revid], 'tracking revisions: Get the revid added the text');
+	assert([12260, newer_revision.revid], 'tracking revisions: Get the revid added the text');
 	assert(['[[Image:Venus_express.jpg|thumb|200px|金星快车效果图]]', newer_revision.diff_list[0][1]], 'tracking revisions: Get the text added');
 	finish_test('tracking revisions to lookup what revision had added "金星快车效果图"');
 });
