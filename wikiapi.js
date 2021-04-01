@@ -386,7 +386,9 @@ function reject_edit_error(reject, error, result) {
 
 /**
  * @alias edit_page
- * @description edits content of target page. Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.
+ * @description edits content of target page.<br />
+ * Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.<br />
+ * Note: The function will check sections of [[User talk:user name/Stop]] if somebody tells us needed to stop edit. See <a href="https://zh.wikipedia.org/wiki/User:Cewbot/Stop">mechanism to stop operations</a>.
  * 
  * @param {String} title			- page title
  * @param {String|Function} content	- 'wikitext page content' || page_data => 'wikitext'
@@ -1541,7 +1543,8 @@ Object.assign(Wikiapi.prototype, {
 	/**
 	 * @description edits content of target page.<br />
 	 * <em>MUST using after {@link Wikiapi#page}!</em><br />
-	 * Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.
+	 * Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.<br />
+	 * Note: The function will check sections of [[User talk:user name/Stop]] if somebody tells us needed to stop edit. See <a href="https://zh.wikipedia.org/wiki/User:Cewbot/Stop">mechanism to stop operations</a>.
 	 * 
 	 * @param {String|Function} content	- 'wikitext page content' || page_data => 'wikitext'
 	 * @param {Object} [options]		- options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }
