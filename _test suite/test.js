@@ -373,6 +373,40 @@ add_test('read wikidata #2', async (assert, setup_test, finish_test) => {
 
 // ------------------------------------------------------------------
 
+add_test('繁簡轉換', async (assert, setup_test, finish_test) => {
+	setup_test('繁簡轉換');
+	const wiki = new Wikiapi;
+	assert(['中國', await wiki.convert_Chinese('中国', { uselang: 'zh-hant' })], '繁簡轉換: 中国');
+	assert(['中国', await wiki.convert_Chinese('中國', { uselang: 'zh-hans' })], '繁簡轉換: 中國');
+	assert(['繁体,简体', (await wiki.convert_Chinese(['繁體', '簡體'], { uselang: 'zh-hans' })).join()], '繁簡轉換: {Array}');
+	finish_test('繁簡轉換');
+});
+
+// ------------------------------------------------------------------
+
+add_test('tracking revisions to lookup what revision had added "an international team led by scientists"', async (assert, setup_test, finish_test) => {
+	setup_test('tracking revisions to lookup what revision had added "an international team led by scientists"');
+	const wiki = new Wikiapi('en.wikinews');
+	// trace https://en.wikinews.org/w/index.php?title=Study_suggests_Mars_hosted_life-sustaining_habitat_for_millions_of_years&diff=4434584&oldid=4434582
+	const newer_revision = await wiki.tracking_revisions('Study suggests Mars hosted life-sustaining habitat for millions of years', 'an international team led by scientists');
+	assert([4434584, p.revid], 'tracking revisions: Get the revid added the text');
+	assert(newer_revision.diff_list[0][0].includes('a team led by scientists'), 'tracking revisions: Get the text removed');
+	assert(newer_revision.diff_list[0][1].includes('an international team led by scientists'), 'tracking revisions: Get the text added');
+	finish_test('tracking revisions to lookup what revision had added "an international team led by scientists"');
+});
+
+add_test('tracking revisions to lookup what revision had added "金星快车效果图"', async (assert, setup_test, finish_test) => {
+	setup_test('tracking revisions to lookup what revision had added "金星快车效果图"');
+	const wiki = new Wikiapi('zh.wikinews');
+	// trace https://zh.wikinews.org/w/index.php?title=%E9%87%91%E6%98%9F%E5%BF%AB%E8%BD%A6%E5%8F%91%E5%9B%9E%E4%BA%91%E5%B1%82%E7%85%A7%E7%89%87&diff=12260&oldid=12259
+	const newer_revision = await wiki.tracking_revisions('金星快车发回云层照片', '金星快车效果图');
+	assert([12260, p.revid], 'tracking revisions: Get the revid added the text');
+	assert(['[[Image:Venus_express.jpg|thumb|200px|金星快车效果图]]', newer_revision.diff_list[0][1]], 'tracking revisions: Get the text added');
+	finish_test('tracking revisions to lookup what revision had added "金星快车效果图"');
+});
+
+// ------------------------------------------------------------------
+
 add_test('get list of categorymembers', async (assert, setup_test, finish_test) => {
 	setup_test('get list of [[w:en:Category:Chemical_elements]]');
 	const wiki = new Wikiapi;
@@ -452,17 +486,31 @@ add_test('list category tree', async (assert, setup_test, finish_test) => {
 	const enwiki = new Wikiapi('en');
 	const page_list = await enwiki.category_tree('Countries in North America', 1);
 	assert(page_list.some(page_data => page_data.title === 'United States'), 'list category tree: [[Category:Countries in North America]] must includes [[United States]]');
-	assert('Mexico' in page_list.subcategories, 'list category tree: [[Category:Mexico]] is a subcategory of [[Category:Countries in North America]]');
+	assert('Mexico' in page_list[Wikiapi.KEY_subcategories], 'list category tree: [[Category:Mexico]] is a subcategory of [[Category:Countries in North America]]');
 	finish_test('list category tree: Countries in North America');
 });
 
 // ------------------------------------------------------------------
 
-add_test('search key', async (assert, setup_test, finish_test) => {
-	setup_test('search key: 霍金');
+add_test('search pages include key', async (assert, setup_test, finish_test) => {
+	setup_test('search pages include key: 霍金');
 
 	const zhwikinews = new Wikiapi('zh.wikinews');
 	const page_list = await zhwikinews.search('"霍金"');
-	assert(page_list.some(page_data => page_data.title === '霍金访问香港'), 'search key: "霍金" must includes [[n:zh:霍金访问香港]]');
-	finish_test('search key: 霍金');
+	assert(page_list?.some(page_data => page_data?.title === '霍金访问香港'), 'search pages include key: "霍金" must includes [[n:zh:霍金访问香港]]');
+	finish_test('search pages include key: 霍金');
+});
+
+// ------------------------------------------------------------------
+
+add_test('query MediaWiki API manually', async (assert, setup_test, finish_test) => {
+	setup_test('query MediaWiki API manually');
+	const wiki = new Wikiapi('mediawiki');
+	const results = await wiki.query({
+		action: "flow-parsoid-utils",
+		content: "<b>bold</b> &amp; <i>italic</i>",
+		title: "MediaWiki", from: "html", to: "wikitext"
+	});
+	assert(["'''bold''' & ''italic''", results['flow-parsoid-utils']?.content], 'query MediaWiki API manually: flow-parsoid-utils');
+	finish_test('query MediaWiki API manually');
 });

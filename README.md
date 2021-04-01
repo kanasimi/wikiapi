@@ -1,4 +1,4 @@
-[![npm version](https://badge.fury.io/js/wikiapi.svg)](https://www.npmjs.com/package/wikiapi)
+﻿[![npm version](https://badge.fury.io/js/wikiapi.svg)](https://www.npmjs.com/package/wikiapi)
 [![npm downloads](https://img.shields.io/npm/dm/wikiapi.svg)](https://www.npmjs.com/package/wikiapi)
 [![GitHub Actions workflow build status](https://github.com/kanasimi/wikiapi/actions/workflows/npm-test.yml/badge.svg)](https://github.com/kanasimi/wikiapi/actions)
 [![codecov](https://codecov.io/gh/kanasimi/wikiapi/branch/master/graph/badge.svg)](https://codecov.io/gh/kanasimi/wikiapi)
@@ -27,9 +27,14 @@ npm install wikiapi
 
 ## Usage
 Here lists some examples of this module.
-*   [Login to wiki site](https://kanasimi.github.io/wikiapi/Wikiapi.html#login)
+* [Login to wiki site](https://kanasimi.github.io/wikiapi/Wikiapi.html#login)
 	* [Login to wiki site #1](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__Login%20to%20wiki%20site%201)
 	* [Login to wiki site #2](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__Login%20to%20wiki%20site%202)
+* [Get page data](https://kanasimi.github.io/wikiapi/Wikiapi.html#page)
+* [Edit page](https://kanasimi.github.io/wikiapi/Wikiapi.html#edit)
+* [Edit multiple pages](https://kanasimi.github.io/wikiapi/Wikiapi.html#for_each_page)
+* [Get category tree](https://kanasimi.github.io/wikiapi/Wikiapi.html#category_tree)
+* [Get wikidata](https://kanasimi.github.io/wikiapi/Wikiapi.html#data)
 * [upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#upload)
 	* [upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__upload%20file%20/%20media)
 
