@@ -275,8 +275,8 @@ console.log(page_data.wikitext);
 const zhwiki = new Wikiapi('zh');
 await zhwiki.login('user', 'password');
 let page_data = await zhwiki.page('Universe');
-// Other types:
-// @see wiki_toString @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/parser.js
+// See all type in wiki_toString @ https://github.com/kanasimi/CeJS/tree/master/application/net/wiki/parser.js
+// List all template name.
 page_data.parse().each('template',
 	token => console.log(token.name));
 // </code>
@@ -285,8 +285,10 @@ page_data.parse().each('template',
 // <code>
 const wiki = new Wikiapi('en');
 const page_data = await wiki.page('JavaScript');
+// `page_data.parse(options)` will startup the parser process, create page_data.parsed. After .parse(), we can use parsed.each().
 const parsed = page_data.parse();
 let infobox;
+// Read Infobox templates, convert to JSON.
 parsed.each('template', template_token => {
 	if (template_token.name.startsWith('Infobox')) {
 		infobox = template_token.parameters;
@@ -295,6 +297,7 @@ parsed.each('template', template_token => {
 });
 for (const [key, value] of Object.entries(infobox))
 	infobox[key] = value.toString();
+// print json of the infobox
 console.log(infobox);
 // </code>
  *
@@ -754,10 +757,12 @@ let page_data = await wiki.data('Q1');
 console.assert(CeL.wiki.data.value_of(page_data.labels.zh) === '宇宙');
 // </code>
  *
- * @example <caption>Get wikidata entity method 2</caption>
+ * @example <caption>Get wikidata entity method 2: Get P1419 of wikidata entity: 'Universe'</caption>
 // <code>
 const wiki = new Wikiapi;
+// Read, access by title (English), access property P1419
 let data = await wiki.data('Universe', 'P1419');
+// assert: {Array}data = [ 'shape of the universe', '', ... ]
 console.assert(data.includes('shape of the universe'));
 // </code>
  *
@@ -1568,13 +1573,18 @@ Object.assign(Wikiapi.prototype, {
 	 * @example <caption>listen to new edits</caption>
 // <code>
 const wiki = new Wikiapi;
-wiki.listen(function for_each_row() { ... }, {
-// 檢查的延遲時間。
-delay: '2m',
-filter: function filter_row() { ... },
-// also get diff
-with_diff: { LCS: true, line: true },
-namespace: '0|talk',
+wiki.listen(function for_each_row() {
+	// ...
+}, {
+	// 檢查的延遲時間。
+	delay: '2m',
+	filter: function filter_row(row) {
+		// row is the same format as page_data
+	},
+	// also get diff
+	with_diff: { LCS: true, line: true },
+	// only for articles (0:main namespace) and talk pages
+	namespace: '0|talk',
 });
 // </code>
 	 *
