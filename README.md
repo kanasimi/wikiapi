@@ -36,8 +36,8 @@ Here lists some examples of this module.
 * [Edit multiple pages](https://kanasimi.github.io/wikiapi/Wikiapi.html#for_each_page)
 * [Get category tree](https://kanasimi.github.io/wikiapi/Wikiapi.html#category_tree)
 * [Get wikidata](https://kanasimi.github.io/wikiapi/Wikiapi.html#data)
-* [upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#upload)
-	* [upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__upload%20file%20/%20media)
+* [Upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#upload)
+	* [Upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__upload%20file%20/%20media)
 * [Move page](https://kanasimi.github.io/wikiapi/Wikiapi.html#move_page)
 
 ### As node.js module
@@ -51,7 +51,6 @@ const Wikiapi = require('wikiapi');
 // LOGIN IN: In any wiki, any language
 	const wiki = new Wikiapi('zh');		// or new Wikiapi('https://zh.wikipedia.org/w/api.php')
 	await wiki.login('user', 'password');		// get your own account and password on your target wiki.
-
 
         
 /* ***************************************************** */
@@ -95,14 +94,13 @@ const Wikiapi = require('wikiapi');
 /* edit_page(): a more direct method ******************* */
 // Edit page: 
 	await wiki.edit_page('Wikipedia:Sandbox', function(page_data) {
-		return page_data.wikitext
-			+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
+		return page_data.wikitext+'\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 	}, {bot: 1, nocreate: 1, minor: 1, summary: 'Test: edit page via .edit_page().'});
 
 
 /* ***************************************************** */
-/* MULTI-read/edit ************************************* */
-// Provided list
+/* PROVIDE MANY **************************************** */
+// List of hand-picked target pages
 	let list = ['Wikipedia:Sandbox', 'Wikipedia:Sandbox2', 'Wikipedia:Sandbox/wikiapi' ];
 // List pages in [[Category:Chemical_elements]]
 	let listMembers = await wiki.categorymembers('Chemical elements');  // array of titles
@@ -110,12 +108,16 @@ const Wikiapi = require('wikiapi');
 	let listLinks = await wiki.redirects_here('ABC');  // array of titles
 // List of transcluded pages {{w:en:Periodic table}}
 	let listTranscluded = await wiki.embeddedin('Template:Periodic table');
+// List of searched pages with expression in its title name
+	let listSearch = await wiki.search(' dragon');  // array of titles
 
+/* ***************************************************** */
+/* MULTI-read/edit ************************************* */
 // Multi edit, members of category
 	await wiki.for_each_page(
-	listMembers, 
-	page_data => { return `{{stub}}\n`+page_data.wikitext; }, 
-	{ summary: 'Test: multi-edits', minor: 1 }
+		listMembers, 
+		page_data => { return `{{stub}}\n`+page_data.wikitext; }, 
+		{ summary: 'Test: multi-edits', minor: 1 }
 	);
 
 // Multi read, following intra-wiki links
@@ -131,11 +133,11 @@ const Wikiapi = require('wikiapi');
 /* ***************************************************** */
 /* MOVE PAGE (RENAME) ********************************** */
 // Move page once.
-	result = await targetWiki.move_page('Wikipedia:Sanbox/Wikiapi', 'Wikipedia:Sanbox/NewWikiapi', 
+	result = await wiki.move_page('Wikipedia:Sanbox/Wikiapi', 'Wikipedia:Sanbox/NewWikiapi', 
 		{ reason: 'Test: move page (1).', noredirect: true, movetalk: true }
 	);
 // Reverse move
-	result = await targetWiki.move_page('Wikipedia:Sanbox/NewWikiapi', 'Wikipedia:Sanbox/Wikiapi',
+	result = await wiki.move_page('Wikipedia:Sanbox/NewWikiapi', 'Wikipedia:Sanbox/Wikiapi',
 		{ reason: 'Test: move page (2).', noredirect: true, movetalk: true }
 	);
 
@@ -200,20 +202,20 @@ const Wikiapi = require('wikiapi');
 
 // Upload file from URL
 	let result = await wiki.upload({
-	file_path: '/local/file/path',
+		file_path: '/local/file/path',
 		filename: 'New_Osaka_Photograph.jpg',  // default : keep filename
-	comment: '',
+		comment: '',
 		ignorewarnings: 1,  // overwrite
-	...options
+		...options
 	});
 
 // Upload file from URL
 	result = await wiki.upload({ 
-	media_url: 'https://media.url/Thunder-Dragon.ogg',
-	text: "Her eis wikicode to replave the page's content instead of various other parameters.",
-	comment:'Thunder Dragon audio from vacation in Philipines. Page uses custom template.'
+		media_url: 'https://media.url/Thunder-Dragon.ogg',
+		text: "Her eis wikicode to replave the page's content instead of various other parameters.",
+		comment:'Thunder Dragon audio from vacation in Philipines. Page uses custom template.'
 		ignorewarnings: 1,  // overwrite
-	...options 
+		...options 
 	});
 
 
