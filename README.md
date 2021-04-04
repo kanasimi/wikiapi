@@ -37,7 +37,7 @@ Here lists some examples of this module.
 * [Get category tree](https://kanasimi.github.io/wikiapi/Wikiapi.html#category_tree)
 * [Get wikidata](https://kanasimi.github.io/wikiapi/Wikiapi.html#data)
 * [Upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#upload)
-	* [Upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__upload%20file%20/%20media)
+	* [Upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__Upload%20file%20/%20media)
 * [Move page](https://kanasimi.github.io/wikiapi/Wikiapi.html#move_page)
 
 ### As node.js module

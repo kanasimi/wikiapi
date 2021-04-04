@@ -400,6 +400,7 @@ function reject_edit_error(reject, error, result) {
 // <code>
 const enwiki = new Wikiapi;
 await enwiki.login('bot name', 'password', 'en');
+
 const SB_page_data = await enwiki.page('Wikipedia:Sandbox');
 // You may do some operations on SB_page_data
 const parsed = SB_page_data.parse();
@@ -408,15 +409,15 @@ parsed.each('template', template_token => {
 });
 // and then edit it. ** You MUST call enwiki.page() before enwiki.edit()! **
 await enwiki.edit(parsed.toString(), { bot: 1, minor: 1, nocreate: 1 });
+
 // exmaple 2
 await enwiki.edit(function (page_data) {
 	return page_data.wikitext
 		+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 }, { bot: 1 });
+
 // exmaple 3
 await enwiki.edit('Just replace by this wikitext', { bot: 1, minor: 1, nocreate: 1, summary: 'test edit' });
-
-console.log('Done.');
 // </code>
  *
  * @example <caption>edit page: method 2</caption>
@@ -424,10 +425,10 @@ console.log('Done.');
 const enwiki = new Wikiapi;
 await enwiki.login('bot name', 'password', 'en');
 await enwiki.edit_page('Wikipedia:Sandbox', function (page_data) {
+	this.summary += ': You may set additional summary inside the function';
 	return page_data.wikitext
 		+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 }, { bot: 1, nocreate: 1, minor: 1, summary: 'test edit' });
-console.log('Done.');
 // </code>
  *
  * @memberof Wikiapi.prototype
@@ -1071,42 +1072,40 @@ function Wikiapi_redirects_here(title, options) {
  *
  * @example <caption>Register template redirects and get tokens of the templates.</caption>
 // <code>
-async () => {
-	const wiki_session = new Wikiapi;
-	// e.g., await wiki_session.register_redirects(['Section link', 'Broken anchors'], { namespace: 'Template' });
-	await wiki_session.register_redirects([template_name_1, template_name_2, template_name_3], { namespace: 'Template' });
+const wiki_session = new Wikiapi;
+// e.g., await wiki_session.register_redirects(['Section link', 'Broken anchors'], { namespace: 'Template' });
+await wiki_session.register_redirects([template_name_1, template_name_2, template_name_3], { namespace: 'Template' });
 
+// ...
+
+const page_data = await wiki_session.page(page_title);
+// {Array} parsed page content 頁面解析後的結構。
+const parsed = page_data.parse();
+
+parsed.each('Template:' + template_name_1, function (token, index, parent) {
 	// ...
+});
 
-	const page_data = await wiki_session.page(page_title);
-	// {Array} parsed page content 頁面解析後的結構。
-	const parsed = page_data.parse();
-
-	parsed.each('Template:' + template_name_1, function (token, index, parent) {
+parsed.each('template', function (token, index, parent) {
+	if (wiki_session.is_template(template_name_1, token)) {
 		// ...
-	});
+		return;
+	}
+	if (wiki_session.is_template(template_name_2, token)) {
+		// ...
+		return;
+	}
 
-	parsed.each('template', function (token, index, parent) {
-		if (wiki_session.is_template(template_name_1, token)) {
-			// ...
-			return;
-		}
-		if (wiki_session.is_template(template_name_2, token)) {
-			// ...
-			return;
-		}
-
-		// alternative method:
-		switch (wiki_session.redirect_target_of(token)) {
-			case wiki_session.redirect_target_of(template_name_1):
-				break;
-			case wiki_session.redirect_target_of(template_name_2):
-				break;
-			case wiki_session.redirect_target_of(template_name_3):
-				break;
-		}
-	});
-}
+	// alternative method:
+	switch (wiki_session.redirect_target_of(token)) {
+		case wiki_session.redirect_target_of(template_name_1):
+			break;
+		case wiki_session.redirect_target_of(template_name_2):
+			break;
+		case wiki_session.redirect_target_of(template_name_3):
+			break;
+	}
+});
 // </code>
  *
  * @memberof Wikiapi.prototype
@@ -1167,7 +1166,7 @@ See <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/e
  *
  * @returns {Promise} Promise object represents {String} result of MediaWiki API
  *
- * @example <caption><span id="example__upload file / media">upload file / media</span></caption>
+ * @example <caption><span id="example__Upload file / media">Upload file / media</span></caption>
 // <code>
 const wiki = new Wikiapi;
 await wiki.login('user', 'password', 'test');
