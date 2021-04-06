@@ -1,7 +1,7 @@
 ﻿/**
- * @name wikiapi
+ * @name Wikiapi.js
  * 
- * @fileoverview Main code of module wikiapi
+ * @fileoverview Main codes of module wikiapi (class Wikiapi)
  */
 
 'use strict';

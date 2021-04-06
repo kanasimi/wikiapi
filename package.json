@@ -1,7 +1,7 @@
 {
 	"name": "wikiapi",
 	"title": "JavaScript MediaWiki API for node.js",
-	"version": "1.14.1",
+	"version": "1.14.2",
 	"description": "A simple way to access MediaWiki API via JavaScript with simple wikitext parser.",
 	"keywords": [
 		"MediaWiki",
@@ -29,11 +29,11 @@
 		"type": "git",
 		"url": "git+https://github.com/kanasimi/wikiapi.git"
 	},
-	"main": "wikiapi.js",
+	"main": "Wikiapi.js",
 	"scripts": {
 		"test": "nyc node \"_test suite/test.js\"",
 		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-		"doc": "jsdoc --template node_modules/docdash --readme README.md --destination docs wikiapi.js"
+		"doc": "jsdoc --template node_modules/docdash --readme README.md --destination docs Wikiapi.js"
 	},
 	"nyc": {
 		"exclude": [

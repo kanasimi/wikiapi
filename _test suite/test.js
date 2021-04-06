@@ -1,7 +1,7 @@
 ﻿'use strict';
 
 // load module
-const Wikiapi = require('../wikiapi.js');
+const Wikiapi = require('../Wikiapi.js');
 
 const CeL = global.CeL;
 CeL.info('Using CeJS version: ' + CeL.version);
