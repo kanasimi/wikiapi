@@ -1217,12 +1217,7 @@ function Wikiapi_upload(file_data) {
  * 
  * @param {Array} page_list			- title list or page_data list
  * @param {Function} for_each_page	- processor for each page. for_each_page(page_data with contents)
- * @param {Object} [options]		- options to run this function.
- *            e.g., { summary: '' }<br />
- *            e.g., { no_edit: true, no_warning: true, no_message: true,
- *            allow_empty: true, page_options: { redirects: 1, rvprop:
- *            'ids|content|timestamp|user' } }<br />
- *            no_warning: hide "wiki_API_page: No contents: [[title]]" messages
+ * @param {Object} [options]		- options to run this function. Refer to example codes.
  *
  * @returns {Promise} Promise object represents the operations are done.
  *
@@ -1235,11 +1230,33 @@ await wiki.for_each_page(link_from, page_data => {
 	return Wikiapi.skip_edit;
 	return 'You may also modify page contents for each page';
 }, {
+	// The options below are sample, not default configuration.
+
+	// denotes we do not edit pages
+	no_edit: true,
+
 	// Only needed if you want to modify page.
 	summary: 'test edit',
+	// Allow content to be emptied. 允許內容被清空。白紙化。
+	allow_empty: true,
+	tags: 'bot trial',
 	// prevent creating new pages
+	// Throw an error if the page doesn't exist.
+	// 若頁面不存在/已刪除，則產生錯誤。
 	nocreate: 1,
-	bot: 1, minor: 1
+	// denotes this is a bot edit. 標記此編輯為機器人編輯。
+	bot: 1,
+	minor: 1,
+
+	// options to get page revisions
+	page_options: { redirects: 1, rvprop: 'ids|content|timestamp|user' }
+
+	// .for_each_page() will generate a report. It can be written to specified page.
+	log_to: 'log to this page',
+	// no warning messages on console. e.g., hide "wiki_API_page: No contents: [[title]]" messages
+	no_warning: true,
+	// no warning messages and debug messages on console
+	no_message: true,
 });
 // </code>
  *
@@ -1251,9 +1268,7 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 		let error;
 		const wiki = this[KEY_wiki_session];
 		const work_options = {
-			// log_to: log_to,
-			// no_edit: true,
-			// tags: 'bot trial',
+			log_to: null,
 			no_message: options && options.no_edit,
 
 			...options,
