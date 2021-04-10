@@ -1251,7 +1251,7 @@ await wiki.for_each_page(link_from, page_data => {
 	// options to get page revisions
 	page_options: { redirects: 1, rvprop: 'ids|content|timestamp|user' }
 
-	// .for_each_page() will generate a report. It can be written to specified page.
+	// <code>.for_each_page()</code> will generate a report. It can be written to the specified page.
 	log_to: 'log to this page',
 	// no warning messages on console. e.g., hide "wiki_API_page: No contents: [[title]]" messages
 	no_warning: true,
