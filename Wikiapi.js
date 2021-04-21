@@ -399,7 +399,7 @@ function reject_edit_error(reject, error, result) {
  * 
  * @returns {Promise} Promise object represents {Object} result of MediaWiki API
  *
- * @example <caption>edit page: method 1</caption>
+ * @example <caption>edit page: method 1: basic operation</caption>
 // <code>
 const enwiki = new Wikiapi;
 await enwiki.login('bot name', 'password', 'en');
@@ -413,22 +413,31 @@ parsed.each('template', template_token => {
 // and then edit it. ** You MUST call enwiki.page() before enwiki.edit()! **
 await enwiki.edit(parsed.toString(), { bot: 1, minor: 1, nocreate: 1 });
 
-// exmaple 2
-await enwiki.edit(function (page_data) {
+// exmaple 2: append text in the tail of page content
+await enwiki.edit(page_data => {
 	return page_data.wikitext
 		+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 }, { bot: 1 });
 
-// exmaple 3
+// exmaple 3: replace page content
 await enwiki.edit('Just replace by this wikitext', { bot: 1, minor: 1, nocreate: 1, summary: 'test edit' });
+
+// exmaple 4: append a new section
+await enwiki.edit('section content', {
+	section: 'new',
+	sectiontitle: 'section title',
+	nocreate : 1,
+	summary: 'test edit',
+ });
 // </code>
  *
- * @example <caption>edit page: method 2</caption>
+ * @example <caption>edit page: method 2: modufy summary inside function</caption>
 // <code>
 const enwiki = new Wikiapi;
 await enwiki.login('bot name', 'password', 'en');
 await enwiki.edit_page('Wikipedia:Sandbox', function (page_data) {
 	this.summary += ': You may set additional summary inside the function';
+	delete this.minor;
 	return page_data.wikitext
 		+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 }, { bot: 1, nocreate: 1, minor: 1, summary: 'test edit' });
@@ -1138,6 +1147,7 @@ function Wikiapi_register_redirects(page_title_list, options) {
  * @description Upload specified local file to the target wiki.
  *
  * @param {Object} file_data	- Upload configurations.<br />
+ * Warning: When you are update a file, only the file content will changed. The <code>comment</code> will only shown in the file page. The <code>text</code>, ... till <code>categories</code> will <em>all ignored</em>. If you want to update the content of file page, please consider <code>Variable_Map</code> as mentioned in the sample code.<br />
 {<br />
 <ul>
 <li><code>file_path</code>: string - Local path.</li>
@@ -1183,11 +1193,40 @@ let result = await wiki.upload({
 	description: '', date: new Date() || '2021-01-01', source_url: 'https://github.com/kanasimi/wikiapi', author: '[[User:user]]', permission: '{{cc-by-sa-2.5}}', other_versions: '', other_fields: '',
 	license: ['{{cc-by-sa-2.5}}'], categories: ['[[Category:test images]]'],
 	bot: 1, tags: "tag1|tag2",
-	// To overwrite existing files
+	// To overwrite existing file
 	ignorewarnings: 1,
 });
 // Upload file from URL:
 result = await wiki.upload({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
+// </code>
+ *
+ * @example <caption>Upload file and then update content of file page</caption>
+// <code>
+const wiki = new Wikiapi;
+await wiki.login('user', 'password', 'test');
+
+const variable_Map = new CeL.wiki.Variable_Map();
+variable_Map.set('description', '...');
+//variable_Map.set('date', '...');
+// ...
+//variable_Map.set('other_fields', '...');
+
+let result = await wiki.upload({
+	file_path: '/local/file/path',
+	// The <code>comment</code> will only shown in the file page when updating file. It is read-only and cannot be modified.
+	comment: '',
+
+	// <code>CeL.wiki.Variable_Map</code> is used to update content when update pages or files.
+	// <code>description</code> till <code>other_fields</code> will be auto-setted as values assigned above.
+	// The code to do the conversion is in <code>wiki_API.upload</code> @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js
+	// There are some examples: https://github.com/kanasimi/wikibot/blob/master/routine/20181016.import_earthquake_shakemap.js https://github.com/kanasimi/wikibot/blob/master/routine/20190629.import_hurricane_track_maps.js
+	// More examples to use <code>CeL.wiki.Variable_Map</code>: https://github.com/kanasimi/wikibot/blob/master/routine/20191129.check_language_convention.js
+	variable_Map,
+	// When set .variable_Map, after successful update, the content of file page will be auto-updated too.
+
+	// To overwrite existing file
+	ignorewarnings: 1,
+});
 // </code>
  *
  * @memberof Wikiapi.prototype

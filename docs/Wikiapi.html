@@ -237,7 +237,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line952">line 952</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line961">line 961</a>
     </li></ul></dd>
     
 
@@ -309,7 +309,7 @@ const KEY_subcategories = Wikiapi.KEY_subcategories;
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line499">line 499</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line508">line 508</a>
     </li></ul></dd>
     
 
@@ -382,7 +382,7 @@ const KEY_subcategories = Wikiapi.KEY_subcategories;
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line928">line 928</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line937">line 937</a>
     </li></ul></dd>
     
 
@@ -595,7 +595,7 @@ assert('Mexico' in page_list[Wikiapi.KEY_subcategories], 'list category tree: [[
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1329">line 1329</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1368">line 1368</a>
     </li></ul></dd>
     
 
@@ -814,7 +814,7 @@ await wiki.convert_Chinese(['繁體', '簡體'], { uselang: 'zh-hans' });
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line794">line 794</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line803">line 803</a>
     </li></ul></dd>
     
 
@@ -1061,7 +1061,7 @@ await entity.modify({ labels: [{ language: 'zh-tw', value: '地球' }] });
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1500">line 1500</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1539">line 1539</a>
     </li></ul></dd>
     
 
@@ -1265,7 +1265,7 @@ await entity.modify({ labels: [{ language: 'zh-tw', value: '地球' }] });
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line439">line 439</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line448">line 448</a>
     </li></ul></dd>
     
 
@@ -1318,7 +1318,7 @@ await entity.modify({ labels: [{ language: 'zh-tw', value: '地球' }] });
 
     <h5>Examples</h5>
     
-        <p class="code-caption">edit page: method 1</p>
+        <p class="code-caption">edit page: method 1: basic operation</p>
     
     <pre class="prettyprint"><code>// &lt;code>
 const enwiki = new Wikiapi;
@@ -1333,23 +1333,32 @@ parsed.each('template', template_token => {
 // and then edit it. ** You MUST call enwiki.page() before enwiki.edit()! **
 await enwiki.edit(parsed.toString(), { bot: 1, minor: 1, nocreate: 1 });
 
-// exmaple 2
-await enwiki.edit(function (page_data) {
+// exmaple 2: append text in the tail of page content
+await enwiki.edit(page_data => {
 	return page_data.wikitext
 		+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 }, { bot: 1 });
 
-// exmaple 3
+// exmaple 3: replace page content
 await enwiki.edit('Just replace by this wikitext', { bot: 1, minor: 1, nocreate: 1, summary: 'test edit' });
+
+// exmaple 4: append a new section
+await enwiki.edit('section content', {
+	section: 'new',
+	sectiontitle: 'section title',
+	nocreate : 1,
+	summary: 'test edit',
+ });
 // &lt;/code></code></pre>
 
-        <p class="code-caption">edit page: method 2</p>
+        <p class="code-caption">edit page: method 2: modufy summary inside function</p>
     
     <pre class="prettyprint"><code>// &lt;code>
 const enwiki = new Wikiapi;
 await enwiki.login('bot name', 'password', 'en');
 await enwiki.edit_page('Wikipedia:Sandbox', function (page_data) {
 	this.summary += ': You may set additional summary inside the function';
+	delete this.minor;
 	return page_data.wikitext
 		+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
 }, { bot: 1, nocreate: 1, minor: 1, summary: 'test edit' });
@@ -1540,7 +1549,7 @@ await enwiki.edit_page('Wikipedia:Sandbox', function (page_data) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1265">line 1265</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1304">line 1304</a>
     </li></ul></dd>
     
 
@@ -1815,7 +1824,7 @@ await wiki.for_each_page(link_from, page_data => {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1420">line 1420</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1459">line 1459</a>
     </li></ul></dd>
     
 
@@ -2003,7 +2012,7 @@ console.assert(FC_data_hash === wiki.FC_data_hash);
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1533">line 1533</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1572">line 1572</a>
     </li></ul></dd>
     
 
@@ -2458,7 +2467,7 @@ await wiki.login('user_name', 'password', 'en');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line520">line 520</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line529">line 529</a>
     </li></ul></dd>
     
 
@@ -2705,7 +2714,7 @@ await wiki.move_page(move_from_title, move_to_title, { reason: reason, noredirec
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line569">line 569</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line578">line 578</a>
     </li></ul></dd>
     
 
@@ -3182,7 +3191,7 @@ console.log(infobox);
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line667">line 667</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line676">line 676</a>
     </li></ul></dd>
     
 
@@ -3393,7 +3402,7 @@ let page_data = await metawiki.purge('Project:Sandbox');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line630">line 630</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line639">line 639</a>
     </li></ul></dd>
     
 
@@ -3608,7 +3617,7 @@ const results = await wiki.query({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1044">line 1044</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1053">line 1053</a>
     </li></ul></dd>
     
 
@@ -3817,7 +3826,7 @@ const redirects_list = await enwiki.redirects_here('Wikipedia:Sandbox');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1007">line 1007</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1016">line 1016</a>
     </li></ul></dd>
     
 
@@ -4026,7 +4035,7 @@ const redirects_taregt = await enwiki.redirects_root('WP:SB');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1118">line 1118</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1127">line 1127</a>
     </li></ul></dd>
     
 
@@ -4272,7 +4281,7 @@ parsed.each('template', function (token, index, parent) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line973">line 973</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line982">line 982</a>
     </li></ul></dd>
     
 
@@ -4483,7 +4492,7 @@ const page_list = await zhwikinews.search('"霍金"');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1466">line 1466</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1505">line 1505</a>
     </li></ul></dd>
     
 
@@ -4928,7 +4937,7 @@ console.assert(wiki.site_name() === 'enwiki');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1195">line 1195</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1234">line 1234</a>
     </li></ul></dd>
     
 
@@ -4979,7 +4988,7 @@ console.assert(wiki.site_name() === 'enwiki');
 
 
 
-    <h5>Example</h5>
+    <h5>Examples</h5>
     
         <p class="code-caption"><span id="example__Upload file / media">Upload file / media</span></p>
     
@@ -4994,11 +5003,41 @@ let result = await wiki.upload({
 	description: '', date: new Date() || '2021-01-01', source_url: 'https://github.com/kanasimi/wikiapi', author: '[[User:user]]', permission: '{{cc-by-sa-2.5}}', other_versions: '', other_fields: '',
 	license: ['{{cc-by-sa-2.5}}'], categories: ['[[Category:test images]]'],
 	bot: 1, tags: "tag1|tag2",
-	// To overwrite existing files
+	// To overwrite existing file
 	ignorewarnings: 1,
 });
 // Upload file from URL:
 result = await wiki.upload({ media_url: 'https://media.url/name.jpg', comment: '', text: '' });
+// &lt;/code></code></pre>
+
+        <p class="code-caption">Upload file and then update content of file page</p>
+    
+    <pre class="prettyprint"><code>// &lt;code>
+const wiki = new Wikiapi;
+await wiki.login('user', 'password', 'test');
+
+const variable_Map = new CeL.wiki.Variable_Map();
+variable_Map.set('description', '...');
+//variable_Map.set('date', '...');
+// ...
+//variable_Map.set('other_fields', '...');
+
+let result = await wiki.upload({
+	file_path: '/local/file/path',
+	// The &lt;code>comment&lt;/code> will only shown in the file page when updating file. It is read-only and cannot be modified.
+	comment: '',
+
+	// &lt;code>CeL.wiki.Variable_Map&lt;/code> is used to update content when update pages or files.
+	// &lt;code>description&lt;/code> till &lt;code>other_fields&lt;/code> will be auto-setted as values assigned above.
+	// The code to do the conversion is in &lt;code>wiki_API.upload&lt;/code> @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js
+	// There are some examples: https://github.com/kanasimi/wikibot/blob/master/routine/20181016.import_earthquake_shakemap.js https://github.com/kanasimi/wikibot/blob/master/routine/20190629.import_hurricane_track_maps.js
+	// More examples to use &lt;code>CeL.wiki.Variable_Map&lt;/code>: https://github.com/kanasimi/wikibot/blob/master/routine/20191129.check_language_convention.js
+	variable_Map,
+	// When set .variable_Map, after successful update, the content of file page will be auto-updated too.
+
+	// To overwrite existing file
+	ignorewarnings: 1,
+});
 // &lt;/code></code></pre>
 
 
@@ -5045,7 +5084,7 @@ result = await wiki.upload({ media_url: 'https://media.url/name.jpg', comment: '
 
             
 
-            <td class="description last">Upload configurations.<br />
+            <td class="description last">Upload configurations.<br />Warning: When you are update a file, only the file content will changed. The <code>comment</code> will only shown in the file page. The <code>text</code>, ... till <code>categories</code> will <em>all ignored</em>. If you want to update the content of file page, please consider <code>Variable_Map</code> as mentioned in the sample code.<br />
 {<br />
 <ul>
 <li><code>file_path</code>: string - Local path.</li>
@@ -5142,7 +5181,7 @@ See <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/e
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Apr 14 2021 20:28:40 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Apr 21 2021 15:57:34 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
