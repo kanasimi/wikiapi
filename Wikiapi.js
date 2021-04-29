@@ -1252,14 +1252,14 @@ function Wikiapi_upload(file_data) {
 
 /**
  * @alias download
- * @description Upload specified local file to the target wiki.
+ * @description Download file to local path.
  *
  * @param {String} file_title	- file title starts with "File:"
  * @param {Object} [options]	- options to run this function. Refer to example codes.
  *
  * @returns {Promise} Promise object represents [ {Object}file informations ]
  *
- * @example <caption>Download file / media</span></caption>
+ * @example <caption>Download file / media to current directory.</span></caption>
 // <code>
 await wiki.download('File:Example.svg');
 // </code>
