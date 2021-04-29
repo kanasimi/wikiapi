@@ -1266,12 +1266,24 @@ await wiki.download('File:Example.svg');
  *
  * @example <caption>Download file / media with options</span></caption>
 // <code>
+// Download non-vector version of .svg
+await wiki.download('File:Example.svg', { width: 80 });
+
+// Change width / height
 await wiki.download('File:Example.png', {
 	file_name: 'example.png', directory: '/tmp/',
 	// reget and overwrite existed file.
 	reget: true,
-	width: 100,// height: 100
+	width: 80,// height: 80
 });
+
+// Download all files from a (Commons) category
+for (const page_data of await wiki.categorymembers('Category:name')) {
+	try {
+		if (page_data.title.startsWith('File:'))
+			const file_data = await wiki.download(page_data, { directory: './' });
+	} catch (e) { }
+}
 // </code>
  *
  * @memberof Wikiapi.prototype
