@@ -1147,7 +1147,7 @@ function Wikiapi_register_redirects(page_title_list, options) {
  * @description Upload specified local file to the target wiki.
  *
  * @param {Object} file_data	- Upload configurations.<br />
- * Warning: When you are update a file, only the file content will changed. The <code>comment</code> will only shown in the file page. The <code>text</code>, ... till <code>categories</code> will <em>all ignored</em>. If you want to update the content of file page, please consider <code>Variable_Map</code> as mentioned in the sample code.<br />
+ * Warning: When you are update a file, only the file content will changed. The <code>comment</code> will only show in the file page. The <code>text</code>, ... till <code>categories</code> will <em>all ignored</em>. If you want to update the content of file page, please consider <code>Variable_Map</code> as mentioned in the sample code.<br />
 {<br />
 <ul>
 <li><code>file_path</code>: string - Local path.</li>
@@ -1213,10 +1213,10 @@ variable_Map.set('description', '...');
 
 let result = await wiki.upload({
 	file_path: '/local/file/path',
-	// The <code>comment</code> will only shown in the file page when updating file. It is read-only and cannot be modified.
+	// The <code>comment</code> will only show in the file page when updating file. It is read-only and cannot be modified.
 	comment: '',
 
-	// <code>CeL.wiki.Variable_Map</code> is used to update content when update pages or files.
+	// <code>CeL.wiki.Variable_Map</code> is used to update content when update pages or files. It will insert comments around the value, prevent others from accidentally editing the text that will be overwritten.
 	// <code>description</code> till <code>other_fields</code> will be auto-setted as values assigned above.
 	// The code to do the conversion is in <code>wiki_API.upload</code> @ https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/edit.js
 	// There are some examples: https://github.com/kanasimi/wikibot/blob/master/routine/20181016.import_earthquake_shakemap.js https://github.com/kanasimi/wikibot/blob/master/routine/20190629.import_hurricane_track_maps.js
@@ -1246,6 +1246,50 @@ function Wikiapi_upload(file_data) {
 	}
 
 	return new Promise(Wikiapi_upload_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
+/**
+ * @alias download
+ * @description Upload specified local file to the target wiki.
+ *
+ * @param {String} file_title	- file title starts with "File:"
+ * @param {Object} [options]	- options to run this function. Refer to example codes.
+ *
+ * @returns {Promise} Promise object represents [ {Object}file informations ]
+ *
+ * @example <caption>Download file / media</span></caption>
+// <code>
+await wiki.download('File:Example.svg');
+// </code>
+ *
+ * @example <caption>Download file / media with options</span></caption>
+// <code>
+await wiki.download('File:Example.png', {
+	file_name: 'example.png', directory: '/tmp/',
+	// reget and overwrite existed file.
+	reget: true,
+	width: 100,// height: 100
+});
+// </code>
+ *
+ * @memberof Wikiapi.prototype
+ */
+function Wikiapi_download(file_title, options) {
+	function Wikiapi_download_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		wiki.download(file_title, options, (result, error) => {
+			if (error) {
+				// See result.error_titles
+				reject(result);
+			} else {
+				resolve(result);
+			}
+		});
+	}
+
+	return new Promise(Wikiapi_download_executor.bind(this));
 }
 
 // --------------------------------------------------------
@@ -1304,17 +1348,20 @@ await wiki.for_each_page(link_from, page_data => {
 function Wikiapi_for_each_page(page_list, for_each_page, options) {
 	function Wikiapi_for_each_page_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
+		const append_to_this = Array.isArray(for_each_page) && for_each_page[1];
+		if (Array.isArray(for_each_page))
+			for_each_page = for_each_page[0];
 		const work_config = {
 			log_to: null,
 			no_message: options?.no_edit,
 
 			...options,
 
-			each(page_data/* , messages, config */) {
+			each: [function each(page_data/* , messages, config */) {
 				set_page_data_attributes(page_data, wiki);
 
 				return for_each_page.apply(this, arguments);
-			},
+			}, append_to_this],
 			// Run after all list items (pages) processed.
 			last(error) {
 				// this === options
@@ -1584,6 +1631,7 @@ wiki.listen(function for_each_row() {
 	register_redirects: Wikiapi_register_redirects,
 
 	upload: Wikiapi_upload,
+	download: Wikiapi_download,
 
 	get_featured_content: Wikiapi_get_featured_content,
 
