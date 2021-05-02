@@ -1259,13 +1259,16 @@ function Wikiapi_upload(file_data) {
  *
  * @returns {Promise} Promise object represents [ {Object}file informations ]
  *
- * @example <caption>Download file / media to current directory.</span></caption>
+ * @example <caption>Download original file / media to current directory.</span></caption>
 // <code>
+const wiki = new Wikiapi('commons');
 await wiki.download('File:Example.svg');
 // </code>
  *
  * @example <caption>Download file / media with options</span></caption>
 // <code>
+const wiki = new Wikiapi('commons');
+
 // Download non-vector version of .svg
 await wiki.download('File:Example.svg', { width: 80 });
 
@@ -1278,10 +1281,10 @@ await wiki.download('File:Example.png', {
 });
 
 // Download all files from a (Commons) category
-for (const page_data of await wiki.categorymembers('Category:name')) {
+for (const page_data of await wiki.categorymembers('Category:name', { namespace: 'File' })) {
 	try {
-		if (page_data.title.startsWith('File:'))
-			const file_data = await wiki.download(page_data, { directory: './' });
+		//if (wiki.is_namespace(page_data, 'File'))
+		const file_data = await wiki.download(page_data, { directory: './' });
 	} catch (e) { }
 }
 // </code>
