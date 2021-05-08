@@ -328,7 +328,7 @@ function Wikiapi_page(title, options) {
  * @description tracking revisions to lookup what revision had added / removed <code>to_search</code>.
  * 
  * @param {String} title		- page title
- * @param {String} to_search	- filter / text to search
+ * @param {String} to_search	- filter / text to search. to_search(diff, revision, old_revision): `diff` 為從舊的版本 `old_revision` 改成 `revision` 時的差異。
  * @param {Object} [options]	- options to run this function
  * 
  * @returns {Promise} Promise object represents {Object} newer_revision,
