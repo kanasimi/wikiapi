@@ -19,6 +19,11 @@ let CeL;
 try {
 	// Load CeJS library.
 	CeL = require('cejs');
+	if (typeof CeL.then === 'function' && typeof window === "object" && window.CeL) {
+		// assert: @Snowpack
+		CeL = window.CeL;
+	}
+
 } catch (e) /* istanbul ignore next: Only for debugging locally */ {
 	// https://github.com/gotwarlost/istanbul/blob/master/ignoring-code-for-coverage.md
 	// const Wikiapi = require('./wikiapi.js');
