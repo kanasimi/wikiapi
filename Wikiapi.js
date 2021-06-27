@@ -488,13 +488,13 @@ function Wikiapi_edit_page(title, content, options) {
 			// CeL.set_debug(6);
 
 			if (!reject_edit_error(reject, error, result)) {
+				// console.log('Wikiapi_edit_page: resolve');
 				resolve(title);
 			}
-			// console.trace('Wikiapi_edit_page: return');
+			// console.log('Wikiapi_edit_page: callback() return');
 		});
 
-		// console.log(`Wikiapi_edit_page 3: ${title}, ${wiki.actions.length}
-		// actions, ${wiki.running}/${wiki.thread_count}.`);
+		// console.trace(`Wikiapi_edit_page 3: ${title}, ${wiki.actions.length} actions, ${wiki.running}/${wiki.thread_count}.`);
 	}
 
 	return new Promise(Wikiapi_edit_page_executor.bind(this));
@@ -1367,16 +1367,20 @@ await wiki.for_each_page(link_from, page_data => {
  */
 function Wikiapi_for_each_page(page_list, for_each_page, options) {
 	function Wikiapi_for_each_page_executor(resolve, reject) {
+		if (typeof options === 'string') options = { summary: options };
+
 		const wiki = this[KEY_wiki_session];
 		const append_to_this = Array.isArray(for_each_page) && for_each_page[1];
 		if (Array.isArray(for_each_page))
 			for_each_page = for_each_page[0];
+		// console.trace(for_each_page);
 		const work_config = {
 			log_to: null,
 			no_message: options?.no_edit,
 
 			...options,
 
+			//is_async_each: CeL.is_async_function(for_each_page),
 			each: [function each(page_data/* , messages, config */) {
 				set_page_data_attributes(page_data, wiki);
 
@@ -1386,6 +1390,7 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 			last(error) {
 				// this === options
 				// console.trace('last(error)');
+				// console.error(error);
 				// console.trace('Wikiapi_for_each_page_executor finish:');
 				// console.log(options);
 
