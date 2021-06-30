@@ -1,7 +1,7 @@
 {
 	"name": "wikiapi",
 	"title": "JavaScript MediaWiki API for node.js",
-	"version": "1.15.2",
+	"version": "1.16.0",
 	"description": "A simple way to access MediaWiki API via JavaScript with simple wikitext parser.",
 	"keywords": [
 		"MediaWiki",
