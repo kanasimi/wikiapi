@@ -1368,6 +1368,7 @@ await wiki.for_each_page(link_from, page_data => {
 function Wikiapi_for_each_page(page_list, for_each_page, options) {
 	function Wikiapi_for_each_page_executor(resolve, reject) {
 		if (typeof options === 'string') options = { summary: options };
+		else options = CeL.setup_options(options);
 
 		const wiki = this[KEY_wiki_session];
 		const append_to_this = Array.isArray(for_each_page) && for_each_page[1];
@@ -1376,7 +1377,7 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 		// console.trace(for_each_page);
 		const work_config = {
 			log_to: null,
-			no_message: options?.no_edit,
+			no_message: options.no_edit,
 
 			...options,
 
@@ -1396,10 +1397,10 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 
 				// 提早執行 resolve(), reject() 的話，可能導致後續的程式碼 `options.last`
 				// 延後執行，程式碼順序錯亂。
-				if (options?.last === 'function')
+				if (options.last === 'function')
 					options.last.call(this, error);
 				if (error) {
-					if (options?.throw_error) {
+					if (options.throw_error) {
 						reject(error);
 						return;
 					}

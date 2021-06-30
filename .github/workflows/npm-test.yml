@@ -17,7 +17,9 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 14.x, 16.x ]
+        # https://nodejs.org/en/about/releases/
+		# EoL of node.js v12: 2022-04-30
+        node-version: [ 12.x, 14.x, 16.x ]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
