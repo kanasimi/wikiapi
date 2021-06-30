@@ -139,10 +139,14 @@ add_test('edit page', async (assert, setup_test, finish_test) => {
 	const enwiki = new Wikiapi;
 	await enwiki.login({ user_name: bot_name, password, API_URL: 'en' });
 	const query_result = await enwiki.query({ action: 'query', meta: 'userinfo' });
+	// node.js v12 does not support the optional chaining operator (?.)
+	// EoL of node.js v12: 2022-04-30
 	if (password) {
-		assert([bot_name, query_result?.query?.userinfo?.name], 'test wiki.query()');
+		//assert([bot_name, query_result?.query?.userinfo?.name], 'test wiki.query()');
+		assert([bot_name, query_result.query.userinfo.name], 'test wiki.query()');
 	} else {
-		assert(['' in query_result?.query?.userinfo?.anon], 'test wiki.query()');
+		//assert(['' in query_result?.query?.userinfo?.anon], 'test wiki.query()');
+		assert(['' in query_result.query.userinfo.anon], 'test wiki.query()');
 	}
 
 	await enwiki.page(test_page_title);
@@ -320,7 +324,16 @@ add_test('purge page', async (assert, setup_test, finish_test) => {
 	setup_test('purge page: meta');
 	const metawiki = new Wikiapi('meta');
 
-	let page_data = await metawiki.purge('Project:Sandbox');
+	let page_data;
+	try {
+		page_data = await metawiki.purge('Project:Sandbox');
+	} catch (e) {
+		if (e.code === 'blocked') {
+			// info: 'You have been blocked from editing.'
+			finish_test('purge page: meta');
+			return;
+		}
+	}
 	// [ { ns: 4, title: 'Meta:Sandbox', purged: '' } ]
 	assert(page_data.title === 'Meta:Sandbox' && ('purged' in page_data), 'purge page: [[meta:Project:Sandbox]]');
 
@@ -497,7 +510,10 @@ add_test('search pages include key', async (assert, setup_test, finish_test) => 
 
 	const zhwikinews = new Wikiapi('zh.wikinews');
 	const page_list = await zhwikinews.search('"霍金"');
-	assert(page_list?.some(page_data => page_data?.title === '霍金访问香港'), 'search pages include key: "霍金" must includes [[n:zh:霍金访问香港]]');
+	// node.js v12 does not support the optional chaining operator (?.)
+	// EoL of node.js v12: 2022-04-30
+	//assert(page_list?.some(page_data => page_data?.title === '霍金访问香港'), 'search pages include key: "霍金" must includes [[n:zh:霍金访问香港]]');
+	assert(page_list.some(page_data => page_data.title === '霍金访问香港'), 'search pages include key: "霍金" must includes [[n:zh:霍金访问香港]]');
 	finish_test('search pages include key: 霍金');
 });
 
@@ -511,6 +527,9 @@ add_test('query MediaWiki API manually', async (assert, setup_test, finish_test)
 		content: "<b>bold</b> &amp; <i>italic</i>",
 		title: "MediaWiki", from: "html", to: "wikitext"
 	});
-	assert(["'''bold''' & ''italic''", results['flow-parsoid-utils']?.content], 'query MediaWiki API manually: flow-parsoid-utils');
+	// node.js v12 does not support the optional chaining operator (?.)
+	// EoL of node.js v12: 2022-04-30
+	//assert(["'''bold''' & ''italic''", results['flow-parsoid-utils']?.content], 'query MediaWiki API manually: flow-parsoid-utils');
+	assert(["'''bold''' & ''italic''", results['flow-parsoid-utils'].content], 'query MediaWiki API manually: flow-parsoid-utils');
 	finish_test('query MediaWiki API manually');
 });
