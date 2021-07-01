@@ -827,6 +827,91 @@ function Wikiapi_data(key, property, options) {
 	return new Promise(Wikiapi_data_executor.bind(this));
 }
 
+
+/**
+ * @alias new_data
+ * @description Create new entity or property
+ *
+ * @param {Object} data_to_modify	- Initial data.
+ * @param {Object} [options]		- options to run this function
+ *
+ * @returns {Promise} Promise object represents {Object} new entity or property.
+ *
+ * @example <caption>Create new entity</caption>
+// <code>
+const new_entity = await wiki.new_data({ labels: { en: "Evolution in Mendelian Populations" }, P698: "17246615", P932: "1201091" }, { new: 'item' });
+// </code>
+ *
+ * @memberof Wikiapi.prototype
+ */
+function Wikiapi_new_data(data_to_modify, options) {
+	function Wikiapi_new_data_executor(resolve, reject) {
+		options = { new: 'item', ...options };
+		const wiki = this[KEY_wiki_session];
+		wiki.edit_data({}, options, (data_entity, error) => {
+			if (error) {
+				reject(error);
+			} else if (data_to_modify) {
+				delete options.new;
+				//console.trace([data_entity, options]);
+				wiki.edit_data(data_entity, data_to_modify, options, (result, error) => {
+					if (error) {
+						reject(error);
+					} else if (options.do_not_return_data) {
+						resolve();
+					} else {
+						// reget modified data
+						this.data(data_entity.id, options).then(resolve, error);
+					}
+				});
+			} else {
+				setup_data_entity.call(wiki, data_entity);
+				resolve(data_entity);
+			}
+		});
+	}
+
+	return new Promise(Wikiapi_new_data_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
+/**
+ * @alias SPARQL
+ * @description Query wikidata via SPARQL
+ *
+ * @param {Object} SPARQL		- SPARQL to query. Please test it on <a href="https://query.wikidata.org/">Wikidata Query Service</a> first.
+ * @param {Object} [options]	- options to run this function
+ *
+ * @returns {Promise} Promise object represents {Array} query result of `SPARQL`.
+ *
+ * @example <caption>Get cats</caption>
+// <code>
+const wikidata_item_list = await wiki.SPARQL(`
+SELECT ?item ?itemLabel WHERE {
+  ?item wdt:P31 wd:Q146.
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
+`);
+// </code>
+ *
+ * @memberof Wikiapi.prototype
+ */
+function Wikiapi_SPARQL(SPARQL, options) {
+	function Wikiapi_SPARQL_executor(resolve, reject) {
+		wiki_API.SPARQL(SPARQL, (result, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(result);
+			}
+		}, options);
+	}
+
+	return new Promise(Wikiapi_SPARQL_executor.bind(this));
+}
+
+
 // --------------------------------------------------------
 
 /**
@@ -1367,8 +1452,7 @@ await wiki.for_each_page(link_from, page_data => {
  */
 function Wikiapi_for_each_page(page_list, for_each_page, options) {
 	function Wikiapi_for_each_page_executor(resolve, reject) {
-		if (typeof options === 'string') options = { summary: options };
-		else options = CeL.setup_options(options);
+		options = typeof options === 'string' ? { summary: options } : CeL.setup_options(options);
 
 		const wiki = this[KEY_wiki_session];
 		const append_to_this = Array.isArray(for_each_page) && for_each_page[1];
@@ -1666,6 +1750,8 @@ wiki.listen(function for_each_row() {
 	for_each: Wikiapi_for_each,
 
 	data: Wikiapi_data,
+	new_data: Wikiapi_new_data,
+	SPARQL: Wikiapi_SPARQL,
 
 	convert_Chinese: Wikiapi_convert_Chinese,
 
