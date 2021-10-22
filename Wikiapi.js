@@ -374,12 +374,13 @@ function Wikiapi_tracking_revisions(title, to_search, options) {
  */
 function reject_edit_error(reject, error, result) {
 	// skip_edit is not error
-	if (error && error !== /* 'skip' */ Wikiapi.skip_edit[1]
+	if (error
 		// @see wiki_API_edit.check_data
-		&& error !== 'empty' && error !== 'cancel') {
-		if (typeof error === 'string') {
+		&& error[0] !== Wikiapi.skip_edit[0]) {
+		if (typeof error[1] === 'string') {
 			// console.log('' + reject);
 			// console.trace(error);
+			error = error[1];
 			const error_object = new Error(error);
 			error_object.from_string = error;
 			error = error_object
@@ -433,7 +434,7 @@ await enwiki.edit('section content', {
 	sectiontitle: 'section title',
 	nocreate : 1,
 	summary: 'test edit',
- });
+});
 // </code>
  *
  * @example <caption>edit page: method 2: modufy summary inside function</caption>
@@ -445,7 +446,7 @@ await enwiki.edit_page('Wikipedia:Sandbox', function (page_data) {
 	delete this.minor;
 	return page_data.wikitext
 		+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
-}, { bot: 1, nocreate: 1, minor: 1, summary: 'test edit' });
+}, { bot: 1, nocreate: 1, minor: 1, redirect: 1, summary: 'test edit' });
 // </code>
  *
  * @memberof Wikiapi.prototype
@@ -461,7 +462,7 @@ function Wikiapi_edit_page(title, content, options) {
 		// CeL.set_debug(3);
 		if (title) {
 			// console.trace(wiki);
-			options = CeL.setup_options(options);
+			options = { ...options, error_with_symbol: true };
 			// options.page_to_edit = title;
 			// call wiki_API_prototype_method() @ CeL.application.net.wiki.list
 			wiki.page(title, (page_data, error) => {
@@ -526,7 +527,7 @@ Wikiapi.skip_edit = [wiki_API.edit.cancel, 'skip'];
  *
  * @example <caption>Move <code>move_from_title</code> to <code>move_to_title</code>.</caption>
 // <code>
-await wiki.move_page(move_from_title, move_to_title, { reason: reason, noredirect: true, movetalk: true });
+await wiki.move_page(move_from_title, move_to_title, { reason, noredirect: true, movetalk: true });
 // </code>
  *
  * @memberof Wikiapi.prototype
@@ -1014,12 +1015,18 @@ function Wikiapi_for_each(type, title, for_each, options) {
  *
  * @returns {Promise} Promise object represents {Array} category_tree.
  *
- * @example <caption>update wikidata</caption>
+ * @example <caption>Checking if [[Category:Countries in North America]] including [[Mexico]].</caption>
 // <code>
 const enwiki = new Wikiapi('en');
 const page_list = await enwiki.category_tree('Countries in North America', 1);
 assert(page_list.some(page_data => page_data.title === 'United States'), 'list category tree: [[Category:Countries in North America]] must includes [[United States]]');
 assert('Mexico' in page_list[Wikiapi.KEY_subcategories], 'list category tree: [[Category:Mexico]] is a subcategory of [[Category:Countries in North America]]');
+// </code>
+ *
+ * @example <caption>Get all sub-categories of [[Category:Echinodermata]] with depth=2.</caption>
+// <code>
+const wiki = new Wikiapi('commons');
+const all_sub_categories = (await wiki.category_tree('Echinodermata', { depth: 2, cmtype: 'subcat', get_flated_subcategories: true })).flated_subcategories;
 // </code>
  *
  * @memberof Wikiapi.prototype
@@ -1043,7 +1050,7 @@ function Wikiapi_category_tree(root_category, options) {
 /**
  * export key for subcategory 子分類 used in {@link Wikiapi#category_tree}
  *
- * @example <caption>update wikidata</caption>
+ * @example
 // <code>
 const KEY_subcategories = Wikiapi.KEY_subcategories;
 // </code>
