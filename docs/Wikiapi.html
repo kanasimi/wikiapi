@@ -237,7 +237,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1058">line 1058</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1078">line 1078</a>
     </li></ul></dd>
     
 
@@ -307,7 +307,7 @@ const KEY_subcategories = Wikiapi.KEY_subcategories;
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line514">line 514</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line516">line 516</a>
     </li></ul></dd>
     
 
@@ -380,7 +380,7 @@ const KEY_subcategories = Wikiapi.KEY_subcategories;
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1034">line 1034</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1054">line 1054</a>
     </li></ul></dd>
     
 
@@ -600,7 +600,7 @@ const all_sub_categories = (await wiki.category_tree('Echinodermata', { depth: 2
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1532">line 1532</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1552">line 1552</a>
     </li></ul></dd>
     
 
@@ -819,7 +819,7 @@ await wiki.convert_Chinese(['繁體', '簡體'], { uselang: 'zh-hans' });
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line809">line 809</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line819">line 819</a>
     </li></ul></dd>
     
 
@@ -876,9 +876,18 @@ await wiki.convert_Chinese(['繁體', '簡體'], { uselang: 'zh-hans' });
     
     <pre class="prettyprint"><code>// &lt;code>
 const wiki = new Wikiapi;
-let page_data = await wiki.data('Q1');
+const data_entity = await wiki.data('Q1');
 // Work with other language
-console.assert(CeL.wiki.data.value_of(page_data.labels.zh) === '宇宙');
+console.assert(CeL.wiki.data.value_of(data_entity.labels.zh) === '宇宙');
+// &lt;/code></code></pre>
+
+        <p class="code-caption">Get wikidata entity of [[Human]]</p>
+    
+    <pre class="prettyprint"><code>// &lt;code>
+const wiki = new Wikiapi;
+const page_data = await wiki.page('Human');
+const data_entity = await wiki.data(page_data);
+console.assert(CeL.wiki.data.value_of(data_entity.labels.zh) === '人類');
 // &lt;/code></code></pre>
 
         <p class="code-caption">Get wikidata entity method 2: Get P1419 of wikidata entity: 'Universe'</p>
@@ -905,14 +914,14 @@ let entity = await wiki.data('Q7');
 //entity = await wiki.data(['en', 'Earth']);
 
 // Update claim
-await entity.modify({ claims: [{ P17: 'Q213280' }] });
+await entity.modify({ claims: [{ P17: 'Q213280' }] }, { bot: 1, summary: '' });
 // Update claim: set country (P17) to 'Test Country 1' (Q213280) ([language, label] as entity)
-await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'] }] });
+await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'] }] }, { summary: '' });
 // Remove country (P17) : 'Test Country 1' (Q213280)
-await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'], remove: true }] });
+await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'], remove: true }] }, { summary: '' });
 
 // Update label
-await entity.modify({ labels: [{ language: 'zh-tw', value: '地球' }] });
+await entity.modify({ labels: [{ language: 'zh-tw', value: '地球' }] }, { summary: '' });
 // &lt;/code></code></pre>
 
 
@@ -1066,7 +1075,7 @@ await entity.modify({ labels: [{ language: 'zh-tw', value: '地球' }] });
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1391">line 1391</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1411">line 1411</a>
     </li></ul></dd>
     
 
@@ -1302,7 +1311,7 @@ for (const page_data of await wiki.categorymembers('Category:name', { namespace:
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1703">line 1703</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1729">line 1729</a>
     </li></ul></dd>
     
 
@@ -1602,7 +1611,7 @@ await enwiki.edit_page('Wikipedia:Sandbox', function (page_data) {
 	delete this.minor;
 	return page_data.wikitext
 		+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
-}, { bot: 1, nocreate: 1, minor: 1, redirect: 1, summary: 'test edit' });
+}, { bot: 1, nocreate: 1, minor: 1, redirects: 1, summary: 'test edit' });
 // &lt;/code></code></pre>
 
 
@@ -1790,7 +1799,7 @@ await enwiki.edit_page('Wikipedia:Sandbox', function (page_data) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1460">line 1460</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1480">line 1480</a>
     </li></ul></dd>
     
 
@@ -2065,7 +2074,7 @@ await wiki.for_each_page(link_from, page_data => {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1623">line 1623</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1644">line 1644</a>
     </li></ul></dd>
     
 
@@ -2253,7 +2262,7 @@ console.assert(FC_data_hash === wiki.FC_data_hash);
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1736">line 1736</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1762">line 1762</a>
     </li></ul></dd>
     
 
@@ -2708,7 +2717,7 @@ await wiki.login('user_name', 'password', 'en');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line535">line 535</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line537">line 537</a>
     </li></ul></dd>
     
 
@@ -2955,7 +2964,7 @@ await wiki.move_page(move_from_title, move_to_title, { reason, noredirect: true,
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line584">line 584</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line586">line 586</a>
     </li></ul></dd>
     
 
@@ -3169,7 +3178,7 @@ await wiki.move_to(move_to_title, { reason: reason, noredirect: true, movetalk: 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line848">line 848</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line868">line 868</a>
     </li></ul></dd>
     
 
@@ -3642,7 +3651,7 @@ console.log(infobox);
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line682">line 682</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line684">line 684</a>
     </li></ul></dd>
     
 
@@ -3853,7 +3862,7 @@ let page_data = await metawiki.purge('Project:Sandbox');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line645">line 645</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line647">line 647</a>
     </li></ul></dd>
     
 
@@ -4068,7 +4077,7 @@ const results = await wiki.query({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1150">line 1150</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1170">line 1170</a>
     </li></ul></dd>
     
 
@@ -4277,7 +4286,7 @@ const redirects_list = await enwiki.redirects_here('Wikipedia:Sandbox');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1113">line 1113</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1133">line 1133</a>
     </li></ul></dd>
     
 
@@ -4332,7 +4341,7 @@ const redirects_list = await enwiki.redirects_here('Wikipedia:Sandbox');
     
     <pre class="prettyprint"><code>&lt;caption>&lt;/caption>
 // &lt;code>
-const redirects_taregt = await enwiki.redirects_root('WP:SB');
+const redirects_taregt = await enwiki.redirects_root('WP:SB', { get_page_data: true });
 // &lt;/code></code></pre>
 
 
@@ -4448,7 +4457,7 @@ const redirects_taregt = await enwiki.redirects_root('WP:SB');
 
         
 <div class="param-desc">
-    Promise object represents {Object} page's data
+    Promise object represents {String} page title or {Object} page data
 </div>
 
 
@@ -4486,7 +4495,7 @@ const redirects_taregt = await enwiki.redirects_root('WP:SB');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1224">line 1224</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1244">line 1244</a>
     </li></ul></dd>
     
 
@@ -4732,7 +4741,7 @@ parsed.each('template', function (token, index, parent) {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1079">line 1079</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1099">line 1099</a>
     </li></ul></dd>
     
 
@@ -4943,7 +4952,7 @@ const page_list = await zhwikinews.search('"霍金"');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1669">line 1669</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1693">line 1693</a>
     </li></ul></dd>
     
 
@@ -4999,8 +5008,11 @@ const page_list = await zhwikinews.search('"霍金"');
         <p class="code-caption">Get site name of {Wikiapi}.</p>
     
     <pre class="prettyprint"><code>// &lt;code>
+console.log(Wikiapi.site_name('zh', { get_all_properties: true }));
+
 const wiki = new Wikiapi('en');
 console.assert(wiki.site_name() === 'enwiki');
+console.log(wiki.site_name({ get_all_properties: true }));
 // &lt;/code></code></pre>
 
 
@@ -5156,7 +5168,7 @@ console.assert(wiki.site_name() === 'enwiki');
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line901">line 901</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line921">line 921</a>
     </li></ul></dd>
     
 
@@ -5603,7 +5615,7 @@ SELECT ?item ?itemLabel WHERE {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1331">line 1331</a>
+        <a href="wikiapi.js.html">wikiapi.js</a>, <a href="wikiapi.js.html#line1351">line 1351</a>
     </li></ul></dd>
     
 
@@ -5847,7 +5859,7 @@ See <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/e
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sat Oct 23 2021 04:39:36 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Wed Dec 08 2021 04:46:17 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

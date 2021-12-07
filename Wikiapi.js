@@ -446,7 +446,7 @@ await enwiki.edit_page('Wikipedia:Sandbox', function (page_data) {
 	delete this.minor;
 	return page_data.wikitext
 		+ '\nTest edit using {{GitHub|kanasimi/wikiapi}}.';
-}, { bot: 1, nocreate: 1, minor: 1, redirect: 1, summary: 'test edit' });
+}, { bot: 1, nocreate: 1, minor: 1, redirects: 1, summary: 'test edit' });
 // </code>
  *
  * @memberof Wikiapi.prototype
@@ -463,7 +463,9 @@ function Wikiapi_edit_page(title, content, options) {
 		if (title) {
 			// console.trace(wiki);
 			options = { ...options, error_with_symbol: true };
-			// options.page_to_edit = title;
+			// 預防 page 本身是非法的頁面標題。當 session.page() 出錯時，將導致沒有 .last_page。
+			if (wiki_API.is_page_data(title))
+				options.task_page_data = title;
 			// call wiki_API_prototype_method() @ CeL.application.net.wiki.list
 			wiki.page(title, (page_data, error) => {
 				// console.trace('Set .page_to_edit:');
@@ -767,9 +769,17 @@ function modify_data_entity(data_to_modify, options) {
  * @example <caption>Get wikidata entity method 1</caption>
 // <code>
 const wiki = new Wikiapi;
-let page_data = await wiki.data('Q1');
+const data_entity = await wiki.data('Q1');
 // Work with other language
-console.assert(CeL.wiki.data.value_of(page_data.labels.zh) === '宇宙');
+console.assert(CeL.wiki.data.value_of(data_entity.labels.zh) === '宇宙');
+// </code>
+ *
+ * @example <caption>Get wikidata entity of [[Human]]</caption>
+// <code>
+const wiki = new Wikiapi;
+const page_data = await wiki.page('Human');
+const data_entity = await wiki.data(page_data);
+console.assert(CeL.wiki.data.value_of(data_entity.labels.zh) === '人類');
 // </code>
  *
  * @example <caption>Get wikidata entity method 2: Get P1419 of wikidata entity: 'Universe'</caption>
@@ -794,14 +804,14 @@ let entity = await wiki.data('Q7');
 //entity = await wiki.data(['en', 'Earth']);
 
 // Update claim
-await entity.modify({ claims: [{ P17: 'Q213280' }] });
+await entity.modify({ claims: [{ P17: 'Q213280' }] }, { bot: 1, summary: '' });
 // Update claim: set country (P17) to 'Test Country 1' (Q213280) ([language, label] as entity)
-await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'] }] });
+await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'] }] }, { summary: '' });
 // Remove country (P17) : 'Test Country 1' (Q213280)
-await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'], remove: true }] });
+await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'], remove: true }] }, { summary: '' });
 
 // Update label
-await entity.modify({ labels: [{ language: 'zh-tw', value: '地球' }] });
+await entity.modify({ labels: [{ language: 'zh-tw', value: '地球' }] }, { summary: '' });
 // </code>
  *
  * @memberof Wikiapi.prototype
@@ -814,6 +824,16 @@ function Wikiapi_data(key, property, options) {
 
 	function Wikiapi_data_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
+		if (false && wiki_API.is_page_data(key)) {
+			// get entity (wikidata item) of page_data: key
+			// .page(key): 僅僅設定 .last_page，不會真的再獲取一次頁面內容。
+			wiki.page(key);
+		}
+		if (key.title && !key.site) {
+			// @see function wikidata_entity() @ CeL.application.net.wiki.data
+			// 確保引用到的是本 wiki session，不會引用到其他 site。
+			key = { ...key, site: this.site_name() };
+		}
 		// using wikidata_entity() → wikidata_datavalue()
 		wiki.data(key, property, (data_entity, error) => {
 			if (error) {
@@ -1101,11 +1121,11 @@ function Wikiapi_search(key, options) {
  * @param {String} title		- page title
  * @param {Object} [options]	- options to run this function
  *
- * @returns {Promise} Promise object represents {Object} page's data
+ * @returns {Promise} Promise object represents {String} page title or {Object} page data
  *
  * @example <caption></caption>
 // <code>
-const redirects_taregt = await enwiki.redirects_root('WP:SB');
+const redirects_taregt = await enwiki.redirects_root('WP:SB', { get_page_data: true });
 // </code>
  * 
  * @memberof Wikiapi.prototype
@@ -1117,7 +1137,7 @@ function Wikiapi_redirects_root(title, options) {
 		wiki_API.redirects_root(title, (_title, page_data, error) => {
 			if (error) {
 				reject(error);
-			} else if (options && options.get_page) {
+			} else if (options && options.get_page_data) {
 				page_data.query_title = title;
 				resolve(page_data);
 			} else {
@@ -1488,7 +1508,7 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 
 				// 提早執行 resolve(), reject() 的話，可能導致後續的程式碼 `options.last`
 				// 延後執行，程式碼順序錯亂。
-				if (options.last === 'function')
+				if (typeof options.last === 'function')
 					options.last.call(this, error);
 				if (error) {
 					if (options.throw_error) {
@@ -1534,8 +1554,9 @@ function Wikiapi_convert_Chinese(text, options) {
 		if (typeof options === 'string') {
 			options = { uselang: options };
 		}
-		const site_name = this.site_name();
-		if (/^zh/.test(site_name)) {
+		const site_name = this.site_name({ get_all_properties: true });
+		if (site_name?.language === 'zh') {
+			// 不用再重新造出一個實體。
 			options = this.append_session_to_options(options);
 		}
 
@@ -1660,15 +1681,20 @@ Wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
  * 
  * @example <caption>Get site name of {Wikiapi}.</caption>
 // <code>
+console.log(Wikiapi.site_name('zh', { get_all_properties: true }));
+
 const wiki = new Wikiapi('en');
 console.assert(wiki.site_name() === 'enwiki');
+console.log(wiki.site_name({ get_all_properties: true }));
 // </code>
  * 
  * @memberof Wikiapi.prototype
  */
 function Wikiapi_site_name(language, options) {
-	return wiki_API.site_name(language || this[KEY_wiki_session], options);
+	return wiki_API.site_name(language, options);
 }
+
+Wikiapi.site_name = Wikiapi_site_name;
 
 // --------------------------------------------------------
 // exports
@@ -1680,7 +1706,7 @@ Object.assign(Wikiapi.prototype, {
 		return wiki_API.add_session_to_options(this[KEY_wiki_session], options);
 	},
 
-	site_name: Wikiapi_site_name,
+	site_name(options) { return Wikiapi_site_name(this[KEY_wiki_session], options); },
 	login: Wikiapi_login,
 
 	query: Wikiapi_query,
