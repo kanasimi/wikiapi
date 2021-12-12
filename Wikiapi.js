@@ -1555,7 +1555,8 @@ function Wikiapi_convert_Chinese(text, options) {
 			options = { uselang: options };
 		}
 		const site_name = this.site_name({ get_all_properties: true });
-		if (site_name?.language === 'zh') {
+		// node.js v12.22.7: Cannot use "?."
+		if (site_name && site_name.language === 'zh') {
 			// 不用再重新造出一個實體。
 			options = this.append_session_to_options(options);
 		}
