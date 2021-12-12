@@ -32,7 +32,7 @@
 	"main": "Wikiapi.js",
 	"scripts": {
 		"test": "nyc node \"_test suite/test.js\"",
-		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+		"report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && curl -Os https://uploader.codecov.io/latest/linux/codecov && chmod +x codecov && ./codecov",
 		"doc": "jsdoc --template node_modules/docdash --readme README.md --destination docs Wikiapi.js"
 	},
 	"nyc": {
@@ -47,7 +47,6 @@
 		"jsdoc": "latest",
 		"docdash": "latest",
 
-		"codecov": "latest",
 		"nyc": "latest"
 	},
 	"dependencies": {
