@@ -64,12 +64,12 @@ function add_test(test_name, conditions) {
 delete CeL.wiki.query.default_maxlag;
 
 add_test('load page', async (assert, setup_test, finish_test) => {
-	const enwiki = new Wikiapi;
+	const enwiki = new Wikiapi('en');
 	let page_data;
 
 	setup_test('load page: [[w:en:Universe]]');
 	assert(['enwiki', enwiki.site_name()], '.site_name() #1');
-	assert(['zhwiki', enwiki.site_name('zh')], '.site_name() #2');
+	assert(['zhwiki', Wikiapi.site_name('zh')], '.site_name() #2');
 
 	page_data = await enwiki.page('Universe');
 	// console.log(CeL.wiki.title_link_of(page_data) + ':');
@@ -98,6 +98,8 @@ add_test('load page', async (assert, setup_test, finish_test) => {
 	finish_test('load page: [[w:en:Earth]]');
 });
 
+// https://en.wikipedia.org/wiki/List_of_wikis
+// https://meta.wikimedia.org/wiki/List_of_largest_wikis
 add_test('load page of other wiki', async (assert, setup_test, finish_test) => {
 	const wiki = new Wikiapi('https://harrypotter.fandom.com/api.php');
 	let page_data;

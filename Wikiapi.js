@@ -1707,7 +1707,9 @@ Object.assign(Wikiapi.prototype, {
 		return wiki_API.add_session_to_options(this[KEY_wiki_session], options);
 	},
 
-	site_name(options) { return Wikiapi_site_name(this[KEY_wiki_session], options); },
+	site_name(options) {
+		return Wikiapi_site_name(this[KEY_wiki_session], options);
+	},
 	login: Wikiapi_login,
 
 	query: Wikiapi_query,
