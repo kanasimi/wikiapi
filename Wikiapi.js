@@ -1687,6 +1687,7 @@ console.log(Wikiapi.site_name('zh', { get_all_properties: true }));
 const wiki = new Wikiapi('en');
 console.assert(wiki.site_name() === 'enwiki');
 console.log(wiki.site_name({ get_all_properties: true }));
+console.assert(wiki.site_name({ get_all_properties: true }).language === 'en');
 // </code>
  * 
  * @memberof Wikiapi.prototype
