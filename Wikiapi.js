@@ -1401,8 +1401,8 @@ await wiki.download('File:Example.png', {
 for (const page_data of await wiki.categorymembers('Category:name', { namespace: 'File' })) {
 	try {
 		//if (wiki.is_namespace(page_data, 'File'))
-		const file_data = await wiki.download(page_data, { directory: './' });
-	} catch (e) { }
+		const file_data = await wiki.download(page_data.title, { directory: './' });
+	} catch (e) { console.log(e) }
 }
 // </code>
  *
