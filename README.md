@@ -206,7 +206,7 @@ const Wikiapi = require('wikiapi');
 		tags: "tag1|tag2",
 	};
 
-	// Upload file from URL
+	// Upload file from local path
 	let result = await wiki.upload({
 		file_path: '/local/file/path',
 		filename: 'New_Osaka_Photograph.jpg',  // default : keep filename
