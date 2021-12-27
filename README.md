@@ -38,6 +38,7 @@ Here lists some examples of this module.
 * [Get wikidata](https://kanasimi.github.io/wikiapi/Wikiapi.html#data)
 * [Upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#upload)
 	* [Upload file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#example__Upload%20file%20/%20media)
+* [Download file / media](https://kanasimi.github.io/wikiapi/Wikiapi.html#download)
 * [Move page](https://kanasimi.github.io/wikiapi/Wikiapi.html#move_page)
 
 ### As node.js module

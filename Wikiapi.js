@@ -280,17 +280,21 @@ console.log(page_data.wikitext);
 const zhwiki = new Wikiapi('zh');
 await zhwiki.login('user', 'password');
 let page_data = await zhwiki.page('Universe');
-// See all type in wiki_toString @ https://github.com/kanasimi/CeJS/tree/master/application/net/wiki/parser.js
+
+// `page_data.parse(options)` will startup the parser process, create page_data.parsed. After .parse(), we can use parsed.each().
+const parsed = page_data.parse();
+
+// See all type in wiki_toString @ https://github.com/kanasimi/CeJS/tree/master/application/net/wiki/parser/wikitext.js
 // List all template name.
-page_data.parse().each('template',
-	token => console.log(token.name));
+parsed.each('template', token => console.log(token.name));
+// List all [[Template:Tl]] token.
+parsed.each('Template:Tl', token => console.log(token));
 // </code>
  *
  * @example <caption>Get information from Infobox template</caption>
 // <code>
 const wiki = new Wikiapi('en');
 const page_data = await wiki.page('JavaScript');
-// `page_data.parse(options)` will startup the parser process, create page_data.parsed. After .parse(), we can use parsed.each().
 const parsed = page_data.parse();
 let infobox;
 // Read Infobox templates, convert to JSON.
@@ -1413,8 +1417,8 @@ function Wikiapi_download(file_title, options) {
 		const wiki = this[KEY_wiki_session];
 		wiki.download(file_title, options, (result, error) => {
 			if (error) {
-				// See result.error_titles
-				reject(result);
+				// return result.error_titles
+				reject(result && result.error_titles && result || error);
 			} else {
 				resolve(result);
 			}
