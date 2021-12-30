@@ -1401,12 +1401,17 @@ await wiki.download('File:Example.png', {
 	width: 80,// height: 80
 });
 
-// Download all files from a (Commons) category
+// Download all files from a (Commons) category and its subcategories WITH directory structure.
+try {
+	const file_data_list = await wiki.download('Category:name', { directory: './' });
+} catch (e) { console.error(e); }
+
+// Download all files from a (Commons) category WITHOUT directory structure.
 for (const page_data of await wiki.categorymembers('Category:name', { namespace: 'File' })) {
 	try {
 		//if (wiki.is_namespace(page_data, 'File'))
 		const file_data = await wiki.download(page_data, { directory: './' });
-	} catch (e) { }
+	} catch (e) { console.error(e); }
 }
 // </code>
  *
