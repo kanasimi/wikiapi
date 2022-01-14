@@ -1403,7 +1403,16 @@ await wiki.download('File:Example.png', {
 
 // Download all files from a (Commons) category and its subcategories WITH directory structure.
 try {
-	const file_data_list = await wiki.download('Category:name', { directory: './' });
+	const file_data_list = await wiki.download('Category:name', {
+		directory: './',
+		max_threads: 4,
+		// depth of category
+		depth: 4,
+		// A function to filter result pages. Return `true` if you want to keep the element.
+		page_filter(page_data) {
+			return page_data.title.includes('word');
+		}
+	});
 } catch (e) { console.error(e); }
 
 // Download all files from a (Commons) category WITHOUT directory structure.
