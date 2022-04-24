@@ -83,7 +83,7 @@ const KEY_wiki_session = Symbol('wiki_API session');
 /**
  * @description main Wikiapi operator 操作子.
  * 
- * @param {String|Object} [API_URL]	- language code or API URL of MediaWiki project.<br />
+ * @param {String|Object} [API_URL]	- language code or service endpoint of MediaWiki project.<br />
  *            Input {Object} will be treat as options.
  * 
  * @class
@@ -378,23 +378,26 @@ function Wikiapi_tracking_revisions(title, to_search, options) {
  */
 function reject_edit_error(reject, error, result) {
 	// skip_edit is not error
-	if (error
+	if (!error
 		// @see wiki_API_edit.check_data
-		&& error[0] !== Wikiapi.skip_edit[0]) {
-		if (typeof error[1] === 'string') {
-			// console.log('' + reject);
-			// console.trace(error);
-			error = error[1];
-			const error_object = new Error(error);
-			error_object.from_string = error;
-			error = error_object
-			// console.log(error);
-		}
-		if (result && typeof error === 'object')
-			error.result = result;
-		reject(error);
-		return true;
+		|| Array.isArray(error) && error[0] === Wikiapi.skip_edit[0]) {
+		return;
 	}
+
+	if (Array.isArray(error) && typeof error[1] === 'string') {
+		// console.log('' + reject);
+		// console.trace(error);
+		error = error[1];
+		const error_object = new Error(error);
+		error_object.from_string = error;
+		error = error_object
+		// console.log(error);
+	}
+
+	if (result && typeof error === 'object')
+		error.result = result;
+	reject(error);
+	return true;
 }
 
 /**
@@ -460,10 +463,9 @@ function Wikiapi_edit_page(title, content, options) {
 		const wiki = this[KEY_wiki_session];
 
 		// console.trace([title, content]);
-		// console.log(`Wikiapi_edit_page 1: ${title}, ${wiki.actions.length}
-		// actions, ${wiki.running}/${wiki.thread_count}.`);
+		// console.trace(`Wikiapi_edit_page 1: ${wiki_API.title_link_of(title)}, ${wiki.actions.length} actions, ${wiki.running}/${wiki.thread_count}/${wiki.actions[wiki_API.KEY_waiting_callback_result_relying_on_this]}.`);
 		// console.trace(title);
-		// CeL.set_debug(3);
+		// CeL.set_debug(6);
 		if (title) {
 			// console.trace(wiki);
 			options = { ...options, error_with_symbol: true };
@@ -480,8 +482,7 @@ function Wikiapi_edit_page(title, content, options) {
 				options.page_to_edit = page_data;
 			}, options);
 		}
-		// console.log(`Wikiapi_edit_page 2: ${title}, ${wiki.actions.length}
-		// actions, ${wiki.running}/${wiki.thread_count}.`);
+		// console.trace(`Wikiapi_edit_page 2: ${wiki_API.title_link_of(title)}, ${wiki.actions.length} actions, ${wiki.running}/${wiki.thread_count}/${wiki.actions[wiki_API.KEY_waiting_callback_result_relying_on_this]}.`);
 		// console.trace(wiki);
 		// console.trace(wiki.last_page);
 
@@ -501,7 +502,7 @@ function Wikiapi_edit_page(title, content, options) {
 			// console.log('Wikiapi_edit_page: callback() return');
 		});
 
-		// console.trace(`Wikiapi_edit_page 3: ${title}, ${wiki.actions.length} actions, ${wiki.running}/${wiki.thread_count}.`);
+		// console.trace(`Wikiapi_edit_page 3: ${wiki_API.title_link_of(title)}, ${wiki.actions.length} actions, ${wiki.running}/${wiki.thread_count}/${wiki.actions[wiki_API.KEY_waiting_callback_result_relying_on_this]}.`);
 	}
 
 	return new Promise(Wikiapi_edit_page_executor.bind(this));
@@ -720,6 +721,8 @@ function Wikiapi_purge(title, options) {
  * @inner
  */
 function setup_data_entity(data_entity) {
+	if (!data_entity)
+		return;
 	// assert: data_entity[KEY_SESSION].host === this
 	// console.trace(data_entity[KEY_SESSION].host === this);
 	delete data_entity[KEY_SESSION];
@@ -749,6 +752,7 @@ function modify_data_entity(data_to_modify, options) {
 		// https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/data.js
 		// wiki.edit_data(id, data, options, callback)
 		wiki.data(this).edit_data(data_to_modify || this, options, (data_entity, error) => {
+			// console.trace([data_entity, error]);
 			if (error) {
 				reject(error);
 			} else {
@@ -854,7 +858,7 @@ function Wikiapi_data(key, property, options) {
 
 
 /**
- * @alias new_data
+ * @alias new_data_entity
  * @description Create new entity or property
  *
  * @param {Object} data_to_modify	- Initial data.
@@ -864,13 +868,13 @@ function Wikiapi_data(key, property, options) {
  *
  * @example <caption>Create new entity</caption>
 // <code>
-const new_entity = await wiki.new_data({ labels: { en: "Evolution in Mendelian Populations" }, P698: "17246615", P932: "1201091" }, { new: 'item' });
+const new_entity = await wiki.new_data_entity({ labels: { en: "Evolution in Mendelian Populations" }, P698: "17246615", P932: "1201091" }, { new: 'item' });
 // </code>
  *
  * @memberof Wikiapi.prototype
  */
-function Wikiapi_new_data(data_to_modify, options) {
-	function Wikiapi_new_data_executor(resolve, reject) {
+function Wikiapi_new_data_entity(data_to_modify, options) {
+	function Wikiapi_new_data_entity_executor(resolve, reject) {
 		options = { new: 'item', ...options };
 		const wiki = this[KEY_wiki_session];
 		wiki.edit_data({}, options, (data_entity, error) => {
@@ -882,11 +886,15 @@ function Wikiapi_new_data(data_to_modify, options) {
 				wiki.edit_data(data_entity, data_to_modify, options, (result, error) => {
 					if (error) {
 						reject(error);
-					} else if (options.do_not_return_data) {
-						resolve();
-					} else {
+					} else if (false && options.retrieve_entity) {
 						// reget modified data
-						this.data(data_entity.id, options).then(resolve, error);
+						this.data(data_entity.id, options).then(resolve, reject);
+					} else {
+						//console.trace([data_entity, result]);
+						//data_entity.latest_result = result;
+						// data_entity: e.g.,
+						// {"type":"item","id":"Q123456","labels":{},"descriptions":{},"aliases":{},"claims":{},"sitelinks":{},"lastrevid":123456}
+						resolve(data_entity);
 					}
 				});
 			} else {
@@ -896,7 +904,7 @@ function Wikiapi_new_data(data_to_modify, options) {
 		});
 	}
 
-	return new Promise(Wikiapi_new_data_executor.bind(this));
+	return new Promise(Wikiapi_new_data_entity_executor.bind(this));
 }
 
 // --------------------------------------------------------
@@ -1402,22 +1410,20 @@ await wiki.download('File:Example.png', {
 });
 
 // Download all files from a (Commons) category and its subcategories WITH directory structure.
-try {
-	const file_data_list = await wiki.download('Category:name', {
-		directory: './',
-		max_threads: 4,
-		// depth of categories
-		depth: 4,
-		// Only download files with these formats.
-		//download_derivatives : ['wav', 'mp3', 'ogg'],
-		// Warning: Will skip downloading if there is no new file!
-		download_derivatives : 'mp3',
-		// A function to filter result pages. Return `true` if you want to keep the element.
-		page_filter(page_data) {
-			return page_data.title.includes('word');
-		}
-	});
-} catch (e) { console.error(e); }
+const file_data_list = await wiki.download('Category:name', {
+	directory: './',
+	max_threads: 4,
+	// depth of categories
+	depth: 4,
+	// Only download files with these formats.
+	//download_derivatives : ['wav', 'mp3', 'ogg'],
+	// Warning: Will skip downloading if there is no new file!
+	download_derivatives : 'mp3',
+	// A function to filter result pages. Return `true` if you want to keep the element.
+	page_filter(page_data) {
+		return page_data.title.includes('word');
+	}
+});
 
 // Download all files from a (Commons) category WITHOUT directory structure.
 for (const page_data of await wiki.categorymembers('Category:name', { namespace: 'File' })) {
@@ -1426,6 +1432,9 @@ for (const page_data of await wiki.categorymembers('Category:name', { namespace:
 		const file_data = await wiki.download(page_data, { directory: './' });
 	} catch (e) { console.error(e); }
 }
+// also
+const categorymembers = await wiki.categorymembers('Category:name', { namespace: 'File' });
+const file_data_list = await wiki.download(categorymembers, { directory: './', no_category_tree: true });
 // </code>
  *
  * @memberof Wikiapi.prototype
@@ -1667,11 +1676,15 @@ console.assert(FC_data_hash === wiki.FC_data_hash);
 function Wikiapi_get_featured_content(options) {
 	if (!options || !options.type) {
 		const session = this;
-		let promise = Promise.resolve();
-		Wikiapi_get_featured_content.default_types.forEach(type => {
-			promise = promise.then(Wikiapi_get_featured_content.bind(session, { ...options, type }));
-		});
-		return promise;
+		return Wikiapi_get_featured_content.default_types
+			.reduce((promise, type) => promise.then(Wikiapi_get_featured_content.bind(session, { ...options, type })), Promise.resolve());
+		if (false) {
+			let promise = Promise.resolve();
+			Wikiapi_get_featured_content.default_types.forEach(type => {
+				promise = promise.then(Wikiapi_get_featured_content.bind(session, { ...options, type }));
+			});
+			return promise;
+		}
 	}
 
 	function Wikiapi_get_featured_content_executor(resolve, reject) {
@@ -1809,7 +1822,7 @@ wiki.listen(function for_each_row() {
 	for_each: Wikiapi_for_each,
 
 	data: Wikiapi_data,
-	new_data: Wikiapi_new_data,
+	new_data_entity: Wikiapi_new_data_entity,
 	SPARQL: Wikiapi_SPARQL,
 
 	convert_Chinese: Wikiapi_convert_Chinese,
