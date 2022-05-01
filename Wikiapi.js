@@ -593,7 +593,7 @@ function Wikiapi_move_to(move_to_title, options) {
 		const wiki = this[KEY_wiki_session];
 		if (!wiki.last_page) {
 			reject(new Error('Wikiapi_move_to: Must call .page() first!'
-				+ ' Can not move to ' + wiki_API.title_link_of(move_to_title)));
+				+ ' Cannot move to ' + wiki_API.title_link_of(move_to_title)));
 			return;
 		}
 
@@ -1856,7 +1856,7 @@ for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespa
 // @see get_list.type @
 // https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/list.js
 for (const type of wiki_API.list.type_list) {
-	// Can not use `= (title, options) {}` !
+	// Cannot use `= (title, options) {}` !
 	// arrow function expression DO NOT has this, arguments, super, or
 	// new.target keywords.
 	Wikiapi.prototype[type] = function (title, options) {
