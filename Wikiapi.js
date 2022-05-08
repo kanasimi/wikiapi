@@ -322,6 +322,7 @@ function Wikiapi_page(title, options) {
 				resolve(set_page_data_attributes(page_data, wiki));
 			}
 		}, {
+			// node.js v12.22.7: Cannot use "?."
 			rvlimit: options && options.revisions,
 			...options
 		});
