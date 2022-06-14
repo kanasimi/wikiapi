@@ -593,8 +593,9 @@ function Wikiapi_move_to(move_to_title, options) {
 	function Wikiapi_move_to_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
 		if (!wiki.last_page) {
-			reject(new Error('Wikiapi_move_to: Must call .page() first!'
-				+ ' Cannot move to ' + wiki_API.title_link_of(move_to_title)));
+			reject(new Error(Wikiapi_move_to.name + ': Must call .page() first! '
+				// gettext_config:{"id":"cannot-move-to-$1"}
+				+ CeL.gettext('Cannot move to %1', wiki_API.title_link_of(move_to_title))));
 			return;
 		}
 
@@ -1136,7 +1137,7 @@ function Wikiapi_search(key, options) {
  *
  * @returns {Promise} Promise object represents {String} page title or {Object} page data
  *
- * @example <caption></caption>
+ * @example <caption>Get redirects target of [[WP:SB]]</caption>
 // <code>
 const redirects_taregt = await enwiki.redirects_root('WP:SB', { get_page_data: true });
 // </code>
@@ -1173,7 +1174,7 @@ function Wikiapi_redirects_root(title, options) {
  *
  * @returns {Promise} Promise object represents {Array} redirect_list
  *
- * @example <caption></caption>
+ * @example <caption>Get all pages redirects to [[Wikipedia:Sandbox]]</caption>
 // <code>
 const redirects_list = await enwiki.redirects_here('Wikipedia:Sandbox');
 // </code>
@@ -1690,7 +1691,7 @@ function Wikiapi_get_featured_content(options) {
 
 	function Wikiapi_get_featured_content_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
-		wiki.get_featured_content(options, (FC_data_hash) => {
+		wiki.get_featured_content(options, FC_data_hash => {
 			try {
 				this.FC_data_hash = FC_data_hash;
 				resolve(FC_data_hash);
