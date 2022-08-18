@@ -18,9 +18,10 @@ jobs:
     strategy:
       matrix:
         # https://nodejs.org/en/about/releases/
-        # EoL of node.js v12: 2022-04-30
+        # EoL of node.js v14: 30 Apr 2023
+        # node.js v12.22.7: Cannot use "?."
         # Also need to modify "engines" @ package.json
-        node-version: [ 12.x, 14.x, 16.x ]
+        node-version: [ 14.x, 16.x, 18.x ]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:

@@ -930,6 +930,22 @@ SELECT ?item ?itemLabel WHERE {
 `);
 // </code>
  *
+ * @example <caption>Get specific DOI</caption>
+// <code>
+// for case-insensitive DOI
+const wikidata_item_list = await wiki.search('haswbstatement:' + JSON.stringify('P356=10.1371/journal.pone.0029797'), { namespace: 0 });
+//wikidata_item_list.map(item => item.title)
+
+// for case-sensitive DOI
+const wikidata_item_list = await wiki.SPARQL(`
+SELECT ?doi ?item ?itemLabel WHERE {
+	VALUES ?doi { "10.1371/JOURNAL.PONE.0029797" }
+	?item wdt:P356 ?doi.
+	SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+}`);
+//wikidata_item_list.id_list()
+// </code>
+ *
  * @memberof Wikiapi.prototype
  */
 function Wikiapi_SPARQL(SPARQL, options) {
