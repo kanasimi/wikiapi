@@ -942,7 +942,10 @@ SELECT ?doi ?item ?itemLabel WHERE {
 	VALUES ?doi { "10.1371/JOURNAL.PONE.0029797" }
 	?item wdt:P356 ?doi.
 	SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-}`);
+}`, {
+	// options.API_URL: custom SPARQL endpoint
+	API_URL: ''
+});
 //wikidata_item_list.id_list()
 // </code>
  *
