@@ -126,6 +126,9 @@ function setup_wiki_session(wiki_session) {
 const wiki = new Wikiapi;
 const login_options = {
 	user_name: '', password: '', API_URL: 'en',
+	// Ror lingualibre only. @see https://github.com/kanasimi/wikibot/blob/master/wiki%20configuration.sample.js
+	//data_API_URL: 'https://lingualibre.org/api.php',
+	//SPARQL_API_URL: 'https://lingualibre.org/bigdata/namespace/wdq/sparql',
 	// Calling in another domain
 	origin: '*'
 };
@@ -959,7 +962,7 @@ function Wikiapi_SPARQL(SPARQL, options) {
 			} else {
 				resolve(result);
 			}
-		}, options);
+		}, this.append_session_to_options(options));
 	}
 
 	return new Promise(Wikiapi_SPARQL_executor.bind(this));
