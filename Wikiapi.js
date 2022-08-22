@@ -816,10 +816,19 @@ let entity = await wiki.data('Q7');
 // search [ language, label ]
 //entity = await wiki.data(['en', 'Earth']);
 
+// Reset claim
+entity = await wiki.data('Q1841');
+await entity.modify({ claims: [{ P3: "old.wav", remove: true }] }, { bot: 1, summary: 'test edit: Remove specific value' });
+// Warning: If you want to perform multiple operations on the same property, you need to get the entity again!
+entity = await wiki.data('Q1841');
+await entity.modify({ claims: [{ P3: "new.wav" }] }, { bot: 1, summary: 'test edit: Add value' });
+
 // Update claim
 await entity.modify({ claims: [{ P17: 'Q213280' }] }, { bot: 1, summary: '' });
+
 // Update claim: set country (P17) to 'Test Country 1' (Q213280) ([language, label] as entity)
 await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'] }] }, { summary: '' });
+
 // Remove country (P17) : 'Test Country 1' (Q213280)
 await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'], remove: true }] }, { summary: '' });
 
