@@ -824,7 +824,7 @@ entity = await wiki.data('Q1841');
 await entity.modify({ claims: [{ P3: "new.wav" }] }, { bot: 1, summary: 'test edit: Add value' });
 
 // Update claim
-await entity.modify({ claims: [{ P17: 'Q213280' }] }, { bot: 1, summary: '' });
+await entity.modify({ claims: [{ P17: 'Q213280' }] }, { bot: 1, summary: 'test edit: Update claim' });
 
 // Update claim: set country (P17) to 'Test Country 1' (Q213280) ([language, label] as entity)
 await entity.modify({ claims: [{ language: 'en', country: [, 'Test Country 1'] }] }, { summary: '' });
@@ -1767,6 +1767,43 @@ function Wikiapi_site_name(language, options) {
 Wikiapi.site_name = Wikiapi_site_name;
 
 // --------------------------------------------------------
+// administration functions 管理功能。
+
+/**
+ * @alias delete
+ * @description delete page
+ *
+ * @param {String} title		- page title
+ * @param {Object} [options]	- options to run this function
+ *
+ * @returns {Promise} Promise object represents response of delete.
+ *
+ * @example <caption>delete page [[Page to delete]]</caption>
+// <code>
+const testwiki = new Wikiapi('test');
+await testwiki.delete('Page to delete');
+// { title: 'Aaaaaaa', reason: 'test', logid: 346223 }
+// </code>
+ *
+ * @memberof Wikiapi.prototype
+ */
+function Wikiapi_delete(title, options) {
+	function Wikiapi_delete_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		// using wiki_API.delete
+		wiki.page(title).delete(options, (response, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				resolve(response);
+			}
+		}, options);
+	}
+
+	return new Promise(Wikiapi_delete_executor.bind(this));
+}
+
+// --------------------------------------------------------
 // exports
 
 Object.assign(Wikiapi.prototype, {
@@ -1853,6 +1890,8 @@ wiki.listen(function for_each_row() {
 	for_each_page: Wikiapi_for_each_page,
 
 	for_each: Wikiapi_for_each,
+
+	delete: Wikiapi_delete,
 
 	data: Wikiapi_data,
 	new_data_entity: Wikiapi_new_data_entity,
