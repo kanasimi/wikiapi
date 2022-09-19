@@ -1781,7 +1781,7 @@ Wikiapi.site_name = Wikiapi_site_name;
  * @example <caption>delete page [[Page to delete]]</caption>
 // <code>
 const testwiki = new Wikiapi('test');
-await testwiki.delete('Page to delete');
+await testwiki.delete('Page to delete', { reason: 'test' });
 // { title: 'Aaaaaaa', reason: 'test', logid: 346223 }
 // </code>
  *
