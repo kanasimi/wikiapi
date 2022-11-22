@@ -448,7 +448,7 @@ await enwiki.edit('section content', {
 });
 // </code>
  *
- * @example <caption>edit page: method 2: modufy summary inside function</caption>
+ * @example <caption>edit page: method 2: modify summary inside function</caption>
 // <code>
 const enwiki = new Wikiapi;
 await enwiki.login('bot name', 'password', 'en');
@@ -473,13 +473,23 @@ function Wikiapi_edit_page(title, content, options) {
 		if (title) {
 			// console.trace(wiki);
 			options = { ...options, error_with_symbol: true };
+			if (false && options.page_to_edit && wiki_API.title_of(options.page_to_edit) !== wiki_API.title_of(title)) {
+				console.trace('delete options.page_to_edit!');
+				delete options.page_to_edit;
+			}
 			// 預防 page 本身是非法的頁面標題。當 session.page() 出錯時，將導致沒有 .last_page。
-			if (wiki_API.is_page_data(title))
+			if (wiki_API.is_page_data(title)) {
 				options.task_page_data = title;
+			} else {
+				//options.page_title_to_edit = title;
+				// 設定個無功能的註記。
+				//options[Symbol('page title to edit')] = title;
+			}
 			// call wiki_API_prototype_method() @ CeL.application.net.wiki.list
 			wiki.page(title, (page_data, error) => {
-				// console.trace('Set .page_to_edit:');
-				// console.log([title, page_data, error]);
+				// console.trace(`Set .page_to_edit: ${wiki_API.title_link_of(page_data)} (${title}) (${wiki_API.title_link_of(options.page_to_edit)})`);
+				// console.trace(options);
+				// console.log([page_data, error]);
 				// console.log(wiki.actions[0]);
 
 				// 手動指定要編輯的頁面。避免多執行續打亂 wiki.last_page。
@@ -492,11 +502,10 @@ function Wikiapi_edit_page(title, content, options) {
 
 		// wiki.edit(page contents, options, callback)
 		wiki.edit(typeof content === 'function' ? function (page_data) {
+			// console.trace(`Get page_data of ${wiki_API.title_link_of(page_data)} (${title})`);
 			return content.call(this, set_page_data_attributes(page_data, wiki));
 		} : content, options, (title, error, result) => {
-			// console.trace('Wikiapi_edit_page: callbacked');
-			// console.log(title);
-			// console.log(wiki.running);
+			// console.trace(`Wikiapi_edit_page: callbacked: ${wiki_API.title_link_of(title)} (${wiki.running})`);
 			// CeL.set_debug(6);
 
 			if (!reject_edit_error(reject, error, result)) {
@@ -1536,6 +1545,8 @@ await wiki.for_each_page(link_from, page_data => {
 	no_warning: true,
 	// no warning messages and debug messages on console
 	no_message: true,
+	// For `{{bots|optout=n1,n2}}`
+	notification_name: 'n1|n2',
 });
 // </code>
  *
@@ -1584,6 +1595,7 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 				resolve(this);
 			}
 		};
+		//console.trace(work_config);
 
 		wiki.work(work_config, page_list);
 	}
@@ -1782,7 +1794,7 @@ Wikiapi.site_name = Wikiapi_site_name;
 // <code>
 const testwiki = new Wikiapi('test');
 await testwiki.delete('Page to delete', { reason: 'test' });
-// { title: 'Aaaaaaa', reason: 'test', logid: 346223 }
+// { title: 'Page to delete', reason: 'test', logid: 00000 }
 // </code>
  *
  * @memberof Wikiapi.prototype

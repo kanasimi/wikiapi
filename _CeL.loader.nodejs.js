@@ -12,9 +12,11 @@
 typeof CeL !== 'function' && (function() {
 	"use strict";
 
-	var full_root = module.filename
-	//
-	&& module.filename.replace(/[^\\\/]+$/, ''),
+	var full_root = module.filename /* require('electron').app.getPath('userData') */
+			// TODO:
+			// https://www.electronjs.org/docs/latest/api/app#appgetpathname
+			// https://stackoverflow.com/questions/71365401/how-to-read-config-file-in-electronjs-app
+			&& module.filename.replace(/[^\\\/]+$/, ''),
 	// WARNING: repository_path_list_file should be an absolute path in some
 	// environment.
 	repository_path_list_file
@@ -73,7 +75,9 @@ typeof CeL !== 'function' && (function() {
 			if (!/[^\\\/]$/.test(path)) {
 				path += require('path').sep;
 			}
-			if (typeof global.CeL !== 'object') {
+			if (typeof global.CeL !== 'function'
+			//
+			&& (typeof global.CeL !== 'object' || !CeL)) {
 				global.CeL = {};
 			}
 			CeL.library_path = path + 'ce.js';
