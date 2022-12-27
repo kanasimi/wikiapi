@@ -481,8 +481,8 @@ function Wikiapi_edit_page(title, content, options) {
 			if (wiki_API.is_page_data(title)) {
 				options.task_page_data = title;
 			} else {
-				//options.page_title_to_edit = title;
-				// 設定個無功能的註記。
+				options.page_title_to_edit = title;
+				// 設定個僅 debug 用、無功能的註記。
 				//options[Symbol('page title to edit')] = title;
 			}
 			// call wiki_API_prototype_method() @ CeL.application.net.wiki.list
@@ -491,9 +491,11 @@ function Wikiapi_edit_page(title, content, options) {
 				// console.trace(options);
 				// console.log([page_data, error]);
 				// console.log(wiki.actions[0]);
+				// if (!page_data) console.trace(page_data);
 
 				// 手動指定要編輯的頁面。避免多執行續打亂 wiki.last_page。
-				options.page_to_edit = page_data;
+				// Will set at wiki_API.prototype.next
+				//options.page_to_edit = page_data;
 			}, options);
 		}
 		// console.trace(`Wikiapi_edit_page 2: ${wiki_API.title_link_of(title)}, ${wiki.actions.length} actions, ${wiki.running}/${wiki.thread_count}/${wiki.actions[wiki_API.KEY_waiting_callback_result_relying_on_this]}.`);
@@ -1569,6 +1571,8 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 
 			//is_async_each: CeL.is_async_function(for_each_page),
 			each: [function each(page_data/* , messages, config */) {
+				// assert: arguments[2] === work_config && work_config === config
+				// assert: config.initial_target_length > 0
 				set_page_data_attributes(page_data, wiki);
 
 				return for_each_page.apply(this, arguments);

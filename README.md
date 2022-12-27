@@ -261,6 +261,12 @@ const Wikiapi = require('wikiapi');
 
 More examples: Please see [test.js](https://github.com/kanasimi/wikiapi/blob/master/_test%20suite/test.js).
 
+### User agent
+By default, the library will use the user agent `get_URL_node.default_user_agent` set in [Ajax.js](https://github.com/kanasimi/CeJS/blob/master/application/net/Ajax.js). If you want to [set another user agent](https://meta.wikimedia.org/wiki/User-Agent_policy), you can change `CeL.wiki.query.get_URL_options.get_URL_options` listed in [query.js](https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/query.js):
+```javascript
+CeL.wiki.query.get_URL_options.headers['User-Agent'] = 'testbot/1.0';
+```
+
 ## OS support
 | Platform    | support |
 | ----------- | ------- |
