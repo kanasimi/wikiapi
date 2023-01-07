@@ -472,7 +472,7 @@ function Wikiapi_edit_page(title, content, options) {
 		// CeL.set_debug(6);
 		if (title) {
 			// console.trace(wiki);
-			options = { ...options, error_with_symbol: true };
+			options = { ...options, page_to_edit: wiki_API.VALUE_set_page_to_edit, error_with_symbol: true };
 			if (false && options.page_to_edit && wiki_API.title_of(options.page_to_edit) !== wiki_API.title_of(title)) {
 				console.trace('delete options.page_to_edit!');
 				delete options.page_to_edit;
