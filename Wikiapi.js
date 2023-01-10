@@ -479,7 +479,7 @@ function Wikiapi_edit_page(title, content, options) {
 			}
 			// 預防 page 本身是非法的頁面標題。當 session.page() 出錯時，將導致沒有 .last_page。
 			if (wiki_API.is_page_data(title)) {
-				options.task_page_data = title;
+				options.page_to_edit = title;
 			} else {
 				options.page_title_to_edit = title;
 				// 設定個僅 debug 用、無功能的註記。
@@ -1840,7 +1840,7 @@ Object.assign(Wikiapi.prototype, {
 	edit_page: Wikiapi_edit_page,
 	/**
 	 * @description edits content of target page.<br />
-	 * <em>MUST using after {@link Wikiapi#page}!</em><br />
+	 * <em>MUST using directly after {@link Wikiapi#page} without any complicated operation! Or rather, the {@link Wikiapi#edit_page} should be used instead.</em><br />
 	 * Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.<br />
 	 * Note: The function will check sections of [[User talk:user name/Stop]] if somebody tells us needed to stop edit. See <a href="https://zh.wikipedia.org/wiki/User:Cewbot/Stop">mechanism to stop operations</a>.
 	 * 
