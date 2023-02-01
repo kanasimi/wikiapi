@@ -472,16 +472,17 @@ function Wikiapi_edit_page(title, content, options) {
 		// CeL.set_debug(6);
 		if (title) {
 			// console.trace(wiki);
-			options = { ...options, page_to_edit: wiki_API.VALUE_set_page_to_edit, error_with_symbol: true };
+			options = { ...options, error_with_symbol: true };
 			if (false && options.page_to_edit && wiki_API.title_of(options.page_to_edit) !== wiki_API.title_of(title)) {
 				console.trace('delete options.page_to_edit!');
 				delete options.page_to_edit;
 			}
 			// 預防 page 本身是非法的頁面標題。當 session.page() 出錯時，將導致沒有 .last_page。
-			if (wiki_API.is_page_data(title)) {
+			if (wiki_API.content_of.had_fetch_content(title)) {
 				options.page_to_edit = title;
 			} else {
 				options.page_title_to_edit = title;
+				options.page_to_edit = wiki_API.VALUE_set_page_to_edit;
 				// 設定個僅 debug 用、無功能的註記。
 				//options[Symbol('page title to edit')] = title;
 			}
@@ -1622,9 +1623,9 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
  * @example <caption>繁簡轉換</caption>
 // <code>
 const wiki = new Wikiapi('en');
-await wiki.convert_Chinese('中国', { uselang: 'zh-hant' });
-await wiki.convert_Chinese('中國', { uselang: 'zh-hans' });
-await wiki.convert_Chinese(['繁體', '簡體'], { uselang: 'zh-hans' });
+const converted_text = await wiki.convert_Chinese('中国', { uselang: 'zh-hant' });
+const converted_text = await wiki.convert_Chinese('中國', { uselang: 'zh-hans' });
+const converted_list = await wiki.convert_Chinese(['繁體', '簡體'], { uselang: 'zh-hans' });
 // </code>
  * 
  * @memberof Wikiapi.prototype
