@@ -383,6 +383,9 @@ function Wikiapi_tracking_revisions(title, to_search, options) {
 function reject_edit_error(reject, error, result) {
 	// skip_edit is not error
 	if (!error
+		// e.g., set options.skip_nochange
+		// @see function do_batch_work_summary @ CeL.application.net.wiki.task
+		|| error === 'nochange' || error === 'skip'
 		// @see wiki_API_edit.check_data
 		|| Array.isArray(error) && error[0] === Wikiapi.skip_edit[0]) {
 		return;
