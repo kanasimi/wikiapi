@@ -1024,6 +1024,7 @@ console.log(list);
 function Wikiapi_list(list_type, title, options) {
 	function Wikiapi_list_executor(resolve, reject) {
 		options = CeL.setup_options(options);
+		// console.trace(options.for_each_page);
 		// const wiki = this[KEY_wiki_session];
 		wiki_API.list(title, (list/* , target, options */) => {
 			// console.trace(list);
@@ -1076,10 +1077,30 @@ function Wikiapi_list(list_type, title, options) {
 	return new Promise(Wikiapi_list_executor.bind(this));
 }
 
-// functions for several kinds of lists
-function Wikiapi_for_each(type, title, for_each, options) {
+/**
+ * Syntactic sugar for several kinds of lists
+ * 
+ * @param {String} type				- list type
+ * @param {String} [title]			- page title if necessary.
+ * @param {Function} for_each_page	- Executing for each page.
+ * @param {Object} [options]		- options to run this function.
+ * @returns {Promise}
+ *
+ * @example <caption>List all redirected categories</caption>
+// <code>
+await wiki.for_each_page_in_list('allredirects', page_data => console.log('page_data: ', page_data), { namespace: 'Category' });
+// </code>
+ */
+function Wikiapi_for_each_page_in_list(type, title, for_each_page, options) {
+	if (options === undefined && typeof title === 'function') {
+		// shift arguments
+		options = for_each_page;
+		for_each_page = title;
+		title = undefined;
+	}
+
 	return Wikiapi_list.call(this, type, title, {
-		for_each,
+		for_each_page: for_each_page,
 		...options
 	});
 }
@@ -1260,6 +1281,15 @@ function Wikiapi_redirects_here(title, options) {
  * @param {Object} [options]				- options to run this function.
  *
  * @returns {Promise} Promise object represents the operations are done.
+ *
+ * @example <caption>Do something for categories embedded in template `template_name`.</caption>
+// <code>
+const wiki_session = new Wikiapi;
+const redirect_target_page_data = await wiki_session.register_redirects(template_name, { namespace: 'Template' });
+// Do NOT use `await wiki_session.embeddedin(template_name)`: `template_name` may redirect to redirect_target_page_data.title. We need all categories embedded in redirect_target_page_data.title, not just `template_name`.
+const category_list = await wiki_session.embeddedin(redirect_target_page_data.title, { namespace: 'Category' });
+await wiki_session.for_each_page(category_list, for_category);
+// </code>
  *
  * @example <caption>Register template redirects and get tokens of the templates.</caption>
 // <code>
@@ -1909,7 +1939,7 @@ wiki.listen(function for_each_row() {
 
 	for_each_page: Wikiapi_for_each_page,
 
-	for_each: Wikiapi_for_each,
+	for_each_page_in_list: Wikiapi_for_each_page_in_list,
 
 	delete: Wikiapi_delete,
 
@@ -1952,6 +1982,11 @@ for (const type of wiki_API.list.type_list) {
 	// arrow function expression DO NOT has this, arguments, super, or
 	// new.target keywords.
 	Wikiapi.prototype[type] = function (title, options) {
+		if (options === undefined && CeL.is_Object(title)) {
+			// shift arguments
+			options = title;
+			title = undefined;
+		}
 		const _this = this;
 		/**
 		 * @example <code>
@@ -1961,12 +1996,21 @@ for (const type of wiki_API.list.type_list) {
 
 		 * </code>
 		 */
-		return Wikiapi_list.call(this, type, title, options)
+		const promise = Wikiapi_list.call(this, type, title, options)
 			.then((page_list) => {
 				// console.log(page_list);
 				page_list.each = Wikiapi_for_each_page.bind(_this, page_list);
 				return page_list;
 			});
+
+		promise[Symbol.iterator] = () => {
+			// e.g., `for (const page_data of wiki.allredirects()) { console.log(page_data); }`
+
+			// TODO: 將獲得整個list最後才回傳，改成獲得一筆資料回傳一次。不保留已回傳過的資料，以節省記憶體使用。
+			throw new Error('NYI');
+		}
+
+		return promise;
 	};
 }
 

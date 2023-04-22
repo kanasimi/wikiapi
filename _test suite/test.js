@@ -442,12 +442,12 @@ add_test('get pages transclude specified template', async (assert, setup_test, f
 
 // ------------------------------------------------------------------
 
-add_test('get list of categorymembers using for_each', async (assert, setup_test, finish_test) => {
+add_test('get list of categorymembers using for_each_page_in_list', async (assert, setup_test, finish_test) => {
 	setup_test('get list of [[w:en:Category:Wikimedia Cloud Services]] using for_each');
 
 	const wiki = new Wikiapi('en');
 	let has_category_count = 0;
-	const page_list_proto = await wiki.for_each('categorymembers', 'Wikimedia Cloud Services', async (category) => {
+	const page_list_proto = await wiki.for_each_page_in_list('categorymembers', 'Wikimedia Cloud Services', async (category) => {
 		const page_data = await wiki.page(category);
 		const parsed = page_data.parse();
 		const to_exit = parsed.each.exit;
