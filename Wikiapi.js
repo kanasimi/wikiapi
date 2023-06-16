@@ -1026,6 +1026,7 @@ function Wikiapi_list(list_type, title, options) {
 		options = CeL.setup_options(options);
 		// console.trace(options.for_each_page);
 		// const wiki = this[KEY_wiki_session];
+		//console.trace([ list_type, title ]);
 		wiki_API.list(title, (list/* , target, options */) => {
 			// console.trace(list);
 			if (list.error) {
@@ -1633,7 +1634,7 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 				resolve(this);
 			}
 		};
-		//console.trace(work_config);
+		//console.trace([ options, work_config, ]);
 
 		wiki.work(work_config, page_list);
 	}
@@ -1982,12 +1983,13 @@ for (const type of wiki_API.list.type_list) {
 	// arrow function expression DO NOT has this, arguments, super, or
 	// new.target keywords.
 	Wikiapi.prototype[type] = function (title, options) {
-		if (options === undefined && CeL.is_Object(title)) {
+		if (options === undefined && CeL.is_Object(title) && !wiki_API.is_page_data(title)) {
 			// shift arguments
 			options = title;
 			title = undefined;
 		}
 		const _this = this;
+		//console.trace(arguments);
 		/**
 		 * @example <code>
 		
