@@ -8,11 +8,10 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/bfb4fe9fe6e04346986f5cc83099369e)](https://www.codacy.com/gh/kanasimi/wikiapi/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=kanasimi/wikiapi&amp;utm_campaign=Badge_Grade)
 [![DeepScan grade](https://deepscan.io/api/teams/4788/projects/6757/branches/58325/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=4788&pid=6757&bid=58325)
 
+# JavaScript MediaWiki API
 <p align="center">
 	<img alt="Wikiapi logo" width="244" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/WikiapiJS_MW_gear_icon.svg/244px-WikiapiJS_MW_gear_icon.svg.png" />
 </p>
-
-# JavaScript MediaWiki API
 A simple way to access MediaWiki API via JavaScript with [wikitext parser](https://kanasimi.github.io/CeJS/_test%20suite/wikitext_parser.html).
 This is basically a modern syntax version of [CeJS MediaWiki module](https://github.com/kanasimi/CeJS/blob/master/application/net/wiki). For example, using [async functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function).
 
