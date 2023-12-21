@@ -1,7 +1,7 @@
 {
 	"name": "wikiapi",
 	"title": "JavaScript MediaWiki API for node.js",
-	"version": "1.19.4",
+	"version": "1.19.5",
 	"description": "A simple way to access MediaWiki API via JavaScript with simple wikitext parser.",
 	"keywords": [
 		"MediaWiki",
@@ -29,6 +29,8 @@
 		"type": "git",
 		"url": "git+https://github.com/kanasimi/wikiapi.git"
 	},
+
+	"type": "commonjs",
 	"main": "Wikiapi.js",
 	"scripts": {
 		"test": "nyc node \"_test suite/test.js\"",

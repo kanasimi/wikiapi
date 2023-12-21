@@ -121,12 +121,12 @@ function setup_wiki_session(wiki_session) {
  *
  * @returns {Promise} Promise object represents {String} login_name
  *
- * @example <caption><span id="example__Login to wiki site 1">Login to wiki site method 1.</span></caption>
+ * @example <caption><span id="example__Login to wiki site 1">Login to wiki site method 1 (recommend).</span></caption>
 // <code>
 const wiki = new Wikiapi;
 const login_options = {
 	user_name: '', password: '', API_URL: 'en',
-	// Ror lingualibre only. @see https://github.com/kanasimi/wikibot/blob/master/wiki%20configuration.sample.js
+	// e.g., lingualibre. @see https://github.com/kanasimi/wikibot/blob/master/wiki%20configuration.sample.js
 	//data_API_URL: 'https://lingualibre.org/api.php',
 	//SPARQL_API_URL: 'https://lingualibre.org/bigdata/namespace/wdq/sparql',
 	// Calling in another domain
@@ -401,7 +401,7 @@ function reject_edit_error(reject, error, result) {
 		// console.log(error);
 	}
 
-	if (result && typeof error === 'object')
+	if (result && error && typeof error === 'object')
 		error.result = result;
 	reject(error);
 	return true;
@@ -1564,6 +1564,8 @@ await wiki.for_each_page(link_from, page_data => {
 	summary: 'test edit',
 	// Allow content to be emptied. 允許內容被清空。白紙化。
 	allow_empty: true,
+	// If the content is not changed, using `skip_nochange` will skip the actual edit. Otherwise, a null edit will be made.
+	skip_nochange: true,
 	tags: 'bot trial',
 	// prevent creating new pages
 	// Throw an error if the page doesn't exist.
