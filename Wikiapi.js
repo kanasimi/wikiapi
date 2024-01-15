@@ -300,7 +300,7 @@ const wiki = new Wikiapi('en');
 const page_data = await wiki.page('JavaScript');
 const parsed = page_data.parse();
 let infobox;
-// Read Infobox templates, convert to JSON.
+// Read [[w:en:MOS:INFOBOX|Infobox templates]], convert to JSON.
 parsed.each('template', template_token => {
 	if (template_token.name.startsWith('Infobox')) {
 		infobox = template_token.parameters;
@@ -1017,6 +1017,7 @@ const wiki = new Wikiapi;
 let list = await wiki.embeddedin('Template:Periodic table');
 console.log(list);
 // </code>
+ *
  */
 
 // Warning: Won't throw if title is not existed!
@@ -1763,7 +1764,7 @@ function Wikiapi_get_featured_content(options) {
 	if (!options || !options.type) {
 		const session = this;
 		return Wikiapi_get_featured_content.default_types
-			.reduce((promise, type) => promise.then(Wikiapi_get_featured_content.bind(session, { ...options, type })), Promise.resolve());
+			.reduce((promise, type) => promise.then(Wikiapi_get_featured_content.bind(session, { ignore_missed: true, ...options, type, })), Promise.resolve());
 		if (false) {
 			let promise = Promise.resolve();
 			Wikiapi_get_featured_content.default_types.forEach(type => {
@@ -1967,8 +1968,35 @@ for (const property_name of ('task_configuration|latest_task_configuration').spl
 	});
 }
 
+
+/**
+ *
+ * @example <caption>Process each page of the category.</caption>
+// <code>
+const page_list = await wiki.categorymembers('Category:Articles not listed in the vital article list');
+
+wiki.categorymembers('Category:Articles not listed in the vital article list', { for_each_page(page_data) { console.log('page_data:', page_data); } })
+
+for await (const page_data of wiki.categorymembers('Category:Articles not listed in the vital article list')) {
+	console.trace('page_data:', page_data);
+}
+console.log('All done.');
+// </code>
+ *
+ * @example <caption>Process all pages.</caption>
+// <code>
+let count = 0;
+for await (const page_data of wiki.allpages({ namespace: 'Talk', apfrom: wiki.remove_namespace('ABC') })) {
+	if (++count > 5) break;
+	console.trace('page_data:', page_data);
+}
+console.log('Done.');
+// </code>
+ *
+ */
+
 // wrapper for sync functions
-for (const function_name of ('namespace|remove_namespace|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title|redirect_target_of|aliases_of_page|is_template'
+for (const function_name of ('namespace|remove_namespace|is_article|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title|redirect_target_of|aliases_of_page|is_template'
 	// CeL.run('application.net.wiki.featured_content');
 	// [].map(wiki.to_talk_page.bind(wiki))
 	+ '|get_featured_content_configurations').split('|')) {
@@ -1992,6 +2020,41 @@ for (const type of wiki_API.list.type_list) {
 		}
 		const _this = this;
 		//console.trace(arguments);
+
+		let done, page_queue = [], resolve_queue, waiting_promise, waiting_resolve;
+		function for_each_page(page_data) {
+			if (page_queue.abort)
+				return CeL.wiki.list.exit;
+
+			//console.trace(page_data, done, page_queue, resolve_queue);
+			if (original_for_each_page)
+				original_for_each_page.apply(this, arguments);
+
+			if (!resolve_queue)
+				return;
+
+			if (resolve_queue.length === 0) {
+				page_queue.push(page_data);
+				//console.log(page_queue.length, 'pages in queue');
+			} else {
+				if (page_queue.length > 0) {
+					page_queue.push(page_data);
+					// 由最早的開始給。
+					page_data = page_queue.shift();
+				}
+				resolve_queue.shift()({ value: page_data });
+			}
+
+			if (page_queue.length > 100) {
+				if (waiting_resolve)
+					waiting_resolve();
+				return new Promise(resolve => { waiting_resolve = resolve; });
+			}
+		}
+
+		const original_for_each_page = options?.for_each_page;
+		options = { ...options, for_each_page, get_list: options?.get_list || !original_for_each_page };
+
 		/**
 		 * @example <code>
 		
@@ -2002,16 +2065,55 @@ for (const type of wiki_API.list.type_list) {
 		 */
 		const promise = Wikiapi_list.call(this, type, title, options)
 			.then((page_list) => {
-				// console.log(page_list);
+				// console.trace(page_list);
+				//console.trace(page_list.length, 'pages');
+				//console.trace(page_queue, resolve_queue);
+				done = true;
 				page_list.each = Wikiapi_for_each_page.bind(_this, page_list);
 				return page_list;
 			});
 
-		promise[Symbol.iterator] = () => {
-			// e.g., `for (const page_data of wiki.allredirects()) { console.log(page_data); }`
+		// 依照標準實作，會先執行一次 next()。之後待 for_each_page() 將此 betch 全 push 進 page_queue 後，再依序 call next()。因此 resolve_queue.length <= 1。
+		// @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
+		promise[Symbol.asyncIterator] = () => {
+			resolve_queue = [];
 
-			// TODO: 將獲得整個list最後才回傳，改成獲得一筆資料回傳一次。不保留已回傳過的資料，以節省記憶體使用。
-			throw new Error('NYI');
+			return {
+				next() {
+					//console.trace(done, page_queue, resolve_queue);
+					if (done && page_queue.length === 0)
+						return { done };
+					return new Promise( /* executor */ function (resolve, reject) {
+						//console.trace(done, page_queue, resolve_queue);
+						if (page_queue.length === 0) {
+							resolve_queue.push(resolve);
+							if (waiting_resolve) {
+								waiting_resolve();
+								waiting_resolve = null;
+							}
+
+						} else {
+							if (resolve_queue.length > 0) {
+								// 依照標準實作不會到這裡來。
+								resolve_queue.push(resolve);
+								// 由最早的開始餵。
+								resolve = resolve_queue.shift();
+							}
+							resolve({ value: page_queue.shift() });
+						}
+					});
+				},
+				return() {
+					// e.g., break loop
+					page_queue.abort = done = true;
+					return { done };
+				},
+				throw(error) {
+					CeL.error('Wikiapi TODO: yet tested');
+					page_queue.abort = done = true;
+					return { done };
+				}
+			};
 		}
 
 		return promise;
