@@ -1564,7 +1564,7 @@ await wiki.for_each_page(link_from, page_data => {
 	// Only needed if you want to modify page.
 	summary: 'test edit',
 	// Allow content to be emptied. 允許內容被清空。白紙化。
-	allow_empty: true,
+	allow_blanking: true,
 	// If the content is not changed, using `skip_nochange` will skip the actual edit. Otherwise, a null edit will be made.
 	skip_nochange: true,
 	tags: 'bot trial',
@@ -1632,7 +1632,7 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
 						reject(error);
 						return;
 					}
-					console.error(error);
+					console.error(typeof error === 'object' ? error : new Error(error));
 				}
 				resolve(this);
 			}
