@@ -1129,7 +1129,7 @@ assert('Mexico' in page_list[Wikiapi.KEY_subcategories], 'list category tree: [[
  * @example <caption>Get all sub-categories of [[Category:Echinodermata]] with depth=2.</caption>
 // <code>
 const wiki = new Wikiapi('commons');
-const all_sub_categories = (await wiki.category_tree('Echinodermata', { depth: 2, cmtype: 'subcat', get_flated_subcategories: true })).flated_subcategories;
+const all_sub_categories = (await wiki.category_tree('Echinodermata', { depth: 2, cmtype: 'subcat', get_flat_subcategories: true })).flat_subcategories;
 // </code>
  *
  * @memberof Wikiapi.prototype
@@ -1728,11 +1728,36 @@ function Wikiapi_run_SQL(SQL, for_each_row/* , options */) {
 
 function Wikiapi_setup_layout_elements(options) {
 	function Wikiapi_setup_layout_elements_executor(resolve, reject) {
-		// const wiki = this[KEY_wiki_session];
-		wiki_API.setup_layout_elements(resolve, this.append_session_to_options(options));
+		const wiki = this[KEY_wiki_session];
+		wiki.setup_layout_elements(resolve, this.append_session_to_options(options));
 	}
 
 	return new Promise(Wikiapi_setup_layout_elements_executor.bind(this));
+}
+
+/**<code>
+
+layout_element = CeL.wiki.parse('{{Authority control}}');
+await wiki_session.setup_layout_element_to_insert(layout_element);
+
+page_data = await wiki.page(page_data);
+parsed = page_data.parse();
+parsed.insert_layout_element(layout_element);
+parsed.toString();
+
+</code>*/
+function Wikiapi_setup_layout_element_to_insert(layout_element, options) {
+	function Wikiapi_setup_layout_element_to_insert_executor(resolve, reject) {
+		const wiki = this[KEY_wiki_session];
+		wiki.setup_layout_element_to_insert(layout_element, (location, error) => {
+			if (error)
+				reject(error);
+			else
+				resolve(location);
+		}, options);
+	}
+
+	return new Promise(Wikiapi_setup_layout_element_to_insert_executor.bind(this));
 }
 
 // --------------------------------------------------------
@@ -1956,6 +1981,7 @@ wiki.listen(function for_each_row() {
 	run_SQL: Wikiapi_run_SQL,
 
 	setup_layout_elements: Wikiapi_setup_layout_elements,
+	setup_layout_element_to_insert: Wikiapi_setup_layout_element_to_insert,
 });
 
 // wrapper for properties
@@ -1987,8 +2013,18 @@ console.log('All done.');
 // <code>
 let count = 0;
 for await (const page_data of wiki.allpages({ namespace: 'Talk', apfrom: wiki.remove_namespace('ABC') })) {
-	if (++count > 5) break;
 	console.trace('page_data:', page_data);
+	if (++count > 5) break;
+}
+console.log('Done.');
+// </code>
+ *
+ * @example <caption>Process all pages.</caption>
+// <code>
+let count = 0;
+for await (const page_list of wiki.allpages({ namespace: 'Talk', apfrom: wiki.remove_namespace('ABC'), batch_size: 5 })) {
+	console.trace('page_list:', page_list);
+	if (++count > 2) break;
 }
 console.log('Done.');
 // </code>
@@ -2022,6 +2058,27 @@ for (const type of wiki_API.list.type_list) {
 		//console.trace(arguments);
 
 		let done, page_queue = [], resolve_queue, waiting_promise, waiting_resolve;
+		// 餵頁面資料給 resolve()
+		function feed_page_data() {
+			if (resolve_queue.length === 0)
+				return;
+
+			if (!done && !(page_queue.length >= (options.batch_size > 0 ? options.batch_size : 1))) {
+				return;
+			}
+
+			let value;
+			// 由最早的開始給。
+			if (options.batch_size > 0) {
+				value = page_queue.splice(0, options.batch_size);
+			} else {
+				value = page_queue.shift();
+			}
+
+			// .shift(): 由最早的開始餵。
+			resolve_queue.shift()({ value });
+		}
+
 		function for_each_page(page_data) {
 			if (page_queue.abort)
 				return CeL.wiki.list.exit;
@@ -2033,21 +2090,15 @@ for (const type of wiki_API.list.type_list) {
 			if (!resolve_queue)
 				return;
 
-			if (resolve_queue.length === 0) {
-				page_queue.push(page_data);
-				//console.log(page_queue.length, 'pages in queue');
-			} else {
-				if (page_queue.length > 0) {
-					page_queue.push(page_data);
-					// 由最早的開始給。
-					page_data = page_queue.shift();
-				}
-				resolve_queue.shift()({ value: page_data });
-			}
+			page_queue.push(page_data);
+			//console.log(page_queue.length, 'pages in queue');
+			feed_page_data();
 
 			if (page_queue.length > 100) {
+				// 清掉前面累積的。
 				if (waiting_resolve)
 					waiting_resolve();
+				// 已經累積太多頁面資料，該緩緩了。
 				return new Promise(resolve => { waiting_resolve = resolve; });
 			}
 		}
@@ -2085,21 +2136,14 @@ for (const type of wiki_API.list.type_list) {
 						return { done };
 					return new Promise( /* executor */ function (resolve, reject) {
 						//console.trace(done, page_queue, resolve_queue);
-						if (page_queue.length === 0) {
-							resolve_queue.push(resolve);
-							if (waiting_resolve) {
-								waiting_resolve();
-								waiting_resolve = null;
-							}
+						// 依照標準實作， resolve_queue.length === 0。
+						resolve_queue.push(resolve);
+						feed_page_data();
 
-						} else {
-							if (resolve_queue.length > 0) {
-								// 依照標準實作不會到這裡來。
-								resolve_queue.push(resolve);
-								// 由最早的開始餵。
-								resolve = resolve_queue.shift();
-							}
-							resolve({ value: page_queue.shift() });
+						if (waiting_resolve) {
+							// 可以繼續接收頁面資料了。
+							waiting_resolve();
+							waiting_resolve = null;
 						}
 					});
 				},
@@ -2109,12 +2153,12 @@ for (const type of wiki_API.list.type_list) {
 					return { done };
 				},
 				throw(error) {
-					CeL.error('Wikiapi TODO: yet tested');
+					CeL.error('Wikiapi list TODO: Not yet tested');
 					page_queue.abort = done = true;
 					return { done };
 				}
 			};
-		}
+		};
 
 		return promise;
 	};
