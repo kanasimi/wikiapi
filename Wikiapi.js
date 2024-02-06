@@ -10,6 +10,8 @@
  * @description CeJS controller
  * 
  * @type Function
+ * 
+ * @ignore
  * @inner
  * 
  * @see https://github.com/kanasimi/CeJS
@@ -53,6 +55,7 @@ CeL.run(['interact.DOM', 'application.debug',
 /**
  * @description syntactic sugar for CeJS MediaWiki module. CeL.net.wiki === CeL.wiki
  * 
+ * @ignore
  * @inner
  */
 const wiki_API = CeL.net.wiki;
@@ -61,6 +64,7 @@ const wiki_API = CeL.net.wiki;
  * 
  * @type Symbol
  * 
+ * @ignore
  * @inner
  */
 const KEY_SESSION = wiki_API.KEY_SESSION;
@@ -74,6 +78,7 @@ wiki_API.set_language('en');
  * 
  * @type Symbol
  * 
+ * @ignore
  * @inner
  */
 const KEY_wiki_session = Symbol('wiki_API session');
@@ -101,6 +106,7 @@ function Wikiapi(API_URL) {
  * 
  * @param {wiki_API} wiki_session	- wiki_API session
  * 
+ * @ignore
  * @inner
  */
 function setup_wiki_session(wiki_session) {
@@ -181,6 +187,7 @@ function Wikiapi_login(user_name, password, API_URL) {
  * 
  * @type Object
  * 
+ * @ignore
  * @inner
  */
 const page_data_attributes = {
@@ -234,6 +241,7 @@ const page_data_attributes = {
  * 
  * @returns {Promise} Promise object represents {Object} page's data
  * 
+ * @ignore
  * @inner
  */
 function set_page_data_attributes(page_data, wiki) {
@@ -247,7 +255,7 @@ function set_page_data_attributes(page_data, wiki) {
 
 /**
  * @alias page
- * @description given a title, returns the page's data.
+ * @description Given a title, returns the page's data.
  * 
  * @param {String} title		- page title
  * @param {Object} [options]	- options to run this function
@@ -378,6 +386,7 @@ function Wikiapi_tracking_revisions(title, to_search, options) {
  *
  * @returns {Boolean} Return <code>true</code> if the edit operation failed.
  * 
+ * @ignore
  * @inner
  */
 function reject_edit_error(reject, error, result) {
@@ -411,7 +420,7 @@ function reject_edit_error(reject, error, result) {
  * @alias edit_page
  * @description edits content of target page.<br />
  * Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.<br />
- * Note: The function will check sections of [[User talk:user name/Stop]] if somebody tells us needed to stop edit. See <a href="https://zh.wikipedia.org/wiki/User:Cewbot/Stop">mechanism to stop operations</a>.
+ * Note: The function will check sections of [[User talk:user name/Stop]] if somebody tells us needed to stop edit. See <a href="https://en.wikipedia.org/wiki/User:Cewbot/Stop">mechanism to stop operations</a>.
  * 
  * @param {String} title			- page title
  * @param {String|Function} content	- 'wikitext page content' || page_data => 'wikitext'
@@ -738,6 +747,7 @@ function Wikiapi_purge(title, options) {
  * 
  * @param {Object} data_entity	- wiki_API data entity
  * 
+ * @ignore
  * @inner
  */
 function setup_data_entity(data_entity) {
@@ -761,6 +771,7 @@ function setup_data_entity(data_entity) {
  * 
  * @returns {Promise} Promise object represents {Object} result data entity
  * 
+ * @ignore
  * @inner
  */
 function modify_data_entity(data_to_modify, options) {
@@ -1120,7 +1131,8 @@ function Wikiapi_list(list_type, title, options) {
 
 
 /**
- * Syntactic sugar for several kinds of lists
+ * @alias for_each_page_in_list
+ * @description Syntactic sugar for several kinds of lists.
  * 
  * @param {String} type				- list type
  * @param {String} [title]			- page title if necessary.
@@ -1128,7 +1140,7 @@ function Wikiapi_list(list_type, title, options) {
  * @param {Object} [options]		- options to run this function.
  * @returns {Promise}
  *
- * @deprecated Please use <a href="#Wikiapi_list">Wikiapi_list()</a>
+ * @deprecated Please use {@link Wikiapi_list}.
  * 
  * @example <caption>List all redirected categories</caption>
 // <code>
@@ -1737,7 +1749,8 @@ function Wikiapi_download(file_title, options) {
 
 /**
  * @alias for_each_page
- * @description Edit / process pages listing in <code>page_list</code>. Will get the content of multiple pages at once to save transmission times. 一次取得多個頁面內容，以節省傳輸次數。
+ * @description Edit / process pages listing in <code>page_list</code>. Will get the content of multiple pages at once to save transmission times. 一次取得多個頁面內容，以節省傳輸次數。<br />
+ * <b>You might be interested in {@link Wikiapi_list}</b>.
  * 
  * @param {Array} page_list			- title list or page_data list
  * @param {Function} for_each_page	- processor for each page. for_each_page(page_data with contents)
@@ -1925,13 +1938,16 @@ function Wikiapi_run_SQL(SQL, for_each_row/* , options */) {
 // --------------------------------------------------------
 
 /**
+ * @alias setup_layout_element_to_insert
+ * @description Setup layout element to insert before  insert layout element.
+ * 
  * @example <caption>insert layout element</caption>
 // <code>
-layout_element = CeL.wiki.parse('{{Authority control}}');
+const layout_element = CeL.wiki.parse('{{Authority control}}');
 await wiki_session.setup_layout_element_to_insert(layout_element);
 
-page_data = await wiki.page(page_data);
-parsed = page_data.parse();
+const page_data = await wiki.page(page_data);
+const parsed = page_data.parse();
 parsed.insert_layout_element(layout_element);
 parsed.toString();
 // </code>
@@ -2012,14 +2028,14 @@ Wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
 
 /**
  * @alias site_name
- * @description Get site name / project name of this {Wikiapi}.
+ * @description Get site name / project name of this {@link Wikiapi} instance.
  * 
  * @param {String} [language]	- language code of wiki session
  * @param {Object} [options]	- options to run this function
  *
  * @returns {String}site name
  * 
- * @example <caption>Get site name of {Wikiapi}.</caption>
+ * @example <caption>Get site name of {@link Wikiapi} instance.</caption>
 // <code>
 console.log(Wikiapi.site_name('zh', { get_all_properties: true }));
 
@@ -2097,7 +2113,7 @@ Object.assign(Wikiapi.prototype, {
 	 * @description edits content of target page.<br />
 	 * <em>MUST using directly after {@link Wikiapi#page} without any complicated operation! Or rather, the {@link Wikiapi#edit_page} should be used instead.</em><br />
 	 * Note: for multiple pages, you should use {@link Wikiapi#for_each_page}.<br />
-	 * Note: The function will check sections of [[User talk:user name/Stop]] if somebody tells us needed to stop edit. See <a href="https://zh.wikipedia.org/wiki/User:Cewbot/Stop">mechanism to stop operations</a>.
+	 * Note: The function will check sections of [[User talk:user name/Stop]] if somebody tells us needed to stop edit. See <a href="https://en.wikipedia.org/wiki/User:Cewbot/Stop">mechanism to stop operations</a>.
 	 * 
 	 * @param {String|Function} content	- 'wikitext page content' || page_data => 'wikitext'
 	 * @param {Object} [options]		- options to run this function. e.g., { summary: '', bot: 1, nocreate: 1, minor: 1 }
