@@ -1000,12 +1000,12 @@ function Wikiapi_SPARQL(SPARQL, options) {
  * @example <caption>get list of [[w:en:Category:Chemical_elements]]</caption>
 // <code>
 const wiki = new Wikiapi;
-let list = await wiki.categorymembers('Chemical elements');
-console.log(list);
+let page_list = await wiki.categorymembers('Chemical elements');
+console.log(page_list);
 // Working on multiple pages
 await wiki.for_each_page(
 	// {Array} title liat / page data list
-	list,
+	page_list,
 	page_data => {
 		// ...
 	});
@@ -1014,8 +1014,47 @@ await wiki.for_each_page(
  * @example <caption>get pages transcluding {{w:en:Periodic table}}</caption>
 // <code>
 const wiki = new Wikiapi;
-let list = await wiki.embeddedin('Template:Periodic table');
-console.log(list);
+let page_list = await wiki.embeddedin('Template:Periodic table');
+console.log(page_list);
+// </code>
+ *
+ * @example <caption>Process each page of the category.</caption>
+// <code>
+// Get the list of all pages at once first.
+const page_list = await wiki.categorymembers('Category:Articles not listed in the vital article list');
+await page_list.each((page_data) => { }, options);
+
+// Imperative code, for huge pages.
+for await (const page_data of wiki.categorymembers('Category:Articles not listed in the vital article list')) {
+	console.trace('page_data:', page_data);
+}
+
+// Declarative code(?), for huge pages.
+await wiki.categorymembers('Category:Articles not listed in the vital article list', {
+	for_each_page(page_data) {
+		console.log('page_data:', page_data);
+	}
+});
+// </code>
+ *
+ * @example <caption>Process all pages.</caption>
+// <code>
+let count = 0;
+for await (const page_data of wiki.allpages({ namespace: 'Talk', apfrom: wiki.remove_namespace('ABC') })) {
+	console.trace('page_data:', page_data);
+	if (++count > 5) break;
+}
+console.log('Done.');
+// </code>
+ *
+ * @example <caption>Process all pages with batch_size.</caption>
+// <code>
+let count = 0;
+for await (const page_list of wiki.allpages({ namespace: 'Talk', apfrom: wiki.remove_namespace('ABC'), batch_size: 5 })) {
+	console.trace('page_list:', page_list);
+	if (++count > 2) break;
+}
+console.log('Done.');
 // </code>
  *
  */
@@ -1079,6 +1118,162 @@ function Wikiapi_list(list_type, title, options) {
 	return new Promise(Wikiapi_list_executor.bind(this));
 }
 
+
+// wrapper for sync functions
+for (const function_name of ('namespace|remove_namespace|is_article|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title|redirect_target_of|aliases_of_page|is_template'
+	// CeL.run('application.net.wiki.featured_content');
+	// [].map(wiki.to_talk_page.bind(wiki))
+	+ '|get_featured_content_configurations').split('|')) {
+	Wikiapi.prototype[function_name] = function wrapper() {
+		const wiki = this[KEY_wiki_session];
+		return wiki[function_name].apply(wiki, arguments);
+	};
+}
+
+
+// @see get_list.type @
+// https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/list.js
+for (const type of wiki_API.list.type_list) {
+	// Cannot use `= (title, options) {}` !
+	// arrow function expression DO NOT has this, arguments, super, or
+	// new.target keywords.
+	Wikiapi.prototype[type] = Wikiapi_get_page_list_of_type;
+
+	function Wikiapi_get_page_list_of_type(title, options) {
+		if (options === undefined && CeL.is_Object(title) && !wiki_API.is_page_data(title)) {
+			// shift arguments
+			options = title;
+			title = undefined;
+		}
+		const _this = this;
+		//console.trace(arguments);
+
+		let done, page_queue = [], resolve_queue, waiting_resolve;
+		// 餵頁面資料給 resolve()
+		function feed_page_data() {
+			//console.trace([resolve_queue.length, done, page_queue.length, options.batch_size]);
+			if (resolve_queue.length === 0)
+				return;
+
+			if (!done && !(page_queue.length >= (options.batch_size >= 1 ? options.batch_size : 1))) {
+				//CeL.info(`${feed_page_data.name}: 尚未累積足夠的頁面資料。 (${page_queue.length},${options.batch_size})`);
+				//CeL.set_debug(6);
+				return;
+			}
+
+			const feed_done = page_queue.abort || page_queue.length === 0;
+			// 由最早的開始給。
+			const value = options.batch_size >= 1 ? page_queue.splice(0, options.batch_size) : page_queue.shift();
+
+			// .shift(): 由最早的開始餵。
+			resolve_queue.shift()(feed_done ? { done } : { value });
+		}
+
+		function for_each_page(page_data) {
+			if (page_queue.abort)
+				return CeL.wiki.list.exit;
+
+			//console.trace(page_data, done, page_queue, resolve_queue);
+			const return_value = original_for_each_page?.apply(this, arguments);
+
+			if (resolve_queue) {
+				if (return_value === CeL.wiki.list.exit) {
+					page_queue.abort = done = true;
+					page_queue.truncate();
+
+					if (waiting_resolve) {
+						//CeL.info(`${for_each_page.name}: 清掉前面累積的。例如 wiki_API.list 剎不住。`);
+						waiting_resolve();
+					}
+
+				} else {
+					page_queue.push(page_data);
+
+					//console.trace(page_queue.length, 'pages in queue');
+					feed_page_data();
+
+					if (page_queue.length > 100) {
+						if (waiting_resolve) {
+							//CeL.info(`${for_each_page.name}: 清掉前面累積的。例如 wiki_API.list 剎不住。`);
+							waiting_resolve();
+						}
+						//CeL.info(`${for_each_page.name}: 已經累積太多頁面資料(${page_queue.length})，該緩緩了。`);
+						return new Promise(resolve => { waiting_resolve = resolve; });
+					}
+				}
+			}
+
+			return return_value;
+		}
+
+		const original_for_each_page = options?.for_each_page;
+		options = { ...options, for_each_page, get_list: options?.get_list || !original_for_each_page };
+
+		/**
+		 * @example <code>
+		
+		const page_list = await wiki.embeddedin(template_name, options);
+		await page_list.each((page_data) => { }, options);
+	
+		 * </code>
+		 */
+		const promise = Wikiapi_list.call(this, type, title, options)
+			.then((page_list) => {
+				// console.trace(page_list);
+				// console.trace(page_list.length, 'pages');
+				// console.trace(page_queue, resolve_queue);
+				if (resolve_queue) {
+					done = true;
+					while (resolve_queue.length > 0)
+						feed_page_data();
+				}
+				page_list.each = Wikiapi_for_each_page.bind(_this, page_list);
+				return page_list;
+			});
+
+		// Imperative code, for huge pages.
+		// 依照標準實作，會先執行一次 next()。之後待 for_each_page() 將此 betch 全 push 進 page_queue 後，再依序 call next()。因此 resolve_queue.length <= 1。
+		// @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
+		promise[Symbol.asyncIterator] = () => {
+			resolve_queue = [];
+
+			return {
+				next() {
+					//console.trace(done, page_queue, resolve_queue);
+					if (done && page_queue.length === 0)
+						return { done };
+					return new Promise( /* executor */ function (resolve, reject) {
+						//console.trace(done, page_queue, resolve_queue);
+						// 依照標準實作， resolve_queue.length === 0。
+						resolve_queue.push(resolve);
+						feed_page_data();
+
+						if (waiting_resolve) {
+							// 可以繼續接收頁面資料了。
+							waiting_resolve();
+							waiting_resolve = null;
+						}
+					});
+				},
+				return() {
+					// e.g., break loop
+					page_queue.abort = done = true;
+					return { done };
+				},
+				throw(error) {
+					CeL.error('Wikiapi list TODO: Not yet tested');
+					page_queue.abort = done = true;
+					return { done };
+				}
+			};
+		};
+
+		return promise;
+	}
+
+}
+
+
 /**
  * Syntactic sugar for several kinds of lists
  * 
@@ -1106,6 +1301,7 @@ function Wikiapi_for_each_page_in_list(type, title, for_each_page, options) {
 		...options
 	});
 }
+
 
 // --------------------------------------------------------
 
@@ -1726,17 +1922,9 @@ function Wikiapi_run_SQL(SQL, for_each_row/* , options */) {
 
 // --------------------------------------------------------
 
-function Wikiapi_setup_layout_elements(options) {
-	function Wikiapi_setup_layout_elements_executor(resolve, reject) {
-		const wiki = this[KEY_wiki_session];
-		wiki.setup_layout_elements(resolve, this.append_session_to_options(options));
-	}
-
-	return new Promise(Wikiapi_setup_layout_elements_executor.bind(this));
-}
-
-/**<code>
-
+/**
+ * @example <caption>insert layout element</caption>
+// <code>
 layout_element = CeL.wiki.parse('{{Authority control}}');
 await wiki_session.setup_layout_element_to_insert(layout_element);
 
@@ -1744,8 +1932,10 @@ page_data = await wiki.page(page_data);
 parsed = page_data.parse();
 parsed.insert_layout_element(layout_element);
 parsed.toString();
-
-</code>*/
+// </code>
+ *
+ * @memberof Wikiapi.prototype
+ */
 function Wikiapi_setup_layout_element_to_insert(layout_element, options) {
 	function Wikiapi_setup_layout_element_to_insert_executor(resolve, reject) {
 		const wiki = this[KEY_wiki_session];
@@ -1936,7 +2126,7 @@ wiki.listen(function for_each_row() {
 	// 檢查的延遲時間。
 	delay: '2m',
 	filter: function filter_row(row) {
-		// row is the same format as page_data
+		// The format of `row` is basically the same as page_data.
 	},
 	// also get diff
 	with_diff: { LCS: true, line: true },
@@ -1980,7 +2170,6 @@ wiki.listen(function for_each_row() {
 
 	run_SQL: Wikiapi_run_SQL,
 
-	setup_layout_elements: Wikiapi_setup_layout_elements,
 	setup_layout_element_to_insert: Wikiapi_setup_layout_element_to_insert,
 });
 
@@ -1992,176 +2181,6 @@ for (const property_name of ('task_configuration|latest_task_configuration').spl
 			return wiki[property_name];
 		}
 	});
-}
-
-
-/**
- *
- * @example <caption>Process each page of the category.</caption>
-// <code>
-const page_list = await wiki.categorymembers('Category:Articles not listed in the vital article list');
-
-wiki.categorymembers('Category:Articles not listed in the vital article list', { for_each_page(page_data) { console.log('page_data:', page_data); } })
-
-for await (const page_data of wiki.categorymembers('Category:Articles not listed in the vital article list')) {
-	console.trace('page_data:', page_data);
-}
-console.log('All done.');
-// </code>
- *
- * @example <caption>Process all pages.</caption>
-// <code>
-let count = 0;
-for await (const page_data of wiki.allpages({ namespace: 'Talk', apfrom: wiki.remove_namespace('ABC') })) {
-	console.trace('page_data:', page_data);
-	if (++count > 5) break;
-}
-console.log('Done.');
-// </code>
- *
- * @example <caption>Process all pages.</caption>
-// <code>
-let count = 0;
-for await (const page_list of wiki.allpages({ namespace: 'Talk', apfrom: wiki.remove_namespace('ABC'), batch_size: 5 })) {
-	console.trace('page_list:', page_list);
-	if (++count > 2) break;
-}
-console.log('Done.');
-// </code>
- *
- */
-
-// wrapper for sync functions
-for (const function_name of ('namespace|remove_namespace|is_article|is_namespace|to_namespace|is_talk_namespace|to_talk_page|talk_page_to_main|normalize_title|redirect_target_of|aliases_of_page|is_template'
-	// CeL.run('application.net.wiki.featured_content');
-	// [].map(wiki.to_talk_page.bind(wiki))
-	+ '|get_featured_content_configurations').split('|')) {
-	Wikiapi.prototype[function_name] = function wrapper() {
-		const wiki = this[KEY_wiki_session];
-		return wiki[function_name].apply(wiki, arguments);
-	};
-}
-
-// @see get_list.type @
-// https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/list.js
-for (const type of wiki_API.list.type_list) {
-	// Cannot use `= (title, options) {}` !
-	// arrow function expression DO NOT has this, arguments, super, or
-	// new.target keywords.
-	Wikiapi.prototype[type] = function (title, options) {
-		if (options === undefined && CeL.is_Object(title) && !wiki_API.is_page_data(title)) {
-			// shift arguments
-			options = title;
-			title = undefined;
-		}
-		const _this = this;
-		//console.trace(arguments);
-
-		let done, page_queue = [], resolve_queue, waiting_promise, waiting_resolve;
-		// 餵頁面資料給 resolve()
-		function feed_page_data() {
-			if (resolve_queue.length === 0)
-				return;
-
-			if (!done && !(page_queue.length >= (options.batch_size > 0 ? options.batch_size : 1))) {
-				return;
-			}
-
-			let value;
-			// 由最早的開始給。
-			if (options.batch_size > 0) {
-				value = page_queue.splice(0, options.batch_size);
-			} else {
-				value = page_queue.shift();
-			}
-
-			// .shift(): 由最早的開始餵。
-			resolve_queue.shift()({ value });
-		}
-
-		function for_each_page(page_data) {
-			if (page_queue.abort)
-				return CeL.wiki.list.exit;
-
-			//console.trace(page_data, done, page_queue, resolve_queue);
-			if (original_for_each_page)
-				original_for_each_page.apply(this, arguments);
-
-			if (!resolve_queue)
-				return;
-
-			page_queue.push(page_data);
-			//console.log(page_queue.length, 'pages in queue');
-			feed_page_data();
-
-			if (page_queue.length > 100) {
-				// 清掉前面累積的。
-				if (waiting_resolve)
-					waiting_resolve();
-				// 已經累積太多頁面資料，該緩緩了。
-				return new Promise(resolve => { waiting_resolve = resolve; });
-			}
-		}
-
-		const original_for_each_page = options?.for_each_page;
-		options = { ...options, for_each_page, get_list: options?.get_list || !original_for_each_page };
-
-		/**
-		 * @example <code>
-		
-		const page_list = await wiki.embeddedin(template_name, options);
-		await page_list.each((page_data) => { }, options);
-
-		 * </code>
-		 */
-		const promise = Wikiapi_list.call(this, type, title, options)
-			.then((page_list) => {
-				// console.trace(page_list);
-				//console.trace(page_list.length, 'pages');
-				//console.trace(page_queue, resolve_queue);
-				done = true;
-				page_list.each = Wikiapi_for_each_page.bind(_this, page_list);
-				return page_list;
-			});
-
-		// 依照標準實作，會先執行一次 next()。之後待 for_each_page() 將此 betch 全 push 進 page_queue 後，再依序 call next()。因此 resolve_queue.length <= 1。
-		// @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
-		promise[Symbol.asyncIterator] = () => {
-			resolve_queue = [];
-
-			return {
-				next() {
-					//console.trace(done, page_queue, resolve_queue);
-					if (done && page_queue.length === 0)
-						return { done };
-					return new Promise( /* executor */ function (resolve, reject) {
-						//console.trace(done, page_queue, resolve_queue);
-						// 依照標準實作， resolve_queue.length === 0。
-						resolve_queue.push(resolve);
-						feed_page_data();
-
-						if (waiting_resolve) {
-							// 可以繼續接收頁面資料了。
-							waiting_resolve();
-							waiting_resolve = null;
-						}
-					});
-				},
-				return() {
-					// e.g., break loop
-					page_queue.abort = done = true;
-					return { done };
-				},
-				throw(error) {
-					CeL.error('Wikiapi list TODO: Not yet tested');
-					page_queue.abort = done = true;
-					return { done };
-				}
-			};
-		};
-
-		return promise;
-	};
 }
 
 module.exports = Wikiapi;
