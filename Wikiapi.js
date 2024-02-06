@@ -1007,7 +1007,9 @@ function Wikiapi_SPARQL(SPARQL, options) {
 // --------------------------------------------------------
 
 /**
- *
+ * @description Tool function to access page list.<br />
+ * Please refer to <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/list.js#:~:text=get_list.type%20=">all supported types</a> (search "get_list.type =").
+ * 
  * @example <caption>get list of [[w:en:Category:Chemical_elements]]</caption>
 // <code>
 const wiki = new Wikiapi;
