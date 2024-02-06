@@ -12,6 +12,7 @@
 <p align="center">
 	<img alt="Wikiapi logo" width="244" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/WikiapiJS_MW_gear_icon.svg/244px-WikiapiJS_MW_gear_icon.svg.png" />
 </p>
+
 A simple way to access MediaWiki API via JavaScript with [wikitext parser](https://kanasimi.github.io/CeJS/_test%20suite/wikitext_parser.html).
 This is basically a modern syntax version of [CeJS MediaWiki module](https://github.com/kanasimi/CeJS/blob/master/application/net/wiki). For example, using [async functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function).
 
