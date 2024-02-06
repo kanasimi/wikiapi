@@ -141,14 +141,16 @@ add_test('edit page', async (assert, setup_test, finish_test) => {
 	const enwiki = new Wikiapi;
 	await enwiki.login({ user_name: bot_name, password, API_URL: 'en' });
 	const query_result = await enwiki.query({ action: 'query', meta: 'userinfo' });
+	//console.trace(query_result);
+
 	// node.js v12 does not support the optional chaining operator (?.)
 	// EoL of node.js v12: 2022-04-30
 	if (password) {
 		//assert([bot_name, query_result?.query?.userinfo?.name], 'test wiki.query()');
-		assert([bot_name, query_result.query.userinfo.name], 'test wiki.query()');
+		assert([bot_name, query_result?.query.userinfo.name], 'test wiki.query()');
 	} else {
 		//assert(['' in query_result?.query?.userinfo?.anon], 'test wiki.query()');
-		assert(['' in query_result.query.userinfo.anon], 'test wiki.query()');
+		assert(['', query_result?.query.userinfo.anon], 'test wiki.query()');
 	}
 
 	await enwiki.page(test_page_title);
@@ -191,6 +193,7 @@ add_test('edit page #2', async (assert, setup_test, finish_test) => {
 	// CeL.set_debug(6);
 	try {
 		await zhwiki.edit_page(test_page_title, (page_data) => {
+			//console.trace(page_data);
 			// append text
 			return page_data.wikitext
 				+ test_wikitext;
@@ -242,6 +245,41 @@ add_test('parse page: zh', async (assert, setup_test, finish_test) => {
 		(token) => template_list.push(token.name));
 	assert(template_list.includes('Infobox'), '[[w:zh:宇宙]] must includes {{Infobox}}');
 	finish_test('parse page: zh');
+});
+
+// ------------------------------------------------------------------
+
+add_test('Get page list', async (assert, setup_test, finish_test) => {
+	setup_test('Get page list');
+
+	const enwiki = new Wikiapi('en');
+
+	let page_list, count;
+
+	page_list = await enwiki.categorymembers('Chemical elements', { limit: 3 });
+	await page_list.each((page_data) => {
+		assert(['string', typeof page_data.wikitext], 'page_list.each(page_data) with content: ' + CeL.wiki.title_link_of(page_data));
+	});
+
+	page_list = [];
+	count = 0;
+	for await (const page_data of enwiki.allpages({ namespace: 'Talk', apfrom: 'ABC', limit: 50 })) {
+		page_list.push(page_data);
+		if (++count === 7) break;
+	}
+	assert(['Talk:ABC', page_list[0].title], 'for await (namespace: Talk, apfrom: ABC)');
+	assert([7, page_list.length], 'for await () { break; }');
+
+	page_list = [];
+	count = 0;
+	for await (const _page_list of enwiki.allpages({ namespace: 'Talk', apfrom: 'ABC', batch_size: 3, limit: 50 })) {
+		assert([3, _page_list.length], 'for await (batch_size) { }');
+		page_list.push(_page_list);
+		if (++count === 6) break;
+	}
+	assert([6, page_list.length], 'for await (batch_size) { break; }');
+
+	finish_test('Get page list');
 });
 
 // ------------------------------------------------------------------
@@ -425,8 +463,8 @@ add_test('tracking revisions to lookup what revision had added "金星快车效�
 add_test('get list of categorymembers', async (assert, setup_test, finish_test) => {
 	setup_test('get list of [[w:en:Category:Chemical_elements]]');
 	const wiki = new Wikiapi;
-	const list = await wiki.categorymembers('Chemical elements');
-	assert(list.map((page_data) => page_data.title).includes('Iron'), 'Iron is a chemical element');
+	const page_list = await wiki.categorymembers('Chemical elements');
+	assert(page_list.map((page_data) => page_data.title).includes('Iron'), 'Iron is a chemical element');
 	finish_test('get list of [[w:en:Category:Chemical_elements]]');
 });
 
@@ -435,8 +473,8 @@ add_test('get list of categorymembers', async (assert, setup_test, finish_test) 
 add_test('get pages transclude specified template', async (assert, setup_test, finish_test) => {
 	setup_test('get pages transclude {{w:en:Periodic table}}');
 	const wiki = new Wikiapi;
-	const list = await wiki.embeddedin('Template:Periodic table');
-	assert(list.map((page_data) => page_data.title).includes('Periodic table'), '[[w:en:Periodic table]] transclude {{w:en:Periodic table}}');
+	const page_list = await wiki.embeddedin('Template:Periodic table');
+	assert(page_list.map((page_data) => page_data.title).includes('Periodic table'), '[[w:en:Periodic table]] transclude {{w:en:Periodic table}}');
 	finish_test('get pages transclude {{w:en:Periodic table}}');
 });
 

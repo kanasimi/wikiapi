@@ -1026,7 +1026,7 @@ await page_list.each((page_data) => { }, options);
 
 // Imperative code, for huge pages.
 for await (const page_data of wiki.categorymembers('Category:Articles not listed in the vital article list')) {
-	console.trace('page_data:', page_data);
+	console.trace(`page_data #${count}:`, page_data);
 }
 
 // Declarative code(?), for huge pages.
@@ -1041,7 +1041,7 @@ await wiki.categorymembers('Category:Articles not listed in the vital article li
 // <code>
 let count = 0;
 for await (const page_data of wiki.allpages({ namespace: 'Talk', apfrom: wiki.remove_namespace('ABC') })) {
-	console.trace('page_data:', page_data);
+	console.trace(`page_data #${count}:`, page_data);
 	if (++count > 5) break;
 }
 console.log('Done.');
@@ -1116,6 +1116,37 @@ function Wikiapi_list(list_type, title, options) {
 	}
 
 	return new Promise(Wikiapi_list_executor.bind(this));
+}
+
+
+/**
+ * Syntactic sugar for several kinds of lists
+ * 
+ * @param {String} type				- list type
+ * @param {String} [title]			- page title if necessary.
+ * @param {Function} for_each_page	- Executing for each page.
+ * @param {Object} [options]		- options to run this function.
+ * @returns {Promise}
+ *
+ * @deprecated Please use <a href="#Wikiapi_list">Wikiapi_list()</a>
+ * 
+ * @example <caption>List all redirected categories</caption>
+// <code>
+await wiki.for_each_page_in_list('allredirects', page_data => console.log('page_data: ', page_data), { namespace: 'Category' });
+// </code>
+ */
+function Wikiapi_for_each_page_in_list(type, title, for_each_page, options) {
+	if (options === undefined && typeof title === 'function') {
+		// shift arguments
+		options = for_each_page;
+		for_each_page = title;
+		title = undefined;
+	}
+
+	return Wikiapi_list.call(this, type, title, {
+		for_each_page: for_each_page,
+		...options
+	});
 }
 
 
@@ -1271,35 +1302,6 @@ for (const type of wiki_API.list.type_list) {
 		return promise;
 	}
 
-}
-
-
-/**
- * Syntactic sugar for several kinds of lists
- * 
- * @param {String} type				- list type
- * @param {String} [title]			- page title if necessary.
- * @param {Function} for_each_page	- Executing for each page.
- * @param {Object} [options]		- options to run this function.
- * @returns {Promise}
- *
- * @example <caption>List all redirected categories</caption>
-// <code>
-await wiki.for_each_page_in_list('allredirects', page_data => console.log('page_data: ', page_data), { namespace: 'Category' });
-// </code>
- */
-function Wikiapi_for_each_page_in_list(type, title, for_each_page, options) {
-	if (options === undefined && typeof title === 'function') {
-		// shift arguments
-		options = for_each_page;
-		for_each_page = title;
-		title = undefined;
-	}
-
-	return Wikiapi_list.call(this, type, title, {
-		for_each_page: for_each_page,
-		...options
-	});
 }
 
 
