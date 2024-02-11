@@ -1175,6 +1175,8 @@ for (const function_name of ('namespace|remove_namespace|is_article|is_namespace
 	};
 }
 
+const default_list_wait_size = 100;
+// assert: default_list_wait_size >= 1
 
 // @see get_list.type @
 // https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/list.js
@@ -1237,12 +1239,14 @@ for (const type of wiki_API.list.type_list) {
 					//console.trace(page_queue.length, 'pages in queue');
 					feed_page_data();
 
-					if (page_queue.length > 100) {
+					// assert: default_list_wait_size >= 1
+					const wait_size = options.batch_size > default_list_wait_size ? options.batch_size : default_list_wait_size;
+					if (page_queue.length > wait_size) {
 						if (waiting_resolve) {
 							//CeL.info(`${for_each_page.name}: 清掉前面累積的。例如 wiki_API.list 剎不住。`);
 							waiting_resolve();
 						}
-						//CeL.info(`${for_each_page.name}: 已經累積太多頁面資料(${page_queue.length})，該緩緩了。`);
+						//CeL.info(`${for_each_page.name}: 已經累積太多頁面資料(${page_queue.length} > ${wait_size})，該緩緩了。`);
 						return new Promise(resolve => { waiting_resolve = resolve; });
 					}
 				}
