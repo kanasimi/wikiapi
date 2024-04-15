@@ -1037,7 +1037,7 @@ console.log(page_list);
 const page_list = await wiki.categorymembers('Category:Articles not listed in the vital article list');
 await page_list.each((page_data) => { }, options);
 
-// Imperative code, for huge pages.
+// Imperative code, for huge pages. 用於巨量的頁面。
 for await (const page_data of wiki.categorymembers('Category:Articles not listed in the vital article list')) {
 	console.trace(`page_data #${count}:`, page_data);
 }
@@ -1048,6 +1048,12 @@ await wiki.categorymembers('Category:Articles not listed in the vital article li
 		console.log('page_data:', page_data);
 	}
 });
+
+await wiki.allpages({
+	async for_each_slice(page_list) {
+	}
+});
+
 // </code>
  *
  * @example <caption>Process all pages.</caption>
