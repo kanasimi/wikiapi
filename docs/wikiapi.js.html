@@ -27,7 +27,7 @@
 
 <nav >
     
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Wikiapi.html">Wikiapi</a><ul class='methods'><li data-type='method'><a href="Wikiapi.html#category_tree">category_tree</a></li><li data-type='method'><a href="Wikiapi.html#convert_Chinese">convert_Chinese</a></li><li data-type='method'><a href="Wikiapi.html#data">data</a></li><li data-type='method'><a href="Wikiapi.html#delete">delete</a></li><li data-type='method'><a href="Wikiapi.html#download">download</a></li><li data-type='method'><a href="Wikiapi.html#edit">edit</a></li><li data-type='method'><a href="Wikiapi.html#edit_page">edit_page</a></li><li data-type='method'><a href="Wikiapi.html#for_each_page">for_each_page</a></li><li data-type='method'><a href="Wikiapi.html#get_featured_content">get_featured_content</a></li><li data-type='method'><a href="Wikiapi.html#listen">listen</a></li><li data-type='method'><a href="Wikiapi.html#login">login</a></li><li data-type='method'><a href="Wikiapi.html#move_page">move_page</a></li><li data-type='method'><a href="Wikiapi.html#move_to">move_to</a></li><li data-type='method'><a href="Wikiapi.html#new_data_entity">new_data_entity</a></li><li data-type='method'><a href="Wikiapi.html#page">page</a></li><li data-type='method'><a href="Wikiapi.html#purge">purge</a></li><li data-type='method'><a href="Wikiapi.html#query">query</a></li><li data-type='method'><a href="Wikiapi.html#redirects_here">redirects_here</a></li><li data-type='method'><a href="Wikiapi.html#redirects_root">redirects_root</a></li><li data-type='method'><a href="Wikiapi.html#register_redirects">register_redirects</a></li><li data-type='method'><a href="Wikiapi.html#search">search</a></li><li data-type='method'><a href="Wikiapi.html#setup_layout_element_to_insert">setup_layout_element_to_insert</a></li><li data-type='method'><a href="Wikiapi.html#site_name">site_name</a></li><li data-type='method'><a href="Wikiapi.html#SPARQL">SPARQL</a></li><li data-type='method'><a href="Wikiapi.html#tracking_revisions">tracking_revisions</a></li><li data-type='method'><a href="Wikiapi.html#upload">upload</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#for_each_page_in_list">for_each_page_in_list</a></li><li><a href="global.html#Wikiapi_list">Wikiapi_list</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Wikiapi.html">Wikiapi</a><ul class='methods'><li data-type='method'><a href="Wikiapi.html#category_tree">category_tree</a></li><li data-type='method'><a href="Wikiapi.html#convert_Chinese">convert_Chinese</a></li><li data-type='method'><a href="Wikiapi.html#data">data</a></li><li data-type='method'><a href="Wikiapi.html#delete">delete</a></li><li data-type='method'><a href="Wikiapi.html#download">download</a></li><li data-type='method'><a href="Wikiapi.html#edit">edit</a></li><li data-type='method'><a href="Wikiapi.html#edit_page">edit_page</a></li><li data-type='method'><a href="Wikiapi.html#find_comment">find_comment</a></li><li data-type='method'><a href="Wikiapi.html#for_each_page">for_each_page</a></li><li data-type='method'><a href="Wikiapi.html#get_featured_content">get_featured_content</a></li><li data-type='method'><a href="Wikiapi.html#listen">listen</a></li><li data-type='method'><a href="Wikiapi.html#login">login</a></li><li data-type='method'><a href="Wikiapi.html#move_page">move_page</a></li><li data-type='method'><a href="Wikiapi.html#move_to">move_to</a></li><li data-type='method'><a href="Wikiapi.html#new_data_entity">new_data_entity</a></li><li data-type='method'><a href="Wikiapi.html#page">page</a></li><li data-type='method'><a href="Wikiapi.html#purge">purge</a></li><li data-type='method'><a href="Wikiapi.html#query">query</a></li><li data-type='method'><a href="Wikiapi.html#redirect_to">redirect_to</a></li><li data-type='method'><a href="Wikiapi.html#redirects_here">redirects_here</a></li><li data-type='method'><a href="Wikiapi.html#redirects_root">redirects_root</a></li><li data-type='method'><a href="Wikiapi.html#register_redirects">register_redirects</a></li><li data-type='method'><a href="Wikiapi.html#search">search</a></li><li data-type='method'><a href="Wikiapi.html#setup_layout_element_to_insert">setup_layout_element_to_insert</a></li><li data-type='method'><a href="Wikiapi.html#site_name">site_name</a></li><li data-type='method'><a href="Wikiapi.html#SPARQL">SPARQL</a></li><li data-type='method'><a href="Wikiapi.html#tracking_revisions">tracking_revisions</a></li><li data-type='method'><a href="Wikiapi.html#upload">upload</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#for_each_page_in_list">for_each_page_in_list</a></li><li><a href="global.html#Wikiapi_list">Wikiapi_list</a></li></ul>
 </nav>
 
 <div id="main">
@@ -1501,6 +1501,42 @@ function Wikiapi_redirects_root(title, options) {
 // --------------------------------------------------------
 
 /**
+ * @alias redirect_to
+ * @description Get the page that &lt;code>title&lt;/code> redirects to.
+ * 
+ * @param {String} title		- page title
+ * @param {Object} [options]	- options to run this function
+ *
+ * @returns {Promise} Promise object represents {Array} redirect_list
+ *
+ * @example &lt;caption>Get the page that [[WP:SB]] redirects to.&lt;/caption>
+// &lt;code>
+const redirects_list = await enwiki.redirect_to('WP:SB');
+// &lt;/code>
+ * 
+ * @memberof Wikiapi.prototype
+ */
+function Wikiapi_redirect_to(title, options) {
+	function Wikiapi_redirect_to_executor(resolve, reject) {
+		// const wiki = this[KEY_wiki_session];
+		// using wiki_API.redirect_to
+		wiki_API.redirect_to(title, (redirect_data, page_data, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				//console.trace(redirect_data);
+				//console.trace(page_data);
+				resolve(page_data || redirect_data);
+			}
+		}, this.append_session_to_options(options));
+	}
+
+	return new Promise(Wikiapi_redirect_to_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
+/**
  * @alias redirects_here
  * @description Get all pages redirects to &lt;code>title&lt;/code>.
  * 
@@ -2184,6 +2220,30 @@ Object.assign(Wikiapi.prototype, {
 	move_to: Wikiapi_move_to,
 	move_page: Wikiapi_move_page,
 	purge: Wikiapi_purge,
+
+	/**
+	 * @description Find comment by talk page title and anchor.
+	 * 
+	 * @example &lt;code>
+
+	const comment_list = await wiki.find_comment(token);
+
+	&lt;/code>
+	 * 
+	 * @param {String|Array}talk_page_and_anchor
+	 *            talk page and anchor: "title#anchor" | [title,anchor]
+	 * @param {Object}[options]
+	 *            附加參數/設定選擇性/特殊功能與選項
+	 * 
+	 * @returns {Promise|Undefined} resolve({Array}comment_list)
+	 * 
+	 * @memberof Wikiapi.prototype
+	 */
+	find_comment(talk_page_and_anchor, options) {
+		const wiki = this[KEY_wiki_session];
+		return wiki.find_comment.apply(wiki, arguments);
+	},
+
 	/**
 	 * @description Listen to page modification. 監視最近更改的頁面。&lt;br />
 	 * wrapper for {@link wiki_API}#listen
@@ -2220,6 +2280,7 @@ wiki.listen(function for_each_row() {
 	search: Wikiapi_search,
 
 	redirects_root: Wikiapi_redirects_root,
+	redirect_to: Wikiapi_redirect_to,
 	// Warning: 採用 wiki_API.redirects_here(title) 才能追溯重新導向的標的。
 	// wiki.redirects() 無法追溯重新導向的標的！
 	redirects_here: Wikiapi_redirects_here,
@@ -2274,7 +2335,7 @@ module.exports = Wikiapi;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Tue Apr 16 2024 06:20:08 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.10</a> on Mon Mar 17 2025 06:50:20 GMT+0800 (台北標準時間) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -117,15 +117,20 @@ function normally_blocked_edit(result) {
 	// @see wiki_API.edit @ wiki.js
 	return result.edit && result.edit.captcha
 		// e.g., [[m:NOP|Open Proxy]] is blocked.
-		|| result.error && (result.error.code === 'globalblocking-ipblocked-range' || result.error.code === 'wikimedia-globalblocking-ipblocked-range');
+		|| result.error && (result.error.code in {
+			'blocked': true,
+			'globalblocking-ipblocked-range': true,
+			'wikimedia-globalblocking-ipblocked-range': true,
+		});
 }
 
 function handle_edit_error(assert, error) {
 	const result = error.result;
 	if (normally_blocked_edit(result)) {
-		CeL.log(`handle_edit_error: Skip blocked edit: ${result.message || result.error && result.error.code || JSON.stringify(result)}`);
+		CeL.log(`${handle_edit_error.name}: Skip blocked edit: ${result.message || result.error && result.error.code || JSON.stringify(result)}`);
 		return;
 	}
+	//console.trace(result);
 
 	assert(error.message === '[blocked] You have been blocked from editing.'
 		|| error.message === 'OK', 'test edit page result');

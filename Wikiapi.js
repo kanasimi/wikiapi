@@ -1457,6 +1457,42 @@ function Wikiapi_redirects_root(title, options) {
 // --------------------------------------------------------
 
 /**
+ * @alias redirect_to
+ * @description Get the page that <code>title</code> redirects to.
+ * 
+ * @param {String} title		- page title
+ * @param {Object} [options]	- options to run this function
+ *
+ * @returns {Promise} Promise object represents {Array} redirect_list
+ *
+ * @example <caption>Get the page that [[WP:SB]] redirects to.</caption>
+// <code>
+const redirects_list = await enwiki.redirect_to('WP:SB');
+// </code>
+ * 
+ * @memberof Wikiapi.prototype
+ */
+function Wikiapi_redirect_to(title, options) {
+	function Wikiapi_redirect_to_executor(resolve, reject) {
+		// const wiki = this[KEY_wiki_session];
+		// using wiki_API.redirect_to
+		wiki_API.redirect_to(title, (redirect_data, page_data, error) => {
+			if (error) {
+				reject(error);
+			} else {
+				//console.trace(redirect_data);
+				//console.trace(page_data);
+				resolve(page_data || redirect_data);
+			}
+		}, this.append_session_to_options(options));
+	}
+
+	return new Promise(Wikiapi_redirect_to_executor.bind(this));
+}
+
+// --------------------------------------------------------
+
+/**
  * @alias redirects_here
  * @description Get all pages redirects to <code>title</code>.
  * 
@@ -2140,6 +2176,30 @@ Object.assign(Wikiapi.prototype, {
 	move_to: Wikiapi_move_to,
 	move_page: Wikiapi_move_page,
 	purge: Wikiapi_purge,
+
+	/**
+	 * @description Find comment by talk page title and anchor.
+	 * 
+	 * @example <code>
+
+	const comment_list = await wiki.find_comment(token);
+
+	</code>
+	 * 
+	 * @param {String|Array}talk_page_and_anchor
+	 *            talk page and anchor: "title#anchor" | [title,anchor]
+	 * @param {Object}[options]
+	 *            附加參數/設定選擇性/特殊功能與選項
+	 * 
+	 * @returns {Promise|Undefined} resolve({Array}comment_list)
+	 * 
+	 * @memberof Wikiapi.prototype
+	 */
+	find_comment(talk_page_and_anchor, options) {
+		const wiki = this[KEY_wiki_session];
+		return wiki.find_comment.apply(wiki, arguments);
+	},
+
 	/**
 	 * @description Listen to page modification. 監視最近更改的頁面。<br />
 	 * wrapper for {@link wiki_API}#listen
@@ -2176,6 +2236,7 @@ wiki.listen(function for_each_row() {
 	search: Wikiapi_search,
 
 	redirects_root: Wikiapi_redirects_root,
+	redirect_to: Wikiapi_redirect_to,
 	// Warning: 採用 wiki_API.redirects_here(title) 才能追溯重新導向的標的。
 	// wiki.redirects() 無法追溯重新導向的標的！
 	redirects_here: Wikiapi_redirects_here,
