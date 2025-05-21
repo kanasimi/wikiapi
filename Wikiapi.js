@@ -1217,6 +1217,8 @@ for (const type of wiki_API.list.type_list) {
 			const feed_done = page_queue.abort || page_queue.length === 0;
 			// 由最早的開始給。
 			const value = options.batch_size >= 1 ? page_queue.splice(0, options.batch_size) : page_queue.shift();
+			if (value)
+				value.is_list_flow = true;
 
 			// .shift(): 由最早的開始餵。
 			resolve_queue.shift()(feed_done ? { done } : { value });
