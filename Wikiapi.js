@@ -144,7 +144,7 @@ await wiki.login(login_options);
  * @example <caption><span id="example__Login to wiki site 2">Login to wiki site method 2.</span></caption>
 // <code>
 const wiki = new Wikiapi;
-await wiki.login('user_name', 'password', 'en');
+await wiki.login('bot name', 'password', 'en');
 // </code>
  *
  * @memberof Wikiapi.prototype
@@ -264,10 +264,11 @@ function set_page_data_attributes(page_data, wiki) {
  *
  * @example <caption>load page</caption>
 // <code>
+const wiki = new Wikiapi;
 // on Wikipedia...
-const wiki = new Wikiapi('en');
+await wiki.login({ user_name: 'user', password: 'password', API_URL: 'en', });
 // ...or other MediaWiki websites
-//const wiki = new Wikiapi('https://awoiaf.westeros.org/api.php');
+await wiki.login({ user_name: 'user', password: 'password', API_URL: 'https://awoiaf.westeros.org/api.php', });
 let page_data = await wiki.page('Universe', {
 	// You may also set rvprop.
 	//rvprop: 'ids|content|timestamp|user',
@@ -288,8 +289,8 @@ console.log(page_data.wikitext);
  * @example <caption>parse wiki page (The parser is more powerful than the example. Please refer to link of wikitext parser examples showing in "Features" section of README.md.)</caption>
 // <code>
 // Usage with other language
-const zhwiki = new Wikiapi('zh');
-await zhwiki.login('user', 'password');
+const zhwiki = new Wikiapi;
+await zhwiki.login('bot name', 'password', 'zh' || 'zhwiki' || 'zh.wikipedia');
 let page_data = await zhwiki.page('Universe');
 
 // `page_data.parse(options)` will startup the parser process, create page_data.parsed. After .parse(), we can use parsed.each().
@@ -304,7 +305,8 @@ parsed.each('Template:Tl', token => console.log(token));
  *
  * @example <caption>Get information from Infobox template</caption>
 // <code>
-const wiki = new Wikiapi('en');
+const wiki = new Wikiapi;
+await wiki.login('bot name', 'password', 'en' || 'enwiki' || 'en.wikipedia');
 const page_data = await wiki.page('JavaScript');
 const parsed = page_data.parse();
 let infobox;
@@ -668,7 +670,8 @@ function Wikiapi_move_to(move_to_title, options) {
  *
  * @example <caption>query flow-parsoid-utils</caption>
 // <code>
-const wiki = new Wikiapi('mediawiki');
+const wiki = new Wikiapi;
+await wiki.login('bot name', 'password', 'mediawiki');
 const results = await wiki.query({
 	action: "flow-parsoid-utils",
 	content: "<b>bold</b> &amp; <i>italic</i>",
@@ -709,7 +712,8 @@ function Wikiapi_query(parameters, options) {
  *
  * @example <caption>query flow-parsoid-utils</caption>
 // <code>
-const metawiki = new Wikiapi('meta');
+const metawiki = new Wikiapi;
+await metawiki.login('bot name', 'password', 'meta');
 let page_data = await metawiki.purge('Project:Sandbox');
 // </code>
  * 
@@ -835,7 +839,7 @@ console.assert(data.includes('shape of the universe'));
 // Just for test
 delete CeL.wiki.query.default_maxlag;
 const wiki = new Wikiapi;
-await wiki.login('user', 'password', 'test');
+await wiki.login('bot name', 'password', 'test');
 
 // Get https://test.wikidata.org/wiki/Q7
 let entity = await wiki.data('Q7');
@@ -1344,7 +1348,8 @@ for (const type of wiki_API.list.type_list) {
  *
  * @example <caption>Checking if [[Category:Countries in North America]] including [[Mexico]].</caption>
 // <code>
-const enwiki = new Wikiapi('en');
+const enwiki = new Wikiapi;
+await enwiki.login('bot name', 'password', 'en');
 const page_list = await enwiki.category_tree('Countries in North America', 1);
 assert(page_list.some(page_data => page_data.title === 'United States'), 'list category tree: [[Category:Countries in North America]] must includes [[United States]]');
 assert('Mexico' in page_list[Wikiapi.KEY_subcategories], 'list category tree: [[Category:Mexico]] is a subcategory of [[Category:Countries in North America]]');
@@ -1352,7 +1357,8 @@ assert('Mexico' in page_list[Wikiapi.KEY_subcategories], 'list category tree: [[
  *
  * @example <caption>Get all sub-categories of [[Category:Echinodermata]] with depth=2.</caption>
 // <code>
-const wiki = new Wikiapi('commons');
+const wiki = new Wikiapi;
+await wiki.login('bot name', 'password', 'commons');
 const all_sub_categories = (await wiki.category_tree('Echinodermata', { depth: 2, cmtype: 'subcat', get_flat_subcategories: true })).flat_subcategories;
 // </code>
  *
@@ -1397,7 +1403,9 @@ Wikiapi.KEY_subcategories = wiki_API.KEY_subcategories;
  *
  * @example <caption>search pages include key: 霍金</caption>
 // <code>
-const zhwikinews = new Wikiapi('zh.wikinews');
+const zhwikinews = new Wikiapi;
+await zhwikinews.login('bot name', 'password', 'zh.wikinews');
+
 const page_list = await zhwikinews.search('"霍金"');
 // </code>
  *
@@ -1653,7 +1661,7 @@ See <a href="https://github.com/kanasimi/CeJS/blob/master/application/net/wiki/e
  * @example <caption><span id="example__Upload file / media">Upload file / media</span></caption>
 // <code>
 const wiki = new Wikiapi;
-await wiki.login('user', 'password', 'test');
+await wiki.login('bot name', 'password', 'test');
 // Upload a local file directly:
 //let result = await wiki.upload({ file_path: '/local/file/path', comment: '', text: '' || {description: '', ...} });
 let result = await wiki.upload({
@@ -1672,7 +1680,7 @@ result = await wiki.upload({ media_url: 'https://media.url/name.jpg', comment: '
  * @example <caption>Upload file and then update content of file page</caption>
 // <code>
 const wiki = new Wikiapi;
-await wiki.login('user', 'password', 'test');
+await wiki.login('bot name', 'password', 'test');
 
 const variable_Map = new CeL.wiki.Variable_Map();
 variable_Map.set('description', '...');
@@ -1730,13 +1738,15 @@ function Wikiapi_upload(file_data) {
  *
  * @example <caption>Download original file / media to current directory.</span></caption>
 // <code>
-const wiki = new Wikiapi('commons');
+const wiki = new Wikiapi;
+await wiki.login('bot name', 'password', 'commons');
 await wiki.download('File:Example.svg');
 // </code>
  *
  * @example <caption>Download file / media with options</span></caption>
 // <code>
-const wiki = new Wikiapi('commons');
+const wiki = new Wikiapi;
+await wiki.login('bot name', 'password', 'commons');
 
 // Download non-vector version of .svg
 await wiki.download('File:Example.svg', { width: 80 });
@@ -1810,7 +1820,8 @@ function Wikiapi_download(file_title, options) {
  *
  * @example <caption>read / edit multiple pages</caption>
 // <code>
-const enwiki = new Wikiapi('en');
+const enwiki = new Wikiapi;
+await enwiki.login('bot name', 'password', 'en');
 const link_from = await wiki.redirects_here('ABC');
 await wiki.for_each_page(link_from, page_data => {
 	// Return `Wikiapi.skip_edit` if you just want to get the page data.
@@ -1920,10 +1931,12 @@ function Wikiapi_for_each_page(page_list, for_each_page, options) {
  *
  * @example <caption>繁簡轉換</caption>
 // <code>
-const wiki = new Wikiapi('en');
-const converted_text = await wiki.convert_Chinese('中国', { uselang: 'zh-hant' });
-const converted_text = await wiki.convert_Chinese('中國', { uselang: 'zh-hans' });
-const converted_list = await wiki.convert_Chinese(['繁體', '簡體'], { uselang: 'zh-hans' });
+const enwiki = new Wikiapi;
+await enwiki.login('bot name', 'password', 'en');
+
+const converted_text = await enwiki.convert_Chinese('中国', { uselang: 'zh-hant' });
+const converted_text = await enwiki.convert_Chinese('中國', { uselang: 'zh-hans' });
+const converted_list = await enwiki.convert_Chinese(['繁體', '簡體'], { uselang: 'zh-hans' });
 // </code>
  * 
  * @memberof Wikiapi.prototype
@@ -2089,10 +2102,12 @@ Wikiapi_get_featured_content.default_types = 'FFA|GA|FA|FL'.split('|');
 // <code>
 console.log(Wikiapi.site_name('zh', { get_all_properties: true }));
 
-const wiki = new Wikiapi('en');
-console.assert(wiki.site_name() === 'enwiki');
-console.log(wiki.site_name({ get_all_properties: true }));
-console.assert(wiki.site_name({ get_all_properties: true }).language === 'en');
+const enwiki = new Wikiapi;
+await enwiki.login('bot name', 'password', 'en');
+
+console.assert(enwiki.site_name() === 'enwiki');
+console.log(enwiki.site_name({ get_all_properties: true }));
+console.assert(enwiki.site_name({ get_all_properties: true }).language === 'en');
 // </code>
  * 
  * @memberof Wikiapi.prototype
@@ -2117,7 +2132,8 @@ Wikiapi.site_name = Wikiapi_site_name;
  *
  * @example <caption>delete page [[Page to delete]]</caption>
 // <code>
-const testwiki = new Wikiapi('test');
+const testwiki = new Wikiapi;
+await testwiki.login('bot name', 'password', 'test');
 await testwiki.delete('Page to delete', { reason: 'test' });
 // { title: 'Page to delete', reason: 'test', logid: 00000 }
 // </code>
