@@ -869,6 +869,11 @@ await entity.modify({ labels: [{ language: 'zh-tw', value: '地球' }] }, { summ
  * @memberof Wikiapi.prototype
  */
 function Wikiapi_data(key, property, options) {
+	// key may be `null`.
+	if (!key/* && key !== 0*/) {
+		return key;
+	}
+
 	if (CeL.is_Object(property) && !options) {
 		// shift arguments.
 		[property, options] = [null, property];
